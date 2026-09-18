@@ -1,0 +1,234 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  CLIENT
+  PROFESSIONAL
+  ADMIN
+}
+
+enum ServiceType {
+  PPF
+  COVERING
+  CERAMIC
+  TINT
+  POLISH
+}
+
+// Cycle de vie d'une demande côté intermédiaire (admin) :
+// PENDING_REVIEW -> l'admin vient de recevoir la demande du client
+// FORWARDED      -> l'admin l'a transmise à un ou plusieurs professionnels
+// QUOTED         -> au moins un professionnel a répondu avec un prix
+// FINALIZED      -> l'admin a fixé le prix final et l'a envoyé au client
+// ACCEPTED       -> le client a accepté l'offre finale (réservation créée)
+// DECLINED       -> refusée par le client ou l'admin
+// CANCELLED      -> annulée par le client
+enum QuoteRequestStatus {
+  PENDING_REVIEW
+  FORWARDED
+  QUOTED
+  FINALIZED
+  ACCEPTED
+  DECLINED
+  CANCELLED
+}
+
+enum QuoteForwardStatus {
+  PENDING
+  QUOTED
+  DECLINED
+}
+
+enum QuoteStatus {
+  PROPOSED
+  SELECTED
+  REJECTED
+}
+
+enum BookingStatus {
+  CONFIRMED
+  COMPLETED
+  CANCELLED
+}
+
+model User {
+  id           String   @id @default(uuid())
+  email        String   @unique
+  passwordHash String
+  role         Role
+  firstName    String
+  lastName     String
+  phone        String?
+  avatarUrl    String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  professionalProfile ProfessionalProfile?
+
+  quoteRequests    QuoteRequest[] @relation("ClientQuoteRequests")
+  bookingsAsClient Booking[]      @relation("ClientBookings")
+  reviewsWritten   Review[]       @relation("ClientReviews")
+
+  conversationsAsA Conversation[] @relation("ConversationA")
+  conversationsAsB Conversation[] @relation("ConversationB")
+  messagesSent     Message[]      @relation("SentMessages")
+}
+
+model ProfessionalProfile {
+  id            String   @id @default(uuid())
+  userId        String   @unique
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  businessName  String
+  description   String?
+  address       String?
+  city          String?
+  latitude      Float?
+  longitude     Float?
+  averageRating Float    @default(0)
+  reviewCount   Int      @default(0)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  services         ProfessionalService[]
+  portfolioImages  PortfolioImage[]
+  quoteForwards    QuoteForward[]
+  quotes           Quote[]
+  bookings         Booking[]              @relation("ProBookings")
+  reviews          Review[]               @relation("ProReviews")
+  selectedForRequests QuoteRequest[]      @relation("SelectedProfessional")
+}
+
+model ProfessionalService {
+  id             String              @id @default(uuid())
+  professionalId String
+  professional   ProfessionalProfile @relation(fields: [professionalId], references: [id], onDelete: Cascade)
+  serviceType    ServiceType
+  priceFrom      Float?
+  description    String?
+
+  @@unique([professionalId, serviceType])
+}
+
+model PortfolioImage {
+  id             String              @id @default(uuid())
+  professionalId String
+  professional   ProfessionalProfile @relation(fields: [professionalId], references: [id], onDelete: Cascade)
+  imageUrl       String
+  caption        String?
+  isBeforeAfter  Boolean             @default(false)
+  createdAt      DateTime            @default(now())
+}
+
+model QuoteRequest {
+  id          String             @id @default(uuid())
+  clientId    String
+  client      User               @relation("ClientQuoteRequests", fields: [clientId], references: [id], onDelete: Cascade)
+  serviceType ServiceType
+  vehicleMake String
+  vehicleModel String
+  vehicleYear Int?
+  description String?
+  city        String?
+  status      QuoteRequestStatus @default(PENDING_REVIEW)
+
+  // Fixés par l'admin lors de la finalisation
+  selectedProfessionalId String?
+  selectedProfessional   ProfessionalProfile? @relation("SelectedProfessional", fields: [selectedProfessionalId], references: [id])
+  finalPrice              Float?
+  finalMessage             String?
+  adminNote                String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  forwards QuoteForward[]
+  quotes   Quote[]
+  booking  Booking?
+}
+
+// Trace qu'une demande a été transmise par l'admin à un professionnel donné
+model QuoteForward {
+  id             String              @id @default(uuid())
+  quoteRequestId String
+  quoteRequest   QuoteRequest        @relation(fields: [quoteRequestId], references: [id], onDelete: Cascade)
+  professionalId String
+  professional   ProfessionalProfile @relation(fields: [professionalId], references: [id], onDelete: Cascade)
+  status         QuoteForwardStatus  @default(PENDING)
+  createdAt      DateTime            @default(now())
+
+  @@unique([quoteRequestId, professionalId])
+}
+
+// Prix proposé par un professionnel à l'admin (jamais visible directement par le client)
+model Quote {
+  id             String              @id @default(uuid())
+  quoteRequestId String
+  quoteRequest   QuoteRequest        @relation(fields: [quoteRequestId], references: [id], onDelete: Cascade)
+  professionalId String
+  professional   ProfessionalProfile @relation(fields: [professionalId], references: [id], onDelete: Cascade)
+  price          Float
+  message        String?
+  status         QuoteStatus         @default(PROPOSED)
+  createdAt      DateTime            @default(now())
+}
+
+model Booking {
+  id             String              @id @default(uuid())
+  quoteRequestId String              @unique
+  quoteRequest   QuoteRequest        @relation(fields: [quoteRequestId], references: [id], onDelete: Cascade)
+  clientId       String
+  client         User                @relation("ClientBookings", fields: [clientId], references: [id], onDelete: Cascade)
+  professionalId String
+  professional   ProfessionalProfile @relation("ProBookings", fields: [professionalId], references: [id], onDelete: Cascade)
+  price          Float
+  scheduledAt    DateTime
+  status         BookingStatus       @default(CONFIRMED)
+  createdAt      DateTime            @default(now())
+  updatedAt      DateTime            @updatedAt
+
+  review Review?
+}
+
+model Review {
+  id             String              @id @default(uuid())
+  bookingId      String              @unique
+  booking        Booking             @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  clientId       String
+  client         User                @relation("ClientReviews", fields: [clientId], references: [id], onDelete: Cascade)
+  professionalId String
+  professional   ProfessionalProfile @relation("ProReviews", fields: [professionalId], references: [id], onDelete: Cascade)
+  rating         Int
+  comment        String?
+  createdAt      DateTime            @default(now())
+}
+
+// Conversation générique entre deux utilisateurs (client <-> admin, ou admin <-> professionnel).
+// participantAId est toujours l'id le plus petit lexicographiquement pour garantir l'unicité.
+model Conversation {
+  id             String   @id @default(uuid())
+  participantAId String
+  participantA   User     @relation("ConversationA", fields: [participantAId], references: [id], onDelete: Cascade)
+  participantBId String
+  participantB   User     @relation("ConversationB", fields: [participantBId], references: [id], onDelete: Cascade)
+  createdAt      DateTime @default(now())
+
+  messages Message[]
+
+  @@unique([participantAId, participantBId])
+}
+
+model Message {
+  id             String       @id @default(uuid())
+  conversationId String
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  senderId       String
+  sender         User         @relation("SentMessages", fields: [senderId], references: [id], onDelete: Cascade)
+  content        String
+  createdAt      DateTime     @default(now())
+}

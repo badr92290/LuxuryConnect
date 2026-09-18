@@ -1,0 +1,153 @@
+import React from "react";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import { AuthProvider, useAuth } from "./context/AuthContext";
+import { AppShell, NavItem } from "./layout/AppShell";
+
+import WelcomePage from "./pages/auth/WelcomePage";
+import LoginPage from "./pages/auth/LoginPage";
+import RegisterPage from "./pages/auth/RegisterPage";
+
+import NewRequestPage from "./pages/client/NewRequestPage";
+import MyRequestsPage from "./pages/client/MyRequestsPage";
+import RequestDetailPage from "./pages/client/RequestDetailPage";
+import BookingsPage from "./pages/client/BookingsPage";
+import LeaveReviewPage from "./pages/client/LeaveReviewPage";
+import ProfilePage from "./pages/client/ProfilePage";
+
+import ProRequestsPage from "./pages/pro/RequestsPage";
+import ProRequestDetailPage from "./pages/pro/RequestDetailPage";
+import ProBookingsPage from "./pages/pro/BookingsPage";
+import ProfileEditPage from "./pages/pro/ProfileEditPage";
+
+import QueuePage from "./pages/admin/QueuePage";
+import AdminRequestDetailPage from "./pages/admin/RequestDetailPage";
+import AdminBookingsPage from "./pages/admin/BookingsPage";
+import AgendaPage from "./pages/admin/AgendaPage";
+
+import MessagesPage from "./pages/shared/MessagesPage";
+import ChatPage from "./pages/shared/ChatPage";
+
+const CLIENT_NAV: NavItem[] = [
+  { to: "/app/requests/new", label: "Nouvelle demande", icon: "➕" },
+  { to: "/app/requests", label: "Mes demandes", icon: "📋" },
+  { to: "/app/bookings", label: "Réservations", icon: "📅" },
+  { to: "/app/messages", label: "Messages", icon: "💬" },
+  { to: "/app/profile", label: "Profil", icon: "👤" },
+];
+
+const PRO_NAV: NavItem[] = [
+  { to: "/pro/requests", label: "Demandes", icon: "📋" },
+  { to: "/pro/bookings", label: "Réservations", icon: "📅" },
+  { to: "/pro/messages", label: "Messages", icon: "💬" },
+  { to: "/pro/profile", label: "Profil", icon: "👤" },
+];
+
+const ADMIN_NAV: NavItem[] = [
+  { to: "/admin", label: "File d'attente", icon: "📥", end: true },
+  { to: "/admin/agenda", label: "Agenda", icon: "📇" },
+  { to: "/admin/bookings", label: "Réservations", icon: "📅" },
+  { to: "/admin/messages", label: "Messages", icon: "💬" },
+];
+
+function LoadingScreen() {
+  return (
+    <div className="flex min-h-screen items-center justify-center bg-background">
+      <div className="h-8 w-8 animate-spin rounded-full border-2 border-border border-t-primary" />
+    </div>
+  );
+}
+
+function RequireRole({ role, children }: { role: "CLIENT" | "PROFESSIONAL" | "ADMIN"; children: React.ReactNode }) {
+  const { user, loading } = useAuth();
+  if (loading) return <LoadingScreen />;
+  if (!user) return <Navigate to="/login" replace />;
+  if (user.role !== role) {
+    const home = user.role === "ADMIN" ? "/admin" : user.role === "PROFESSIONAL" ? "/pro" : "/app";
+    return <Navigate to={home} replace />;
+  }
+  return <>{children}</>;
+}
+
+function PublicOnly({ children }: { children: React.ReactNode }) {
+  const { user, loading } = useAuth();
+  if (loading) return <LoadingScreen />;
+  if (user) {
+    const home = user.role === "ADMIN" ? "/admin" : user.role === "PROFESSIONAL" ? "/pro" : "/app";
+    return <Navigate to={home} replace />;
+  }
+  return <>{children}</>;
+}
+
+function AppRoutes() {
+  return (
+    <Routes>
+      <Route path="/" element={<PublicOnly><WelcomePage /></PublicOnly>} />
+      <Route path="/login" element={<PublicOnly><LoginPage /></PublicOnly>} />
+      <Route path="/register" element={<PublicOnly><RegisterPage /></PublicOnly>} />
+
+      <Route
+        path="/app"
+        element={
+          <RequireRole role="CLIENT">
+            <AppShell navItems={CLIENT_NAV} title="Espace client" />
+          </RequireRole>
+        }
+      >
+        <Route index element={<Navigate to="requests" replace />} />
+        <Route path="requests/new" element={<NewRequestPage />} />
+        <Route path="requests" element={<MyRequestsPage />} />
+        <Route path="requests/:requestId" element={<RequestDetailPage />} />
+        <Route path="bookings" element={<BookingsPage />} />
+        <Route path="bookings/:bookingId/review" element={<LeaveReviewPage />} />
+        <Route path="messages" element={<MessagesPage basePath="/app" />} />
+        <Route path="messages/:conversationId" element={<ChatPage basePath="/app" />} />
+        <Route path="profile" element={<ProfilePage />} />
+      </Route>
+
+      <Route
+        path="/pro"
+        element={
+          <RequireRole role="PROFESSIONAL">
+            <AppShell navItems={PRO_NAV} title="Espace professionnel" />
+          </RequireRole>
+        }
+      >
+        <Route index element={<Navigate to="requests" replace />} />
+        <Route path="requests" element={<ProRequestsPage />} />
+        <Route path="requests/:requestId" element={<ProRequestDetailPage />} />
+        <Route path="bookings" element={<ProBookingsPage />} />
+        <Route path="messages" element={<MessagesPage basePath="/pro" />} />
+        <Route path="messages/:conversationId" element={<ChatPage basePath="/pro" />} />
+        <Route path="profile" element={<ProfileEditPage />} />
+      </Route>
+
+      <Route
+        path="/admin"
+        element={
+          <RequireRole role="ADMIN">
+            <AppShell navItems={ADMIN_NAV} title="Administration" />
+          </RequireRole>
+        }
+      >
+        <Route index element={<QueuePage />} />
+        <Route path="requests/:requestId" element={<AdminRequestDetailPage />} />
+        <Route path="agenda" element={<AgendaPage />} />
+        <Route path="bookings" element={<AdminBookingsPage />} />
+        <Route path="messages" element={<MessagesPage basePath="/admin" />} />
+        <Route path="messages/:conversationId" element={<ChatPage basePath="/admin" />} />
+      </Route>
+
+      <Route path="*" element={<Navigate to="/" replace />} />
+    </Routes>
+  );
+}
+
+export default function App() {
+  return (
+    <BrowserRouter>
+      <AuthProvider>
+        <AppRoutes />
+      </AuthProvider>
+    </BrowserRouter>
+  );
+}
