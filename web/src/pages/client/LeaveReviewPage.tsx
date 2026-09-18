@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { api, ApiError } from "../../api/client";
-import { Button, ErrorText, Textarea } from "../../components/ui";
+import { BackLink, Button, ErrorText, Textarea } from "../../components/ui";
 
 export default function LeaveReviewPage() {
   const { bookingId } = useParams<{ bookingId: string }>();
@@ -26,10 +26,8 @@ export default function LeaveReviewPage() {
 
   return (
     <div className="mx-auto max-w-md">
-      <button onClick={() => navigate("/app/bookings")} className="mb-4 text-sm text-muted">
-        ← Retour
-      </button>
-      <h1 className="mb-6 text-2xl font-bold">Laisser un avis</h1>
+      <BackLink label="Retour" onClick={() => navigate("/app/bookings")} />
+      <h1 className="mb-6 font-display text-3xl text-ivory tracking-tight">Laisser un avis</h1>
 
       <div className="mb-6 flex gap-2 text-4xl">
         {[1, 2, 3, 4, 5].map((i) => (

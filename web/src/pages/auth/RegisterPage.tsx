@@ -52,52 +52,62 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="mx-auto flex min-h-screen max-w-md flex-col justify-center px-6 py-12">
-      <h1 className="mb-6 text-2xl font-bold">Créer un compte</h1>
+    <div className="relative min-h-screen overflow-hidden bg-background">
+      <div className="pointer-events-none absolute inset-0 bg-radial-glow" />
+      <div className="relative mx-auto flex min-h-screen max-w-md flex-col justify-center px-6 py-14">
+        <Link to="/" className="mb-8 block font-display text-lg tracking-wide text-ivory">
+          Luxury<span className="text-gold-gradient italic">Connect</span>
+        </Link>
 
-      <div className="mb-6 flex rounded-xl bg-surfaceAlt p-1">
-        {(["CLIENT", "PROFESSIONAL"] as const).map((r) => (
-          <button
-            key={r}
-            type="button"
-            onClick={() => setRole(r)}
-            className={`flex-1 rounded-lg py-2 text-sm font-semibold transition-colors ${
-              role === r ? "bg-primary text-background" : "text-muted"
-            }`}
-          >
-            {r === "CLIENT" ? "Client" : "Professionnel"}
-          </button>
-        ))}
-      </div>
+        <h1 className="mb-1 font-display text-3xl text-ivory">Créer un compte</h1>
+        <p className="mb-6 text-sm text-muted">Rejoignez LuxuryConnect en tant que...</p>
 
-      <form onSubmit={handleSubmit}>
-        <Input label="Prénom" value={firstName} onChange={(e) => setFirstName(e.target.value)} />
-        <Input label="Nom" value={lastName} onChange={(e) => setLastName(e.target.value)} />
-        {role === "PROFESSIONAL" && (
+        <div className="mb-6 flex rounded-xl border border-hairline bg-surface p-1">
+          {(["CLIENT", "PROFESSIONAL"] as const).map((r) => (
+            <button
+              key={r}
+              type="button"
+              onClick={() => setRole(r)}
+              className={`flex-1 rounded-lg py-2 text-sm font-semibold transition-colors ${
+                role === r ? "bg-gold-gradient text-background" : "text-muted hover:text-ivory"
+              }`}
+            >
+              {r === "CLIENT" ? "Client" : "Professionnel"}
+            </button>
+          ))}
+        </div>
+
+        <form onSubmit={handleSubmit}>
+          <div className="grid grid-cols-2 gap-3">
+            <Input label="Prénom" value={firstName} onChange={(e) => setFirstName(e.target.value)} />
+            <Input label="Nom" value={lastName} onChange={(e) => setLastName(e.target.value)} />
+          </div>
+          {role === "PROFESSIONAL" && (
+            <Input
+              label="Nom de l'entreprise"
+              value={businessName}
+              onChange={(e) => setBusinessName(e.target.value)}
+              placeholder="ex: Auto Shine Lyon"
+            />
+          )}
+          <Input label="Email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
+          <Input label="Téléphone (optionnel)" value={phone} onChange={(e) => setPhone(e.target.value)} />
           <Input
-            label="Nom de l'entreprise"
-            value={businessName}
-            onChange={(e) => setBusinessName(e.target.value)}
-            placeholder="ex: Auto Shine Lyon"
+            label="Mot de passe"
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
           />
-        )}
-        <Input label="Email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
-        <Input label="Téléphone (optionnel)" value={phone} onChange={(e) => setPhone(e.target.value)} />
-        <Input
-          label="Mot de passe"
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
-        {error && <ErrorText>{error}</ErrorText>}
-        <Button type="submit" full loading={loading}>
-          Créer mon compte
-        </Button>
-      </form>
+          {error && <ErrorText>{error}</ErrorText>}
+          <Button type="submit" full loading={loading} className="mt-2">
+            Créer mon compte
+          </Button>
+        </form>
 
-      <Link to="/login" className="mt-6 block text-center text-sm text-primary">
-        Déjà un compte ? Se connecter
-      </Link>
+        <Link to="/login" className="mt-8 block border-t border-hairline pt-6 text-center text-sm text-gold hover:text-gold-200">
+          Déjà un compte ? Se connecter
+        </Link>
+      </div>
     </div>
   );
 }

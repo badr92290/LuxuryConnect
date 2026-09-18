@@ -5,7 +5,7 @@ import { api, getToken } from "../../api/client";
 import { API_BASE_URL } from "../../api/config";
 import { useAuth } from "../../context/AuthContext";
 import { Message } from "../../types";
-import { Button, Input } from "../../components/ui";
+import { BackLink, Button, Input } from "../../components/ui";
 
 export default function ChatPage({ basePath }: { basePath: string }) {
   const { conversationId } = useParams<{ conversationId: string }>();
@@ -49,9 +49,7 @@ export default function ChatPage({ basePath }: { basePath: string }) {
 
   return (
     <div className="flex h-[calc(100vh-8rem)] flex-col md:h-[calc(100vh-3rem)]">
-      <button onClick={() => navigate(`${basePath}/messages`)} className="mb-4 self-start text-sm text-muted">
-        ← Retour aux messages
-      </button>
+      <BackLink label="Retour aux messages" onClick={() => navigate(`${basePath}/messages`)} />
       <div className="flex-1 space-y-3 overflow-y-auto pr-1">
         {messages.map((m) => {
           const mine = m.senderId === user?.id;

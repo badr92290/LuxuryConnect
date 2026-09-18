@@ -10,8 +10,47 @@ body,
 
 body {
   margin: 0;
-  background-color: #0b0f14;
-  color: #f5f7fa;
-  font-family: system-ui, "Segoe UI", Roboto, sans-serif;
+  background-color: #0a0a0c;
+  color: #f6f2ea;
+  font-family: "Manrope", system-ui, "Segoe UI", Roboto, sans-serif;
   -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+::selection {
+  background-color: rgba(201, 168, 118, 0.35);
+  color: #f6f2ea;
+}
+
+/* Fine luxury scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #28282e;
+  border-radius: 999px;
+  border: 2px solid #0a0a0c;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #3a3a42;
+}
+
+.font-display {
+  font-family: "Fraunces", serif;
+  font-optical-sizing: auto;
+}
+
+.text-gold-gradient {
+  background: linear-gradient(135deg, #e3c68a 0%, #c9a876 45%, #a5824f 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.hairline {
+  border-color: #232328;
 }

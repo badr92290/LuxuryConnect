@@ -7,7 +7,7 @@ export default function ProfilePage() {
 
   return (
     <div className="mx-auto max-w-md">
-      <h1 className="mb-6 text-2xl font-bold">Mon profil</h1>
+      <h1 className="mb-6 font-display text-3xl text-ivory tracking-tight">Mon profil</h1>
       <Card>
         <p className="text-lg font-semibold">
           {user?.firstName} {user?.lastName}

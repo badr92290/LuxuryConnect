@@ -46,7 +46,7 @@ export default function QueuePage() {
 
   return (
     <div>
-      <h1 className="mb-4 text-2xl font-bold">File des demandes</h1>
+      <h1 className="mb-4 font-display text-3xl text-ivory tracking-tight">File des demandes</h1>
 
       <div className="mb-6 flex gap-2 overflow-x-auto pb-1">
         {TABS.map((t) => (

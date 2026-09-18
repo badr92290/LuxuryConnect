@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { api } from "../../api/client";
 import { Contact, QUOTE_REQUEST_STATUS_LABELS, SERVICE_LABELS } from "../../types";
 import { Badge, Card, EmptyState, Input, Spinner } from "../../components/ui";
+import { IconPhone, IconMail } from "../../components/icons";
 
 const TONE: Record<string, "primary" | "muted" | "success" | "danger"> = {
   PENDING_REVIEW: "danger",
@@ -48,7 +49,7 @@ export default function AgendaPage() {
 
   return (
     <div className="mx-auto max-w-2xl">
-      <h1 className="mb-1 text-2xl font-bold">Agenda clients</h1>
+      <h1 className="mb-1 font-display text-3xl text-ivory tracking-tight">Agenda clients</h1>
       <p className="mb-6 text-sm text-muted">
         Carnet de contacts privé : coordonnées et objet de chaque demande, visible uniquement par vous.
       </p>
@@ -75,23 +76,25 @@ export default function AgendaPage() {
                 {group.map((c) => (
                   <Card key={c.id}>
                     <div className="flex flex-wrap items-center justify-between gap-2">
-                      <p className="text-lg font-semibold">
+                      <p className="font-display text-lg text-ivory">
                         {c.firstName} {c.lastName}
                       </p>
-                      <span className="text-xs text-muted">
+                      <span className="text-xs text-mutedDark">
                         Client depuis {new Date(c.clientSince).toLocaleDateString("fr-FR")}
                       </span>
                     </div>
-                    <div className="mt-1 flex flex-wrap gap-x-4 gap-y-1 text-sm text-muted">
+                    <div className="mt-2 flex flex-wrap gap-x-5 gap-y-1.5 text-sm text-muted">
                       {c.phone && (
-                        <a href={`tel:${c.phone}`} className="text-primary hover:underline">
-                          📞 {c.phone}
+                        <a href={`tel:${c.phone}`} className="flex items-center gap-1.5 text-gold hover:text-gold-200">
+                          <IconPhone className="h-3.5 w-3.5" /> {c.phone}
                         </a>
                       )}
-                      <span>✉️ {c.email}</span>
+                      <span className="flex items-center gap-1.5">
+                        <IconMail className="h-3.5 w-3.5" /> {c.email}
+                      </span>
                     </div>
 
-                    <div className="mt-3 border-t border-border pt-3">
+                    <div className="mt-4 border-t border-hairline pt-4">
                       {c.requests.length === 0 ? (
                         <p className="text-sm text-muted">Aucune demande de devis pour le moment.</p>
                       ) : (
@@ -100,7 +103,7 @@ export default function AgendaPage() {
                             <div
                               key={r.id}
                               onClick={() => navigate(`/admin/requests/${r.id}`)}
-                              className="flex cursor-pointer items-center justify-between rounded-xl border border-border px-3 py-2 text-sm hover:border-primary/40"
+                              className="flex cursor-pointer items-center justify-between rounded-xl border border-hairline px-4 py-3 text-sm transition-colors hover:border-gold/40"
                             >
                               <div>
                                 <p className="font-medium">

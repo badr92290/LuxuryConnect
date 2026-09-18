@@ -44,7 +44,7 @@ export default function NewRequestPage() {
 
   return (
     <div className="mx-auto max-w-lg">
-      <h1 className="mb-2 text-2xl font-bold">Nouvelle demande de devis</h1>
+      <h1 className="mb-2 font-display text-3xl text-ivory tracking-tight">Nouvelle demande de devis</h1>
       <p className="mb-6 text-sm text-muted">
         Décrivez votre besoin : notre équipe la transmet aux professionnels adaptés et vous revient avec
         une offre claire, tarif et délai inclus.

@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { api, ApiError } from "../../api/client";
 import { QuoteRequest, SERVICE_LABELS } from "../../types";
-import { Badge, Button, Card, ErrorText, Input, Spinner, Textarea } from "../../components/ui";
+import { BackLink, Badge, Button, Card, ErrorText, Input, Spinner, Textarea } from "../../components/ui";
 
 export default function ProRequestDetailPage() {
   const { requestId } = useParams<{ requestId: string }>();
@@ -58,13 +58,11 @@ export default function ProRequestDetailPage() {
 
   return (
     <div className="mx-auto max-w-lg">
-      <button onClick={() => navigate("/pro/requests")} className="mb-4 text-sm text-muted">
-        ← Retour aux demandes
-      </button>
+      <BackLink label="Retour aux demandes" onClick={() => navigate("/pro/requests")} />
 
       <Card>
         <div className="flex items-center justify-between">
-          <h1 className="text-xl font-bold">{SERVICE_LABELS[quoteRequest.serviceType]}</h1>
+          <h1 className="font-display text-2xl text-ivory tracking-tight">{SERVICE_LABELS[quoteRequest.serviceType]}</h1>
           <Badge label={quoteRequest.forwardStatus === "QUOTED" ? "Devis envoyé" : "À traiter"} />
         </div>
         <p className="mt-2 text-sm text-muted">

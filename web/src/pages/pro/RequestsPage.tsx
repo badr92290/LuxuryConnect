@@ -33,7 +33,7 @@ export default function RequestsPage() {
 
   return (
     <div>
-      <h1 className="mb-6 text-2xl font-bold">Demandes transmises</h1>
+      <h1 className="mb-6 font-display text-3xl text-ivory tracking-tight">Demandes transmises</h1>
       {quoteRequests.length === 0 && (
         <EmptyState message="Aucune demande transmise pour le moment. Notre équipe vous contactera dès qu'une mission correspond à votre profil." />
       )}

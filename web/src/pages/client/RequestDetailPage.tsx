@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { api, ApiError } from "../../api/client";
 import { QuoteRequest, QUOTE_REQUEST_STATUS_LABELS, SERVICE_LABELS } from "../../types";
-import { Badge, Button, Card, ErrorText, Input, Spinner } from "../../components/ui";
+import { BackLink, Badge, Button, Card, ErrorText, Input, Spinner } from "../../components/ui";
 
 export default function RequestDetailPage() {
   const { requestId } = useParams<{ requestId: string }>();
@@ -62,13 +62,11 @@ export default function RequestDetailPage() {
 
   return (
     <div className="mx-auto max-w-lg">
-      <button onClick={() => navigate("/app/requests")} className="mb-4 text-sm text-muted">
-        ← Retour à mes demandes
-      </button>
+      <BackLink label="Retour à mes demandes" onClick={() => navigate("/app/requests")} />
 
       <Card>
         <div className="flex items-center justify-between">
-          <h1 className="text-xl font-bold">{SERVICE_LABELS[quoteRequest.serviceType]}</h1>
+          <h1 className="font-display text-2xl text-ivory tracking-tight">{SERVICE_LABELS[quoteRequest.serviceType]}</h1>
           <Badge label={QUOTE_REQUEST_STATUS_LABELS[quoteRequest.status]} />
         </div>
         <p className="mt-2 text-sm text-muted">
@@ -91,7 +89,7 @@ export default function RequestDetailPage() {
       {quoteRequest.status === "FINALIZED" && (
         <Card className="mt-4">
           <h2 className="mb-2 font-semibold text-primary">Offre reçue</h2>
-          <p className="text-2xl font-bold">{quoteRequest.finalPrice} €</p>
+          <p className="font-display text-3xl text-ivory tracking-tight">{quoteRequest.finalPrice} €</p>
           {quoteRequest.finalMessage && <p className="mt-2 text-sm text-muted">{quoteRequest.finalMessage}</p>}
 
           <div className="mt-4">

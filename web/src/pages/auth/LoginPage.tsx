@@ -29,33 +29,47 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="mx-auto flex min-h-screen max-w-md flex-col justify-center px-6">
-      <h1 className="mb-8 text-2xl font-bold">Connexion</h1>
-      <form onSubmit={handleSubmit}>
-        <Input
-          label="Email"
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          placeholder="vous@exemple.fr"
-          autoComplete="email"
-        />
-        <Input
-          label="Mot de passe"
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          placeholder="••••••••"
-          autoComplete="current-password"
-        />
-        {error && <ErrorText>{error}</ErrorText>}
-        <Button type="submit" full loading={loading}>
-          Se connecter
-        </Button>
-      </form>
-      <div className="mt-6 flex flex-col gap-2 text-center text-sm text-primary">
-        <Link to="/register?role=CLIENT">Pas encore de compte ? Créer un compte client</Link>
-        <Link to="/register?role=PROFESSIONAL">Vous êtes un professionnel ? Créer un compte pro</Link>
+    <div className="relative min-h-screen overflow-hidden bg-background">
+      <div className="pointer-events-none absolute inset-0 bg-radial-glow" />
+      <div className="relative mx-auto flex min-h-screen max-w-md flex-col justify-center px-6">
+        <Link to="/" className="mb-10 block font-display text-lg tracking-wide text-ivory">
+          Luxury<span className="text-gold-gradient italic">Connect</span>
+        </Link>
+
+        <h1 className="mb-1 font-display text-3xl text-ivory">Connexion</h1>
+        <p className="mb-8 text-sm text-muted">Accédez à votre espace.</p>
+
+        <form onSubmit={handleSubmit}>
+          <Input
+            label="Email"
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="vous@exemple.fr"
+            autoComplete="email"
+          />
+          <Input
+            label="Mot de passe"
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="••••••••"
+            autoComplete="current-password"
+          />
+          {error && <ErrorText>{error}</ErrorText>}
+          <Button type="submit" full loading={loading} className="mt-2">
+            Se connecter
+          </Button>
+        </form>
+
+        <div className="mt-8 flex flex-col items-center gap-2 border-t border-hairline pt-6 text-center text-sm">
+          <Link to="/register?role=CLIENT" className="text-gold hover:text-gold-200">
+            Pas encore de compte ? Créer un compte client
+          </Link>
+          <Link to="/register?role=PROFESSIONAL" className="text-muted hover:text-ivory">
+            Vous êtes un professionnel ? Créer un compte pro
+          </Link>
+        </div>
       </div>
     </div>
   );

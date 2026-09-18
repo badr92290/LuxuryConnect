@@ -1,4 +1,4 @@
-# CarCare Connect
+# LuxuryConnect
 
 Plateforme d'intermédiation pour la protection automobile (PPF, covering, protection céramique,
 vitres teintées, lustrage). **Vous (l'administrateur) êtes l'intermédiaire unique** entre les clients
@@ -67,42 +67,6 @@ L'app mobile construite précédemment reflète encore **l'ancien modèle** (cli
 un professionnel). Le site web ci-dessus est désormais la référence pour le nouveau parcours avec
 intermédiaire. Si vous voulez que l'app mobile suive le même modèle (file d'attente admin, transmission,
 prix final), dites-le moi et je la mets à jour à l'identique du site.
-
-## Déploiement en production (obtenir un lien public)
-
-Deux services gratuits suffisent : **Railway** pour l'API + la base de données, **Vercel** pour le site.
-
-### 1. Backend + base de données sur Railway
-
-1. Allez sur [railway.app](https://railway.app) et connectez-vous avec GitHub.
-2. **New Project** → **Deploy from GitHub repo** → sélectionnez `badr92290/luxuryconnect`.
-3. Dans les réglages du service créé, mettez **Root Directory** sur `backend`.
-4. Toujours dans ce projet Railway, cliquez **+ New** → **Database** → **Add PostgreSQL**
-   (Railway le relie automatiquement).
-5. Dans l'onglet **Variables** du service backend, ajoutez :
-   - `DATABASE_URL` → référencez la variable de la base Postgres créée (Railway propose
-     `${{Postgres.DATABASE_URL}}` dans l'autocomplétion)
-   - `JWT_SECRET` → une longue chaîne aléatoire (ex. générée avec `openssl rand -hex 32`)
-   - `JWT_EXPIRES_IN` → `7d`
-6. Railway build et démarre automatiquement (`npm run build` puis `npm start`, qui applique les
-   migrations Prisma au démarrage). Une fois déployé, notez l'URL publique donnée par Railway
-   (Settings → **Generate Domain**), du type `https://luxuryconnect-backend.up.railway.app`.
-7. Pour charger les comptes de démo (admin + clients + pros), ouvrez un terminal Railway
-   (Service → onglet **Shell**) et lancez `npm run seed`.
-
-### 2. Site web sur Vercel
-
-1. Allez sur [vercel.com](https://vercel.com) et connectez-vous avec GitHub.
-2. **Add New** → **Project** → sélectionnez `badr92290/luxuryconnect`.
-3. **Root Directory** → `web` (Vercel détecte automatiquement Vite).
-4. Dans **Environment Variables**, ajoutez `VITE_API_BASE_URL` avec l'URL Railway obtenue à
-   l'étape précédente (ex. `https://luxuryconnect-backend.up.railway.app`, sans `/` final).
-5. Cliquez **Deploy**. Après 1-2 minutes, Vercel vous donne un lien public du type
-   `https://luxuryconnect.vercel.app` — c'est le lien à partager, fonctionnel sur ordinateur,
-   tablette et téléphone.
-
-Une fois ces deux liens obtenus, envoyez-les-moi si vous voulez que je vérifie que tout fonctionne
-correctement en ligne.
 
 ## Prochaines étapes suggérées
 

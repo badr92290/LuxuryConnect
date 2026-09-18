@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { api, ApiError } from "../../api/client";
 import { ProfessionalProfile, QuoteRequest, QUOTE_REQUEST_STATUS_LABELS, SERVICE_LABELS } from "../../types";
-import { Badge, Button, Card, ErrorText, Input, Spinner, Textarea } from "../../components/ui";
+import { BackLink, Badge, Button, Card, Checkbox, ErrorText, Input, Spinner, Textarea } from "../../components/ui";
 
 export default function AdminRequestDetailPage() {
   const { requestId } = useParams<{ requestId: string }>();
@@ -87,13 +87,11 @@ export default function AdminRequestDetailPage() {
 
   return (
     <div className="mx-auto max-w-2xl">
-      <button onClick={() => navigate("/admin")} className="mb-4 text-sm text-muted">
-        ← Retour à la file
-      </button>
+      <BackLink label="Retour à la file" onClick={() => navigate("/admin")} />
 
       <Card>
         <div className="flex items-center justify-between">
-          <h1 className="text-xl font-bold">
+          <h1 className="font-display text-2xl text-ivory tracking-tight">
             {quoteRequest.client?.firstName} {quoteRequest.client?.lastName}
           </h1>
           <Badge label={QUOTE_REQUEST_STATUS_LABELS[quoteRequest.status]} />
@@ -128,17 +126,16 @@ export default function AdminRequestDetailPage() {
           ) : (
             <div className="flex flex-col gap-2">
               {notForwardedYet.map((p) => (
-                <label key={p.id} className="flex items-center gap-3 rounded-xl border border-border px-3 py-2 text-sm">
-                  <input
-                    type="checkbox"
-                    checked={selectedIds.includes(p.id)}
-                    onChange={() => toggleCandidate(p.id)}
-                    className="h-4 w-4 accent-primary"
-                  />
-                  <span className="flex-1">
-                    {p.businessName} <span className="text-muted">· {p.city}</span>
-                  </span>
-                </label>
+                <Checkbox
+                  key={p.id}
+                  checked={selectedIds.includes(p.id)}
+                  onChange={() => toggleCandidate(p.id)}
+                  label={
+                    <>
+                      {p.businessName} <span className="text-muted">· {p.city}</span>
+                    </>
+                  }
+                />
               ))}
             </div>
           )}

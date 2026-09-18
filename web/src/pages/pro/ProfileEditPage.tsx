@@ -80,7 +80,7 @@ export default function ProfileEditPage() {
 
   return (
     <div className="mx-auto max-w-2xl">
-      <h1 className="mb-6 text-2xl font-bold">Mon profil professionnel</h1>
+      <h1 className="mb-6 font-display text-3xl text-ivory tracking-tight">Mon profil professionnel</h1>
 
       <Card className="mb-6">
         <h2 className="mb-3 font-semibold">Informations</h2>

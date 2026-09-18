@@ -33,7 +33,7 @@ export default function MessagesPage({ basePath }: { basePath: string }) {
 
   return (
     <div>
-      <h1 className="mb-6 text-2xl font-bold">Messages</h1>
+      <h1 className="mb-6 font-display text-3xl text-ivory tracking-tight">Messages</h1>
       {conversations.length === 0 && <EmptyState message="Aucune conversation pour le moment." />}
       <div className="flex flex-col gap-3">
         {conversations.map((c) => {

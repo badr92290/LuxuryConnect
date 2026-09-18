@@ -38,7 +38,7 @@ export default function MyRequestsPage() {
   return (
     <div>
       <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Mes demandes</h1>
+        <h1 className="font-display text-3xl text-ivory tracking-tight">Mes demandes</h1>
       </div>
       {quoteRequests.length === 0 && <EmptyState message="Vous n'avez pas encore fait de demande de devis." />}
       <div className="flex flex-col gap-3">

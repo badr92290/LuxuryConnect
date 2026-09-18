@@ -27,26 +27,28 @@ import AgendaPage from "./pages/admin/AgendaPage";
 import MessagesPage from "./pages/shared/MessagesPage";
 import ChatPage from "./pages/shared/ChatPage";
 
+import { IconPlus, IconList, IconCalendar, IconMessage, IconUser, IconInbox, IconContacts } from "./components/icons";
+
 const CLIENT_NAV: NavItem[] = [
-  { to: "/app/requests/new", label: "Nouvelle demande", icon: "➕" },
-  { to: "/app/requests", label: "Mes demandes", icon: "📋" },
-  { to: "/app/bookings", label: "Réservations", icon: "📅" },
-  { to: "/app/messages", label: "Messages", icon: "💬" },
-  { to: "/app/profile", label: "Profil", icon: "👤" },
+  { to: "/app/requests/new", label: "Nouvelle demande", icon: IconPlus },
+  { to: "/app/requests", label: "Mes demandes", icon: IconList },
+  { to: "/app/bookings", label: "Réservations", icon: IconCalendar },
+  { to: "/app/messages", label: "Messages", icon: IconMessage },
+  { to: "/app/profile", label: "Profil", icon: IconUser },
 ];
 
 const PRO_NAV: NavItem[] = [
-  { to: "/pro/requests", label: "Demandes", icon: "📋" },
-  { to: "/pro/bookings", label: "Réservations", icon: "📅" },
-  { to: "/pro/messages", label: "Messages", icon: "💬" },
-  { to: "/pro/profile", label: "Profil", icon: "👤" },
+  { to: "/pro/requests", label: "Demandes", icon: IconList },
+  { to: "/pro/bookings", label: "Réservations", icon: IconCalendar },
+  { to: "/pro/messages", label: "Messages", icon: IconMessage },
+  { to: "/pro/profile", label: "Profil", icon: IconUser },
 ];
 
 const ADMIN_NAV: NavItem[] = [
-  { to: "/admin", label: "File d'attente", icon: "📥", end: true },
-  { to: "/admin/agenda", label: "Agenda", icon: "📇" },
-  { to: "/admin/bookings", label: "Réservations", icon: "📅" },
-  { to: "/admin/messages", label: "Messages", icon: "💬" },
+  { to: "/admin", label: "File d'attente", icon: IconInbox, end: true },
+  { to: "/admin/agenda", label: "Agenda", icon: IconContacts },
+  { to: "/admin/bookings", label: "Réservations", icon: IconCalendar },
+  { to: "/admin/messages", label: "Messages", icon: IconMessage },
 ];
 
 function LoadingScreen() {

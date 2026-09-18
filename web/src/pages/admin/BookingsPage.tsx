@@ -24,7 +24,7 @@ export default function AdminBookingsPage() {
 
   return (
     <div>
-      <h1 className="mb-6 text-2xl font-bold">Toutes les réservations</h1>
+      <h1 className="mb-6 font-display text-3xl text-ivory tracking-tight">Toutes les réservations</h1>
       {bookings.length === 0 && <EmptyState message="Aucune réservation pour le moment." />}
       <div className="flex flex-col gap-3">
         {bookings.map((b) => (

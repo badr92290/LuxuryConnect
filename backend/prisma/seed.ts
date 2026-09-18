@@ -31,7 +31,7 @@ async function main() {
       passwordHash: adminPasswordHash,
       role: "ADMIN",
       firstName: "Admin",
-      lastName: "CarCare Connect",
+      lastName: "LuxuryConnect",
     },
   });
 
