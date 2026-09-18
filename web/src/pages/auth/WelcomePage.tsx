@@ -1,7 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { Button } from "../../components/ui";
-import { HeroIllustration, LogoMark } from "../../components/logo";
 
 export default function WelcomePage() {
   return (
@@ -11,8 +10,7 @@ export default function WelcomePage() {
 
       <div className="relative mx-auto flex min-h-screen max-w-md flex-col justify-between px-6 py-14 md:max-w-lg">
         <div>
-          <div className="mb-8 flex items-center gap-3">
-            <LogoMark className="h-9 w-9 text-gold" />
+          <div className="mb-8">
             <span className="text-[11px] font-semibold uppercase tracking-wider2 text-mutedDark">
               Concierge PPF · Covering · Céramique
             </span>
@@ -31,7 +29,7 @@ export default function WelcomePage() {
             et vous revient avec une offre unique, claire, sans négociation à mener vous-même.
           </p>
 
-          <HeroIllustration className="mt-10 w-full max-w-sm" />
+          <div className="mt-10 h-px w-16 bg-gradient-to-r from-gold/60 to-transparent" />
         </div>
 
         <div className="mt-10 flex flex-col gap-3">
