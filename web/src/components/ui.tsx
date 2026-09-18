@@ -1,5 +1,6 @@
 import React from "react";
 import { IconArrowLeft } from "./icons";
+import { CarGlyph } from "./logo";
 
 type ButtonVariant = "primary" | "secondary" | "danger" | "ghost";
 
@@ -220,7 +221,12 @@ export function Spinner() {
 }
 
 export function EmptyState({ message }: { message: string }) {
-  return <p className="py-12 text-center text-sm text-muted">{message}</p>;
+  return (
+    <div className="flex flex-col items-center gap-4 py-16 text-center">
+      <CarGlyph className="h-10 w-24 text-mutedDark/60" />
+      <p className="max-w-xs text-sm text-muted">{message}</p>
+    </div>
+  );
 }
 
 export function ErrorText({ children }: { children: React.ReactNode }) {

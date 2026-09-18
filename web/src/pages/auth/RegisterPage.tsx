@@ -4,6 +4,7 @@ import { Button, ErrorText, Input } from "../../components/ui";
 import { useAuth } from "../../context/AuthContext";
 import { ApiError } from "../../api/client";
 import type { Role } from "../../types";
+import { LogoMark } from "../../components/logo";
 
 export default function RegisterPage() {
   const { register } = useAuth();
@@ -55,7 +56,8 @@ export default function RegisterPage() {
     <div className="relative min-h-screen overflow-hidden bg-background">
       <div className="pointer-events-none absolute inset-0 bg-radial-glow" />
       <div className="relative mx-auto flex min-h-screen max-w-md flex-col justify-center px-6 py-14">
-        <Link to="/" className="mb-8 block font-display text-lg tracking-wide text-ivory">
+        <Link to="/" className="mb-8 flex items-center gap-2 font-display text-lg tracking-wide text-ivory">
+          <LogoMark className="h-7 w-7 text-gold" />
           Luxury<span className="text-gold-gradient italic">Connect</span>
         </Link>
 

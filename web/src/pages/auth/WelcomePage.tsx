@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { Button } from "../../components/ui";
-import { IconCrown } from "../../components/icons";
+import { HeroIllustration, LogoMark } from "../../components/logo";
 
 export default function WelcomePage() {
   return (
@@ -9,16 +9,16 @@ export default function WelcomePage() {
       <div className="pointer-events-none absolute inset-0 bg-radial-glow" />
       <div className="pointer-events-none absolute left-1/2 top-0 h-[560px] w-[560px] -translate-x-1/2 rounded-full bg-gold/5 blur-[120px]" />
 
-      <div className="relative mx-auto flex min-h-screen max-w-md flex-col justify-between px-6 py-16 md:max-w-lg">
+      <div className="relative mx-auto flex min-h-screen max-w-md flex-col justify-between px-6 py-14 md:max-w-lg">
         <div>
-          <div className="mb-8 flex items-center gap-2 text-gold">
-            <IconCrown className="h-5 w-5" />
+          <div className="mb-8 flex items-center gap-3">
+            <LogoMark className="h-9 w-9 text-gold" />
             <span className="text-[11px] font-semibold uppercase tracking-wider2 text-mutedDark">
               Concierge PPF · Covering · Céramique
             </span>
           </div>
 
-          <h1 className="font-display text-[2.75rem] leading-[1.08] tracking-tight text-ivory md:text-5xl">
+          <h1 className="font-display text-[2.6rem] leading-[1.08] tracking-tight text-ivory md:text-5xl">
             La protection
             <br />
             automobile,
@@ -31,10 +31,10 @@ export default function WelcomePage() {
             et vous revient avec une offre unique, claire, sans négociation à mener vous-même.
           </p>
 
-          <div className="mt-8 h-px w-16 bg-gradient-to-r from-gold/60 to-transparent" />
+          <HeroIllustration className="mt-10 w-full max-w-sm" />
         </div>
 
-        <div className="mt-16 flex flex-col gap-3">
+        <div className="mt-10 flex flex-col gap-3">
           <Link to="/login">
             <Button full>Se connecter</Button>
           </Link>

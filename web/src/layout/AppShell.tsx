@@ -3,6 +3,7 @@ import { NavLink, Outlet } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { IconLogout } from "../components/icons";
 import type { IconProps } from "../components/icons";
+import { LogoMark } from "../components/logo";
 
 export interface NavItem {
   to: string;
@@ -13,11 +14,14 @@ export interface NavItem {
 
 function Wordmark({ subtitle }: { subtitle: string }) {
   return (
-    <div>
-      <span className="font-display text-xl tracking-wide text-ivory">
-        Luxury<span className="text-gold-gradient italic">Connect</span>
-      </span>
-      <p className="mt-1 text-[11px] font-semibold uppercase tracking-wider2 text-mutedDark">{subtitle}</p>
+    <div className="flex items-center gap-3">
+      <LogoMark className="h-9 w-9 text-gold" />
+      <div>
+        <span className="font-display text-xl tracking-wide text-ivory">
+          Luxury<span className="text-gold-gradient italic">Connect</span>
+        </span>
+        <p className="mt-0.5 text-[11px] font-semibold uppercase tracking-wider2 text-mutedDark">{subtitle}</p>
+      </div>
     </div>
   );
 }
@@ -75,7 +79,8 @@ export function AppShell({ navItems, title }: { navItems: NavItem[]; title: stri
 
       {/* Header mobile */}
       <header className="flex items-center justify-between border-b border-hairline bg-surface px-5 py-4 md:hidden">
-        <span className="font-display text-lg tracking-wide text-ivory">
+        <span className="flex items-center gap-2 font-display text-lg tracking-wide text-ivory">
+          <LogoMark className="h-7 w-7 text-gold" />
           Luxury<span className="text-gold-gradient italic">Connect</span>
         </span>
         <button onClick={logout} className="flex items-center gap-1.5 text-xs text-mutedDark">

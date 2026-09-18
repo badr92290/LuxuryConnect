@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { Button, ErrorText, Input } from "../../components/ui";
 import { useAuth } from "../../context/AuthContext";
 import { ApiError } from "../../api/client";
+import { LogoMark } from "../../components/logo";
 
 export default function LoginPage() {
   const { login } = useAuth();
@@ -32,7 +33,8 @@ export default function LoginPage() {
     <div className="relative min-h-screen overflow-hidden bg-background">
       <div className="pointer-events-none absolute inset-0 bg-radial-glow" />
       <div className="relative mx-auto flex min-h-screen max-w-md flex-col justify-center px-6">
-        <Link to="/" className="mb-10 block font-display text-lg tracking-wide text-ivory">
+        <Link to="/" className="mb-10 flex items-center gap-2 font-display text-lg tracking-wide text-ivory">
+          <LogoMark className="h-7 w-7 text-gold" />
           Luxury<span className="text-gold-gradient italic">Connect</span>
         </Link>
 
