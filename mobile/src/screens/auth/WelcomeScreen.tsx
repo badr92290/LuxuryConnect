@@ -2,6 +2,7 @@ import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { colors, spacing } from "../../theme/colors";
 import { Button, Screen } from "../../components/ui";
+import { HaloBackground } from "../../components/HaloBackground";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import type { AuthStackParamList } from "../../navigation/types";
 
@@ -12,10 +13,22 @@ export default function WelcomeScreen({ navigation }: Props) {
     <Screen>
       <View style={styles.container}>
         <View>
-          <Text style={styles.logo}>🚗 CarCare Connect</Text>
+          <Text style={styles.eyebrow}>CONCIERGE PPF · COVERING · CÉRAMIQUE</Text>
+          <Text style={styles.headline}>
+            La protection automobile, <Text style={styles.headlineAccent}>orchestrée</Text> pour
+            vous.
+          </Text>
           <Text style={styles.tagline}>
-            Trouvez le bon professionnel pour le PPF, covering, céramique, vitres teintées et
-            lustrage de votre véhicule.
+            Décrivez votre besoin — notre équipe consulte pour vous les meilleurs artisans du
+            secteur et vous revient avec une offre unique, claire, sans négociation à mener
+            vous-même.
+          </Text>
+        </View>
+
+        <View style={styles.wordmarkWrap}>
+          <HaloBackground />
+          <Text style={styles.wordmark}>
+            Luxury<Text style={styles.wordmarkAccent}>Connect</Text>
           </Text>
         </View>
 
@@ -44,19 +57,50 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "space-between",
     padding: spacing.lg,
-    paddingTop: 120,
-    paddingBottom: 60,
+    paddingTop: 100,
+    paddingBottom: 50,
   },
-  logo: {
-    fontSize: 30,
+  eyebrow: {
+    fontSize: 11,
     fontWeight: "700",
-    color: colors.text,
+    letterSpacing: 1.2,
+    color: colors.textMuted,
     marginBottom: spacing.md,
   },
+  headline: {
+    fontSize: 32,
+    lineHeight: 38,
+    fontWeight: "600",
+    color: colors.text,
+  },
+  headlineAccent: {
+    color: colors.primary,
+    fontStyle: "italic",
+  },
   tagline: {
-    fontSize: 16,
+    fontSize: 15,
     color: colors.textMuted,
     lineHeight: 22,
+    marginTop: spacing.md,
+  },
+  wordmarkWrap: {
+    flex: 1,
+    overflow: "hidden",
+  },
+  wordmark: {
+    position: "absolute",
+    top: "50%",
+    left: 0,
+    right: 0,
+    textAlign: "center",
+    transform: [{ translateY: -40 }],
+    fontSize: 28,
+    fontWeight: "500",
+    color: colors.text,
+  },
+  wordmarkAccent: {
+    color: colors.primary,
+    fontStyle: "italic",
   },
   actions: {
     width: "100%",

@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { StyleSheet, Text, View, KeyboardAvoidingView, Platform, ScrollView } from "react-native";
 import { colors, spacing } from "../../theme/colors";
 import { Button, Input, Screen } from "../../components/ui";
+import { HaloBackground } from "../../components/HaloBackground";
 import { useAuth } from "../../context/AuthContext";
 import { ApiError } from "../../api/client";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
@@ -30,6 +31,7 @@ export default function LoginScreen({ navigation }: Props) {
 
   return (
     <Screen>
+      <HaloBackground />
       <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : undefined} style={{ flex: 1 }}>
         <ScrollView contentContainerStyle={styles.container}>
           <Text style={styles.title}>Connexion</Text>
