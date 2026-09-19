@@ -4,6 +4,7 @@ import { prisma } from "../prisma";
 import { requireAuth, requireRole, AuthRequest } from "../middleware/auth";
 import { ServiceType } from "@prisma/client";
 import { saveDataUrlImage } from "../utils/uploads";
+import { notify, notifyAdmins } from "../utils/notify";
 
 const router = Router();
 
@@ -44,8 +45,16 @@ router.post("/", requireAuth, requireRole("CLIENT"), async (req: AuthRequest, re
       clientId: req.user!.userId,
       photos: { create: savedPaths.map((imageUrl) => ({ imageUrl })) },
     },
-    include: { photos: true },
+    include: { photos: true, client: { select: { firstName: true, lastName: true } } },
   });
+
+  await notifyAdmins({
+    type: "REQUEST_RECEIVED",
+    title: "Nouvelle demande de devis",
+    body: `${quoteRequest.client.firstName} ${quoteRequest.client.lastName} — ${quoteRequest.vehicleMake} ${quoteRequest.vehicleModel}`,
+    link: `/admin/requests/${quoteRequest.id}`,
+  });
+
   res.status(201).json({ quoteRequest });
 });
 
@@ -178,6 +187,13 @@ router.post("/:id/quotes", requireAuth, requireRole("PROFESSIONAL"), async (req:
     data: { status: "QUOTED" },
   });
 
+  await notifyAdmins({
+    type: "QUOTE_RECEIVED",
+    title: existing ? "Devis mis à jour" : "Nouveau devis reçu",
+    body: `${profile.businessName} — ${parsed.data.price} €`,
+    link: `/admin/requests/${forward.quoteRequestId}`,
+  });
+
   res.status(201).json({ quote });
 });
 
@@ -208,6 +224,30 @@ router.post("/:id/accept", requireAuth, requireRole("CLIENT"), async (req: AuthR
     }),
   ]);
 
+  const professional = await prisma.professionalProfile.findUnique({
+    where: { id: quoteRequest.selectedProfessionalId },
+    select: { userId: true },
+  });
+
+  await notifyAdmins({
+    type: "OFFER_ACCEPTED",
+    title: "Offre acceptée",
+    body: `${quoteRequest.vehicleMake} ${quoteRequest.vehicleModel} — ${quoteRequest.finalPrice} €`,
+    link: `/admin/requests/${quoteRequest.id}`,
+  });
+
+  if (professional) {
+    await notify({
+      userId: professional.userId,
+      type: "OFFER_ACCEPTED",
+      title: "Prestation confirmée",
+      body: `${quoteRequest.vehicleMake} ${quoteRequest.vehicleModel} — rendez-vous le ${new Date(
+        parsed.data.scheduledAt
+      ).toLocaleDateString("fr-FR")}`,
+      link: `/pro/bookings`,
+    });
+  }
+
   res.status(201).json({ booking });
 });
 
@@ -220,6 +260,14 @@ router.post("/:id/decline", requireAuth, requireRole("CLIENT"), async (req: Auth
     where: { id: quoteRequest.id },
     data: { status: quoteRequest.status === "FINALIZED" ? "DECLINED" : "CANCELLED" },
   });
+
+  await notifyAdmins({
+    type: "OFFER_DECLINED",
+    title: updated.status === "DECLINED" ? "Offre refusée par le client" : "Demande annulée",
+    body: `${quoteRequest.vehicleMake} ${quoteRequest.vehicleModel}`,
+    link: `/admin/requests/${quoteRequest.id}`,
+  });
+
   res.json({ quoteRequest: updated });
 });
 

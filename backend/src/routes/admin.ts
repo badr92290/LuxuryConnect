@@ -3,6 +3,7 @@ import { z } from "zod";
 import { prisma } from "../prisma";
 import { requireAuth, requireRole, AuthRequest } from "../middleware/auth";
 import { QuoteRequestStatus } from "@prisma/client";
+import { notify } from "../utils/notify";
 
 const router = Router();
 
@@ -154,6 +155,22 @@ router.post("/quote-requests/:id/forward", async (req, res) => {
     await prisma.quoteRequest.update({ where: { id: quoteRequest.id }, data: { status: "FORWARDED" } });
   }
 
+  const targets = await prisma.professionalProfile.findMany({
+    where: { id: { in: parsed.data.professionalIds } },
+    select: { userId: true },
+  });
+  await prisma.notification.createMany({
+    data: targets.map((t) => ({
+      userId: t.userId,
+      type: "REQUEST_FORWARDED" as const,
+      title: "Nouvelle demande à chiffrer",
+      body: `${quoteRequest.vehicleMake} ${quoteRequest.vehicleModel}${
+        quoteRequest.city ? ` — ${quoteRequest.city}` : ""
+      }`,
+      link: `/pro/requests/${quoteRequest.id}`,
+    })),
+  });
+
   const updated = await prisma.quoteRequest.findUnique({
     where: { id: quoteRequest.id },
     include: { forwards: { include: { professional: { select: { businessName: true } } } } },
@@ -199,6 +216,14 @@ router.post("/quote-requests/:id/finalize", async (req, res) => {
       },
     }),
   ]);
+
+  await notify({
+    userId: quoteRequest.clientId,
+    type: "OFFER_SENT",
+    title: "Votre offre est prête",
+    body: `${quoteRequest.vehicleMake} ${quoteRequest.vehicleModel} — ${parsed.data.finalPrice} €`,
+    link: `/app/requests/${quoteRequest.id}`,
+  });
 
   const updated = await prisma.quoteRequest.findUnique({ where: { id: quoteRequest.id } });
   res.json({ quoteRequest: updated });

@@ -12,8 +12,10 @@ import reviewRoutes from "./routes/reviews";
 import conversationRoutes from "./routes/conversations";
 import adminRoutes from "./routes/admin";
 import vehicleRoutes from "./routes/vehicles";
+import notificationRoutes from "./routes/notifications";
 import { registerChatSockets } from "./sockets/chat";
 import { UPLOAD_DIR } from "./utils/uploads";
+import { startReminderJob } from "./jobs/reminders";
 
 const app = express();
 const httpServer = createServer(app);
@@ -35,6 +37,7 @@ app.use("/bookings", bookingRoutes);
 app.use("/reviews", reviewRoutes);
 app.use("/conversations", conversationRoutes);
 app.use("/vehicles", vehicleRoutes);
+app.use("/notifications", notificationRoutes);
 app.use("/admin", adminRoutes);
 
 app.use((err: any, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
@@ -43,6 +46,7 @@ app.use((err: any, _req: express.Request, res: express.Response, _next: express.
 });
 
 registerChatSockets(io);
+startReminderJob();
 
 const PORT = process.env.PORT ? parseInt(process.env.PORT) : 4000;
 httpServer.listen(PORT, () => {

@@ -2,6 +2,7 @@ import React from "react";
 import { NavLink, Outlet, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { IconLogout } from "../components/icons";
+import { NotificationBell } from "../components/NotificationBell";
 import type { IconProps } from "../components/icons";
 
 export interface NavItem {
@@ -30,8 +31,9 @@ export function AppShell({ navItems, title }: { navItems: NavItem[]; title: stri
     <div className="min-h-screen bg-background text-ivory md:flex">
       {/* Sidebar (desktop / tablette) */}
       <aside className="hidden md:flex md:w-72 md:flex-col md:border-r md:border-hairline md:bg-surface md:p-6">
-        <div className="mb-10 px-1 pt-1">
+        <div className="mb-10 flex items-start justify-between gap-2 px-1 pt-1">
           <Wordmark subtitle={title} />
+          <NotificationBell />
         </div>
         <nav className="flex flex-1 flex-col gap-1">
           {navItems.map((item) => {
@@ -79,9 +81,12 @@ export function AppShell({ navItems, title }: { navItems: NavItem[]; title: stri
         <span className="font-display text-lg tracking-wide text-ivory">
           Luxury<span className="text-gold-gradient italic">Connect</span>
         </span>
-        <button onClick={logout} className="flex items-center gap-1.5 text-xs text-mutedDark">
-          <IconLogout className="h-4 w-4" />
-        </button>
+        <div className="flex items-center gap-1">
+          <NotificationBell />
+          <button onClick={logout} className="flex items-center gap-1.5 p-2 text-xs text-mutedDark">
+            <IconLogout className="h-4 w-4" />
+          </button>
+        </div>
       </header>
 
       <div className="flex-1 pb-20 md:pb-0">
