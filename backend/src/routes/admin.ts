@@ -122,6 +122,7 @@ router.get("/quote-requests/:id", async (req, res) => {
           professional: { select: { id: true, userId: true, businessName: true, city: true, averageRating: true } },
         },
       },
+      photos: true,
       quotes: { include: { professional: { select: { id: true, userId: true, businessName: true } } } },
       booking: true,
     },

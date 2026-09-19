@@ -2,26 +2,35 @@ import React, { useCallback, useEffect, useState } from "react";
 import { api } from "../../api/client";
 import { useAuth } from "../../context/AuthContext";
 import { ProfessionalProfile, ServiceType, SERVICE_LABELS } from "../../types";
-import { Badge, Button, Card, Input, Textarea } from "../../components/ui";
+import { Badge, Button, Card, Checkbox, Input, SectionLabel, Textarea } from "../../components/ui";
+import { PhotoPicker } from "../../components/PhotoPicker";
+import { TrustBadges } from "../../components/TrustBadges";
+import { fileUrl } from "../../api/client";
+import { useToast } from "../../context/ToastContext";
 
 const SERVICES: ServiceType[] = ["PPF", "COVERING", "CERAMIC", "TINT", "POLISH"];
 
 export default function ProfileEditPage() {
   const { user, logout } = useAuth();
+  const { toast } = useToast();
   const [profile, setProfile] = useState<ProfessionalProfile | null>(null);
 
   const [businessName, setBusinessName] = useState("");
   const [description, setDescription] = useState("");
   const [city, setCity] = useState("");
   const [address, setAddress] = useState("");
+  const [isInsured, setIsInsured] = useState(false);
+  const [isCertified, setIsCertified] = useState(false);
+  const [yearsExperience, setYearsExperience] = useState("");
   const [savingProfile, setSavingProfile] = useState(false);
 
   const [serviceType, setServiceType] = useState<ServiceType>("PPF");
   const [priceFrom, setPriceFrom] = useState("");
   const [savingService, setSavingService] = useState(false);
 
-  const [imageUrl, setImageUrl] = useState("");
+  const [newPhotos, setNewPhotos] = useState<string[]>([]);
   const [caption, setCaption] = useState("");
+  const [isBeforeAfter, setIsBeforeAfter] = useState(true);
   const [savingImage, setSavingImage] = useState(false);
 
   const load = useCallback(async () => {
@@ -32,6 +41,9 @@ export default function ProfileEditPage() {
     setDescription(data.professional.description ?? "");
     setCity(data.professional.city ?? "");
     setAddress(data.professional.address ?? "");
+    setIsInsured(data.professional.isInsured ?? false);
+    setIsCertified(data.professional.isCertified ?? false);
+    setYearsExperience(data.professional.yearsExperience ? String(data.professional.yearsExperience) : "");
   }, [user]);
 
   useEffect(() => {
@@ -41,8 +53,17 @@ export default function ProfileEditPage() {
   async function saveProfile() {
     setSavingProfile(true);
     try {
-      await api.put("/professionals/me", { businessName, description, city, address });
+      await api.put("/professionals/me", {
+        businessName,
+        description,
+        city,
+        address,
+        isInsured,
+        isCertified,
+        yearsExperience: yearsExperience ? parseInt(yearsExperience) : null,
+      });
       await load();
+      toast("Profil mis à jour");
     } finally {
       setSavingProfile(false);
     }
@@ -60,14 +81,21 @@ export default function ProfileEditPage() {
     }
   }
 
-  async function addImage() {
-    if (!imageUrl) return;
+  async function addImages() {
+    if (newPhotos.length === 0) return;
     setSavingImage(true);
     try {
-      await api.post("/professionals/me/portfolio", { imageUrl, caption: caption || undefined });
-      setImageUrl("");
+      for (const imageData of newPhotos) {
+        await api.post("/professionals/me/portfolio", {
+          imageData,
+          caption: caption || undefined,
+          isBeforeAfter,
+        });
+      }
+      setNewPhotos([]);
       setCaption("");
       await load();
+      toast(`${newPhotos.length} photo${newPhotos.length > 1 ? "s" : ""} ajoutée${newPhotos.length > 1 ? "s" : ""}`);
     } finally {
       setSavingImage(false);
     }
@@ -90,6 +118,38 @@ export default function ProfileEditPage() {
           <Input label="Adresse" value={address} onChange={(e) => setAddress(e.target.value)} />
         </div>
         <Textarea label="Description" value={description} onChange={(e) => setDescription(e.target.value)} rows={3} />
+
+        <div className="mb-4 border-t border-hairline pt-4">
+          <SectionLabel>Gages de confiance</SectionLabel>
+          <p className="mb-3 text-xs text-mutedDark">
+            Affichés au client sur l'offre finale : ils rassurent avant la décision.
+          </p>
+          <div className="flex flex-col gap-2">
+            <Checkbox
+              checked={isInsured}
+              onChange={() => setIsInsured((v) => !v)}
+              label="Entreprise assurée (RC professionnelle)"
+            />
+            <Checkbox
+              checked={isCertified}
+              onChange={() => setIsCertified((v) => !v)}
+              label="Certifié / agréé par un fabricant"
+            />
+          </div>
+          <div className="mt-3 max-w-[220px]">
+            <Input
+              label="Années d'expérience"
+              value={yearsExperience}
+              onChange={(e) => setYearsExperience(e.target.value)}
+              inputMode="numeric"
+              placeholder="12"
+            />
+          </div>
+          <div className="mt-1">
+            <TrustBadges isInsured={isInsured} isCertified={isCertified} yearsExperience={yearsExperience ? parseInt(yearsExperience) : null} />
+          </div>
+        </div>
+
         <Button onClick={saveProfile} loading={savingProfile}>
           Enregistrer
         </Button>
@@ -127,23 +187,48 @@ export default function ProfileEditPage() {
       </Card>
 
       <Card className="mb-6">
-        <h2 className="mb-3 font-semibold">Portfolio</h2>
+        <h2 className="mb-1 font-semibold">Mes réalisations</h2>
+        <p className="mb-4 text-xs text-mutedDark">
+          Les photos marquées « avant / après » sont montrées au client avec l'offre finale.
+        </p>
+
         {profile?.portfolioImages && profile.portfolioImages.length > 0 && (
-          <div className="mb-4 flex flex-wrap gap-3">
+          <div className="mb-5 grid grid-cols-3 gap-2 sm:grid-cols-4">
             {profile.portfolioImages.map((img) => (
-              <div key={img.id} className="w-32">
-                <img src={img.imageUrl} className="h-24 w-32 rounded-xl bg-surfaceAlt object-cover" />
-                <button onClick={() => removeImage(img.id)} className="mt-1 w-full text-xs text-danger">
+              <div key={img.id} className="group relative aspect-square overflow-hidden rounded-xl border border-hairline">
+                <img src={fileUrl(img.imageUrl)} alt={img.caption ?? ""} className="h-full w-full object-cover" />
+                {img.isBeforeAfter && (
+                  <span className="absolute left-1.5 top-1.5 rounded-full bg-background/80 px-2 py-0.5 text-[9px] font-semibold uppercase tracking-wide text-gold backdrop-blur">
+                    Avant / après
+                  </span>
+                )}
+                <button
+                  onClick={() => removeImage(img.id)}
+                  className="absolute inset-x-0 bottom-0 bg-background/80 py-1 text-[10px] font-semibold text-danger opacity-0 backdrop-blur transition-opacity group-hover:opacity-100"
+                >
                   Supprimer
                 </button>
               </div>
             ))}
           </div>
         )}
-        <Input label="URL de la photo" value={imageUrl} onChange={(e) => setImageUrl(e.target.value)} />
+
+        <PhotoPicker
+          photos={newPhotos}
+          onChange={setNewPhotos}
+          label="Ajouter des photos"
+          hint="Formats JPG, PNG ou WebP — redimensionnées automatiquement."
+        />
         <Input label="Légende (optionnel)" value={caption} onChange={(e) => setCaption(e.target.value)} />
-        <Button variant="secondary" onClick={addImage} loading={savingImage}>
-          Ajouter une photo
+        <div className="mb-4">
+          <Checkbox
+            checked={isBeforeAfter}
+            onChange={() => setIsBeforeAfter((v) => !v)}
+            label="Ce sont des photos avant / après"
+          />
+        </div>
+        <Button variant="secondary" onClick={addImages} loading={savingImage} disabled={newPhotos.length === 0}>
+          Ajouter au portfolio
         </Button>
       </Card>
 

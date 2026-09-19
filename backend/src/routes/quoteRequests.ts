@@ -3,16 +3,19 @@ import { z } from "zod";
 import { prisma } from "../prisma";
 import { requireAuth, requireRole, AuthRequest } from "../middleware/auth";
 import { ServiceType } from "@prisma/client";
+import { saveDataUrlImage } from "../utils/uploads";
 
 const router = Router();
 
 const createSchema = z.object({
   serviceType: z.nativeEnum(ServiceType),
+  vehicleId: z.string().optional(),
   vehicleMake: z.string().min(1),
   vehicleModel: z.string().min(1),
   vehicleYear: z.number().int().optional(),
   description: z.string().optional(),
   city: z.string().optional(),
+  photos: z.array(z.string()).max(6).optional(),
 });
 
 // Le client soumet sa demande : elle atterrit dans la file d'attente de l'administrateur,
@@ -21,8 +24,27 @@ router.post("/", requireAuth, requireRole("CLIENT"), async (req: AuthRequest, re
   const parsed = createSchema.safeParse(req.body);
   if (!parsed.success) return res.status(400).json({ error: parsed.error.flatten() });
 
+  const { photos, vehicleId, ...fields } = parsed.data;
+
+  // Un véhicule ne peut être rattaché que s'il appartient bien au client.
+  let linkedVehicleId: string | undefined;
+  if (vehicleId) {
+    const vehicle = await prisma.vehicle.findUnique({ where: { id: vehicleId } });
+    if (vehicle && vehicle.ownerId === req.user!.userId) linkedVehicleId = vehicle.id;
+  }
+
+  const savedPaths = (photos ?? [])
+    .map(saveDataUrlImage)
+    .filter((p): p is string => p !== null);
+
   const quoteRequest = await prisma.quoteRequest.create({
-    data: { ...parsed.data, clientId: req.user!.userId },
+    data: {
+      ...fields,
+      vehicleId: linkedVehicleId,
+      clientId: req.user!.userId,
+      photos: { create: savedPaths.map((imageUrl) => ({ imageUrl })) },
+    },
+    include: { photos: true },
   });
   res.status(201).json({ quoteRequest });
 });
@@ -32,7 +54,18 @@ router.get("/", requireAuth, async (req: AuthRequest, res) => {
     const quoteRequests = await prisma.quoteRequest.findMany({
       where: { clientId: req.user!.userId },
       include: {
-        selectedProfessional: { select: { businessName: true, city: true } },
+        selectedProfessional: {
+          select: {
+            businessName: true,
+            city: true,
+            isInsured: true,
+            isCertified: true,
+            yearsExperience: true,
+            averageRating: true,
+            reviewCount: true,
+            portfolioImages: { orderBy: { createdAt: "desc" }, take: 8 },
+          },
+        },
         booking: true,
       },
       orderBy: { createdAt: "desc" },
@@ -69,8 +102,20 @@ router.get("/:id", requireAuth, async (req: AuthRequest, res) => {
   const quoteRequest = await prisma.quoteRequest.findUnique({
     where: { id: req.params.id as string },
     include: {
-      selectedProfessional: { select: { businessName: true, city: true } },
+      selectedProfessional: {
+          select: {
+            businessName: true,
+            city: true,
+            isInsured: true,
+            isCertified: true,
+            yearsExperience: true,
+            averageRating: true,
+            reviewCount: true,
+            portfolioImages: { orderBy: { createdAt: "desc" }, take: 8 },
+          },
+        },
       booking: true,
+      photos: true,
     },
   });
   if (!quoteRequest) return res.status(404).json({ error: "Demande introuvable" });

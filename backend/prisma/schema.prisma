@@ -74,6 +74,7 @@ model User {
   quoteRequests    QuoteRequest[] @relation("ClientQuoteRequests")
   bookingsAsClient Booking[]      @relation("ClientBookings")
   reviewsWritten   Review[]       @relation("ClientReviews")
+  vehicles         Vehicle[]      @relation("ClientVehicles")
 
   conversationsAsA Conversation[] @relation("ConversationA")
   conversationsAsB Conversation[] @relation("ConversationB")
@@ -92,6 +93,12 @@ model ProfessionalProfile {
   longitude     Float?
   averageRating Float    @default(0)
   reviewCount   Int      @default(0)
+
+  // Gages de confiance affichés au client
+  isInsured       Boolean @default(false)
+  isCertified     Boolean @default(false)
+  yearsExperience Int?
+
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
@@ -125,11 +132,40 @@ model PortfolioImage {
   createdAt      DateTime            @default(now())
 }
 
+// Véhicule enregistré dans le garage d'un client, réutilisable d'une demande à l'autre.
+model Vehicle {
+  id        String   @id @default(uuid())
+  ownerId   String
+  owner     User     @relation("ClientVehicles", fields: [ownerId], references: [id], onDelete: Cascade)
+  make      String
+  model     String
+  year      Int?
+  plate     String?
+  color     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  quoteRequests QuoteRequest[]
+}
+
+model QuoteRequestPhoto {
+  id             String       @id @default(uuid())
+  quoteRequestId String
+  quoteRequest   QuoteRequest @relation(fields: [quoteRequestId], references: [id], onDelete: Cascade)
+  imageUrl       String
+  createdAt      DateTime     @default(now())
+}
+
 model QuoteRequest {
   id          String             @id @default(uuid())
   clientId    String
   client      User               @relation("ClientQuoteRequests", fields: [clientId], references: [id], onDelete: Cascade)
   serviceType ServiceType
+
+  // Le véhicule est recopié sur la demande (historique figé) et peut pointer
+  // vers une fiche du garage quand le client en a sélectionné une.
+  vehicleId   String?
+  vehicle     Vehicle?           @relation(fields: [vehicleId], references: [id], onDelete: SetNull)
   vehicleMake String
   vehicleModel String
   vehicleYear Int?
@@ -150,6 +186,7 @@ model QuoteRequest {
   forwards QuoteForward[]
   quotes   Quote[]
   booking  Booking?
+  photos   QuoteRequestPhoto[]
 }
 
 // Trace qu'une demande a été transmise par l'admin à un professionnel donné

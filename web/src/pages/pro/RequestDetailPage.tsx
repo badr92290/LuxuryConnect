@@ -3,6 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { api, ApiError } from "../../api/client";
 import { QuoteRequest, SERVICE_LABELS } from "../../types";
 import { BackLink, Badge, Button, Card, ErrorText, Input, Spinner, Textarea } from "../../components/ui";
+import { PhotoGallery } from "../../components/PhotoGallery";
 import { useToast } from "../../context/ToastContext";
 
 export default function ProRequestDetailPage() {
@@ -74,6 +75,11 @@ export default function ProRequestDetailPage() {
         </p>
         {quoteRequest.city && <p className="text-sm text-muted">{quoteRequest.city}</p>}
         {quoteRequest.description && <p className="mt-3 text-sm">{quoteRequest.description}</p>}
+        {quoteRequest.photos && quoteRequest.photos.length > 0 && (
+          <div className="mt-4">
+            <PhotoGallery photos={quoteRequest.photos} />
+          </div>
+        )}
       </Card>
 
       <Card className="mt-4">

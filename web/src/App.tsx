@@ -12,6 +12,7 @@ import NewRequestPage from "./pages/client/NewRequestPage";
 import MyRequestsPage from "./pages/client/MyRequestsPage";
 import RequestDetailPage from "./pages/client/RequestDetailPage";
 import BookingsPage from "./pages/client/BookingsPage";
+import GaragePage from "./pages/client/GaragePage";
 import LeaveReviewPage from "./pages/client/LeaveReviewPage";
 import ProfilePage from "./pages/client/ProfilePage";
 
@@ -29,11 +30,12 @@ import AgendaPage from "./pages/admin/AgendaPage";
 import MessagesPage from "./pages/shared/MessagesPage";
 import ChatPage from "./pages/shared/ChatPage";
 
-import { IconPlus, IconList, IconCalendar, IconMessage, IconUser, IconInbox, IconContacts, IconChart } from "./components/icons";
+import { IconPlus, IconList, IconCalendar, IconMessage, IconUser, IconInbox, IconContacts, IconChart, IconCar } from "./components/icons";
 
 const CLIENT_NAV: NavItem[] = [
   { to: "/app/requests/new", label: "Nouvelle demande", icon: IconPlus },
   { to: "/app/requests", label: "Mes demandes", icon: IconList },
+  { to: "/app/garage", label: "Mon garage", icon: IconCar },
   { to: "/app/bookings", label: "Réservations", icon: IconCalendar },
   { to: "/app/messages", label: "Messages", icon: IconMessage },
   { to: "/app/profile", label: "Profil", icon: IconUser },
@@ -102,6 +104,7 @@ function AppRoutes() {
         <Route path="requests/new" element={<NewRequestPage />} />
         <Route path="requests" element={<MyRequestsPage />} />
         <Route path="requests/:requestId" element={<RequestDetailPage />} />
+        <Route path="garage" element={<GaragePage />} />
         <Route path="bookings" element={<BookingsPage />} />
         <Route path="bookings/:bookingId/review" element={<LeaveReviewPage />} />
         <Route path="messages" element={<MessagesPage basePath="/app" />} />

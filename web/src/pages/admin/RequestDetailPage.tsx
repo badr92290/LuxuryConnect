@@ -2,7 +2,9 @@ import React, { useCallback, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { api, ApiError } from "../../api/client";
 import { ProfessionalProfile, QuoteRequest, QUOTE_REQUEST_STATUS_LABELS, SERVICE_LABELS } from "../../types";
-import { BackLink, Badge, Button, Card, Checkbox, ErrorText, Input, Spinner, Textarea } from "../../components/ui";
+import { BackLink, Badge, Button, Card, Checkbox, ErrorText, Input, SectionLabel, Spinner, Textarea } from "../../components/ui";
+import { PhotoGallery } from "../../components/PhotoGallery";
+import { TrustBadges } from "../../components/TrustBadges";
 import { useToast } from "../../context/ToastContext";
 
 export default function AdminRequestDetailPage() {
@@ -116,6 +118,12 @@ export default function AdminRequestDetailPage() {
           </p>
           {quoteRequest.description && <p className="mt-2 text-sm">{quoteRequest.description}</p>}
         </div>
+        {quoteRequest.photos && quoteRequest.photos.length > 0 && (
+          <div className="mt-4 border-t border-border pt-4">
+            <SectionLabel>Photos envoyées par le client</SectionLabel>
+            <PhotoGallery photos={quoteRequest.photos} />
+          </div>
+        )}
         <Button variant="secondary" className="mt-4" onClick={() => messageUser(quoteRequest.clientId)}>
           Message au client
         </Button>
@@ -141,9 +149,17 @@ export default function AdminRequestDetailPage() {
                   checked={selectedIds.includes(p.id)}
                   onChange={() => toggleCandidate(p.id)}
                   label={
-                    <>
-                      {p.businessName} <span className="text-muted">· {p.city}</span>
-                    </>
+                    <span className="flex flex-wrap items-center gap-x-2 gap-y-1">
+                      <span>
+                        {p.businessName} <span className="text-muted">· {p.city}</span>
+                      </span>
+                      <TrustBadges
+                        isInsured={p.isInsured}
+                        isCertified={p.isCertified}
+                        yearsExperience={p.yearsExperience}
+                        size="small"
+                      />
+                    </span>
                   }
                 />
               ))}

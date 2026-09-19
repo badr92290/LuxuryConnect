@@ -65,6 +65,9 @@ export interface ProfessionalProfile {
   longitude?: number | null;
   averageRating: number;
   reviewCount: number;
+  isInsured?: boolean;
+  isCertified?: boolean;
+  yearsExperience?: number | null;
   services?: ProfessionalService[];
   portfolioImages?: PortfolioImage[];
   user?: { firstName: string; lastName: string; email?: string; avatarUrl?: string | null; phone?: string | null };
@@ -89,10 +92,27 @@ export interface Quote {
   professional?: { id: string; userId: string; businessName: string };
 }
 
+export interface Vehicle {
+  id: string;
+  make: string;
+  model: string;
+  year?: number | null;
+  plate?: string | null;
+  color?: string | null;
+  createdAt: string;
+}
+
+export interface QuoteRequestPhoto {
+  id: string;
+  imageUrl: string;
+}
+
 export interface QuoteRequest {
   id: string;
   clientId: string;
   serviceType: ServiceType;
+  vehicleId?: string | null;
+  photos?: QuoteRequestPhoto[];
   vehicleMake: string;
   vehicleModel: string;
   vehicleYear?: number | null;
@@ -100,7 +120,16 @@ export interface QuoteRequest {
   city?: string | null;
   status: QuoteRequestStatus;
   selectedProfessionalId?: string | null;
-  selectedProfessional?: { businessName: string; city?: string | null } | null;
+  selectedProfessional?: {
+    businessName: string;
+    city?: string | null;
+    isInsured?: boolean;
+    isCertified?: boolean;
+    yearsExperience?: number | null;
+    averageRating?: number;
+    reviewCount?: number;
+    portfolioImages?: PortfolioImage[];
+  } | null;
   finalPrice?: number | null;
   finalMessage?: string | null;
   adminNote?: string | null;

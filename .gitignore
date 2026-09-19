@@ -25,3 +25,6 @@ npm-debug.log*
 
 # Prisma
 backend/prisma/dev.db
+
+# Fichiers envoyés par les utilisateurs
+backend/uploads/

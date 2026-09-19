@@ -3,6 +3,7 @@ import { z } from "zod";
 import { prisma } from "../prisma";
 import { requireAuth, requireRole, AuthRequest } from "../middleware/auth";
 import { distanceKm } from "../utils/geo";
+import { saveDataUrlImage } from "../utils/uploads";
 import { ServiceType } from "@prisma/client";
 
 const router = Router();
@@ -73,6 +74,9 @@ const updateProfileSchema = z.object({
   city: z.string().optional(),
   latitude: z.number().optional(),
   longitude: z.number().optional(),
+  isInsured: z.boolean().optional(),
+  isCertified: z.boolean().optional(),
+  yearsExperience: z.number().int().min(0).max(80).nullable().optional(),
 });
 
 router.put("/me", requireAuth, requireRole("PROFESSIONAL"), async (req: AuthRequest, res) => {
@@ -122,11 +126,17 @@ router.delete("/me/services/:serviceType", requireAuth, requireRole("PROFESSIONA
   res.status(204).send();
 });
 
-const portfolioSchema = z.object({
-  imageUrl: z.string().url(),
-  caption: z.string().optional(),
-  isBeforeAfter: z.boolean().optional(),
-});
+// Une image de portfolio est soit un lien externe, soit un fichier envoyé en data URL.
+const portfolioSchema = z
+  .object({
+    imageUrl: z.string().url().optional(),
+    imageData: z.string().optional(),
+    caption: z.string().optional(),
+    isBeforeAfter: z.boolean().optional(),
+  })
+  .refine((v) => v.imageUrl || v.imageData, {
+    message: "Fournissez une image (lien ou fichier)",
+  });
 
 router.post("/me/portfolio", requireAuth, requireRole("PROFESSIONAL"), async (req: AuthRequest, res) => {
   const parsed = portfolioSchema.safeParse(req.body);
@@ -135,8 +145,12 @@ router.post("/me/portfolio", requireAuth, requireRole("PROFESSIONAL"), async (re
   const profile = await prisma.professionalProfile.findUnique({ where: { userId: req.user!.userId } });
   if (!profile) return res.status(404).json({ error: "Profil professionnel introuvable" });
 
+  const { imageData, imageUrl, ...rest } = parsed.data;
+  const storedUrl = imageData ? saveDataUrlImage(imageData) : imageUrl;
+  if (!storedUrl) return res.status(400).json({ error: "Image invalide ou trop lourde" });
+
   const image = await prisma.portfolioImage.create({
-    data: { ...parsed.data, professionalId: profile.id },
+    data: { ...rest, imageUrl: storedUrl, professionalId: profile.id },
   });
   res.status(201).json({ image });
 });

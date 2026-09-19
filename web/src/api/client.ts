@@ -11,6 +11,11 @@ export function setToken(token: string | null) {
   else localStorage.removeItem(TOKEN_KEY);
 }
 
+/** Les fichiers envoyés sont stockés par l'API : on préfixe leur chemin relatif. */
+export function fileUrl(path: string): string {
+  return path.startsWith("/uploads/") ? `${API_BASE_URL}${path}` : path;
+}
+
 export class ApiError extends Error {
   status: number;
   constructor(status: number, message: string) {

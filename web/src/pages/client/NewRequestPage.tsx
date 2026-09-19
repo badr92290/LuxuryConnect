@@ -1,21 +1,49 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { Button, ErrorText, Input, Select, Textarea } from "../../components/ui";
+import React, { useEffect, useState } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { Button, ErrorText, Input, Select, SectionLabel, Textarea } from "../../components/ui";
+import { PhotoPicker } from "../../components/PhotoPicker";
+import { IconCar } from "../../components/icons";
 import { api, ApiError } from "../../api/client";
-import { ServiceType, SERVICE_LABELS } from "../../types";
+import { ServiceType, SERVICE_LABELS, Vehicle } from "../../types";
+import { useToast } from "../../context/ToastContext";
 
 const SERVICES: ServiceType[] = ["PPF", "COVERING", "CERAMIC", "TINT", "POLISH"];
 
 export default function NewRequestPage() {
   const navigate = useNavigate();
+  const [params] = useSearchParams();
+  const { toast } = useToast();
+
+  const [vehicles, setVehicles] = useState<Vehicle[]>([]);
+  const [vehicleId, setVehicleId] = useState<string | null>(params.get("vehicleId"));
+
   const [serviceType, setServiceType] = useState<ServiceType>("PPF");
   const [vehicleMake, setVehicleMake] = useState("");
   const [vehicleModel, setVehicleModel] = useState("");
   const [vehicleYear, setVehicleYear] = useState("");
   const [city, setCity] = useState("");
   const [description, setDescription] = useState("");
+  const [photos, setPhotos] = useState<string[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    api.get<{ vehicles: Vehicle[] }>("/vehicles").then((d) => setVehicles(d.vehicles));
+  }, []);
+
+  // Sélectionner un véhicule du garage pré-remplit les champs du formulaire.
+  function selectVehicle(vehicle: Vehicle | null) {
+    setVehicleId(vehicle?.id ?? null);
+    setVehicleMake(vehicle?.make ?? "");
+    setVehicleModel(vehicle?.model ?? "");
+    setVehicleYear(vehicle?.year ? String(vehicle.year) : "");
+  }
+
+  useEffect(() => {
+    if (!vehicleId || vehicles.length === 0) return;
+    const match = vehicles.find((v) => v.id === vehicleId);
+    if (match) selectVehicle(match);
+  }, [vehicles, vehicleId]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -28,12 +56,15 @@ export default function NewRequestPage() {
     try {
       await api.post("/quote-requests", {
         serviceType,
+        vehicleId: vehicleId ?? undefined,
         vehicleMake,
         vehicleModel,
         vehicleYear: vehicleYear ? parseInt(vehicleYear, 10) : undefined,
         city: city || undefined,
         description: description || undefined,
+        photos: photos.length ? photos : undefined,
       });
+      toast("Demande envoyée, nous revenons vers vous rapidement");
       navigate("/app/requests");
     } catch (err) {
       setError(err instanceof ApiError ? err.message : "Impossible d'envoyer la demande");
@@ -44,7 +75,7 @@ export default function NewRequestPage() {
 
   return (
     <div className="mx-auto max-w-lg">
-      <h1 className="mb-2 font-display text-3xl text-ivory tracking-tight">Nouvelle demande de devis</h1>
+      <h1 className="mb-2 font-display text-3xl tracking-tight text-ivory">Nouvelle demande de devis</h1>
       <p className="mb-6 text-sm text-muted">
         Décrivez votre besoin : notre équipe la transmet aux professionnels adaptés et vous revient avec
         une offre claire, tarif et délai inclus.
@@ -58,6 +89,30 @@ export default function NewRequestPage() {
             </option>
           ))}
         </Select>
+
+        {vehicles.length > 0 && (
+          <div className="mb-4">
+            <SectionLabel>Depuis mon garage</SectionLabel>
+            <div className="flex flex-wrap gap-2">
+              {vehicles.map((v) => (
+                <button
+                  key={v.id}
+                  type="button"
+                  onClick={() => selectVehicle(vehicleId === v.id ? null : v)}
+                  className={`flex items-center gap-2 rounded-xl border px-3 py-2 text-sm transition-all duration-200 ${
+                    vehicleId === v.id
+                      ? "border-gold bg-gold/10 text-gold shadow-gold"
+                      : "border-border text-muted hover:border-gold/40 hover:text-ivory"
+                  }`}
+                >
+                  <IconCar className="h-4 w-4" />
+                  {v.make} {v.model}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
         <div className="grid grid-cols-2 gap-3">
           <Input label="Marque" value={vehicleMake} onChange={(e) => setVehicleMake(e.target.value)} placeholder="Peugeot" />
           <Input label="Modèle" value={vehicleModel} onChange={(e) => setVehicleModel(e.target.value)} placeholder="308" />
@@ -72,6 +127,9 @@ export default function NewRequestPage() {
           />
           <Input label="Ville" value={city} onChange={(e) => setCity(e.target.value)} placeholder="Lyon" />
         </div>
+
+        <PhotoPicker photos={photos} onChange={setPhotos} />
+
         <Textarea
           label="Décrivez votre besoin (optionnel)"
           value={description}

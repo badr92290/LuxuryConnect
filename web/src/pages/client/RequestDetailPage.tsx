@@ -2,7 +2,9 @@ import React, { useCallback, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { api, ApiError } from "../../api/client";
 import { QuoteRequest, QUOTE_REQUEST_STATUS_LABELS, SERVICE_LABELS } from "../../types";
-import { BackLink, Badge, Button, Card, ErrorText, Input, Spinner } from "../../components/ui";
+import { BackLink, Badge, Button, Card, ErrorText, Input, SectionLabel, Spinner } from "../../components/ui";
+import { PhotoGallery } from "../../components/PhotoGallery";
+import { TrustBadges } from "../../components/TrustBadges";
 import { useToast } from "../../context/ToastContext";
 
 export default function RequestDetailPage() {
@@ -64,6 +66,9 @@ export default function RequestDetailPage() {
 
   if (loading || !quoteRequest) return <Spinner />;
 
+  const pro = quoteRequest.selectedProfessional;
+  const beforeAfter = (pro?.portfolioImages ?? []).filter((img) => img.isBeforeAfter);
+
   return (
     <div className="mx-auto max-w-lg">
       <BackLink label="Retour à mes demandes" onClick={() => navigate("/app/requests")} />
@@ -79,6 +84,11 @@ export default function RequestDetailPage() {
         </p>
         {quoteRequest.city && <p className="text-sm text-muted">{quoteRequest.city}</p>}
         {quoteRequest.description && <p className="mt-3 text-sm">{quoteRequest.description}</p>}
+        {quoteRequest.photos && quoteRequest.photos.length > 0 && (
+          <div className="mt-4">
+            <PhotoGallery photos={quoteRequest.photos} />
+          </div>
+        )}
       </Card>
 
       {(quoteRequest.status === "PENDING_REVIEW" || quoteRequest.status === "FORWARDED" || quoteRequest.status === "QUOTED") && (
@@ -91,10 +101,31 @@ export default function RequestDetailPage() {
       )}
 
       {quoteRequest.status === "FINALIZED" && (
-        <Card className="mt-4">
-          <h2 className="mb-2 font-semibold text-primary">Offre reçue</h2>
-          <p className="font-display text-3xl text-ivory tracking-tight">{quoteRequest.finalPrice} €</p>
+        <Card glass className="mt-4 border-gold/30">
+          <h2 className="mb-2 font-semibold text-gold">Offre reçue</h2>
+          <p className="font-display text-3xl tracking-tight text-ivory">{quoteRequest.finalPrice} €</p>
           {quoteRequest.finalMessage && <p className="mt-2 text-sm text-muted">{quoteRequest.finalMessage}</p>}
+
+          {pro && (
+            <div className="mt-4 border-t border-hairline pt-4">
+              <SectionLabel>Prestataire retenu</SectionLabel>
+              <p className="font-semibold text-ivory">{pro.businessName}</p>
+              {pro.city && <p className="mt-0.5 text-sm text-muted">{pro.city}</p>}
+              <div className="mt-2">
+                <TrustBadges
+                  isInsured={pro.isInsured}
+                  isCertified={pro.isCertified}
+                  yearsExperience={pro.yearsExperience}
+                />
+              </div>
+              {beforeAfter.length > 0 && (
+                <div className="mt-4">
+                  <SectionLabel>Ses réalisations avant / après</SectionLabel>
+                  <PhotoGallery photos={beforeAfter} />
+                </div>
+              )}
+            </div>
+          )}
 
           <div className="mt-4">
             <Input
