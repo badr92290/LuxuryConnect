@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { api } from "../../api/client";
 import { Booking } from "../../types";
-import { Badge, Button, Card, EmptyState, Spinner } from "../../components/ui";
+import { Badge, Button, Card, EmptyState, SkeletonList } from "../../components/ui";
 
 const STATUS_LABELS: Record<Booking["status"], string> = {
   CONFIRMED: "Confirmée",
@@ -38,7 +38,7 @@ export default function ProBookingsPage() {
     }
   }
 
-  if (loading) return <Spinner />;
+  if (loading) return <SkeletonList />;
 
   return (
     <div>

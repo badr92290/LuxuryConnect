@@ -1,6 +1,7 @@
 import React from "react";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { AuthProvider, useAuth } from "./context/AuthContext";
+import { ToastProvider } from "./context/ToastContext";
 import { AppShell, NavItem } from "./layout/AppShell";
 
 import WelcomePage from "./pages/auth/WelcomePage";
@@ -19,6 +20,7 @@ import ProRequestDetailPage from "./pages/pro/RequestDetailPage";
 import ProBookingsPage from "./pages/pro/BookingsPage";
 import ProfileEditPage from "./pages/pro/ProfileEditPage";
 
+import DashboardPage from "./pages/admin/DashboardPage";
 import QueuePage from "./pages/admin/QueuePage";
 import AdminRequestDetailPage from "./pages/admin/RequestDetailPage";
 import AdminBookingsPage from "./pages/admin/BookingsPage";
@@ -27,7 +29,7 @@ import AgendaPage from "./pages/admin/AgendaPage";
 import MessagesPage from "./pages/shared/MessagesPage";
 import ChatPage from "./pages/shared/ChatPage";
 
-import { IconPlus, IconList, IconCalendar, IconMessage, IconUser, IconInbox, IconContacts } from "./components/icons";
+import { IconPlus, IconList, IconCalendar, IconMessage, IconUser, IconInbox, IconContacts, IconChart } from "./components/icons";
 
 const CLIENT_NAV: NavItem[] = [
   { to: "/app/requests/new", label: "Nouvelle demande", icon: IconPlus },
@@ -45,7 +47,8 @@ const PRO_NAV: NavItem[] = [
 ];
 
 const ADMIN_NAV: NavItem[] = [
-  { to: "/admin", label: "File d'attente", icon: IconInbox, end: true },
+  { to: "/admin", label: "Tableau de bord", icon: IconChart, end: true },
+  { to: "/admin/queue", label: "File d'attente", icon: IconInbox },
   { to: "/admin/agenda", label: "Agenda", icon: IconContacts },
   { to: "/admin/bookings", label: "Réservations", icon: IconCalendar },
   { to: "/admin/messages", label: "Messages", icon: IconMessage },
@@ -131,7 +134,8 @@ function AppRoutes() {
           </RequireRole>
         }
       >
-        <Route index element={<QueuePage />} />
+        <Route index element={<DashboardPage />} />
+        <Route path="queue" element={<QueuePage />} />
         <Route path="requests/:requestId" element={<AdminRequestDetailPage />} />
         <Route path="agenda" element={<AgendaPage />} />
         <Route path="bookings" element={<AdminBookingsPage />} />
@@ -148,7 +152,9 @@ export default function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
-        <AppRoutes />
+        <ToastProvider>
+          <AppRoutes />
+        </ToastProvider>
       </AuthProvider>
     </BrowserRouter>
   );

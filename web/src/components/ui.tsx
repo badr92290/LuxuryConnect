@@ -159,19 +159,72 @@ export function Card({
   children,
   className = "",
   onClick,
+  glass,
 }: {
   children: React.ReactNode;
   className?: string;
   onClick?: () => void;
+  glass?: boolean;
 }) {
+  const base = glass
+    ? "border-white/[0.07] bg-surface/60 bg-glass-sheen backdrop-blur-xl shadow-glass"
+    : "border-hairline bg-surface";
   return (
     <div
-      className={`rounded-2xl border border-hairline bg-surface p-5 transition-colors ${
-        onClick ? "cursor-pointer hover:border-gold/40" : ""
+      className={`rounded-2xl border p-5 transition-all duration-200 ${base} ${
+        onClick
+          ? "cursor-pointer hover:-translate-y-0.5 hover:border-gold/40 hover:shadow-gold"
+          : ""
       } ${className}`}
       onClick={onClick}
     >
       {children}
+    </div>
+  );
+}
+
+/** Fait apparaître ses enfants en cascade (fondu + léger glissement). */
+export function Reveal({
+  children,
+  index = 0,
+  className = "",
+}: {
+  children: React.ReactNode;
+  index?: number;
+  className?: string;
+}) {
+  return (
+    <div
+      className={`animate-fade-in-up ${className}`}
+      style={{ animationDelay: `${Math.min(index, 12) * 45}ms` }}
+    >
+      {children}
+    </div>
+  );
+}
+
+export function Skeleton({ className = "" }: { className?: string }) {
+  return (
+    <div className={`relative overflow-hidden rounded-lg bg-surfaceAlt ${className}`}>
+      <div className="absolute inset-0 animate-shimmer bg-shimmer" />
+    </div>
+  );
+}
+
+/** Remplace le spinner pendant le chargement d'une liste de cartes. */
+export function SkeletonList({ count = 4 }: { count?: number }) {
+  return (
+    <div className="flex flex-col gap-3">
+      {Array.from({ length: count }).map((_, i) => (
+        <div key={i} className="rounded-2xl border border-hairline bg-surface p-5">
+          <div className="flex items-center justify-between gap-4">
+            <Skeleton className="h-4 w-1/2" />
+            <Skeleton className="h-5 w-20 rounded-full" />
+          </div>
+          <Skeleton className="mt-3 h-3 w-2/3" />
+          <Skeleton className="mt-2 h-3 w-1/3" />
+        </div>
+      ))}
     </div>
   );
 }

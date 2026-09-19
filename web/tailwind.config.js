@@ -49,6 +49,39 @@ export default {
         "gold-gradient": "linear-gradient(135deg, #E3C68A 0%, #C9A876 45%, #A5824F 100%)",
         "radial-glow":
           "radial-gradient(60% 60% at 50% 0%, rgba(201,168,118,0.16) 0%, rgba(201,168,118,0) 70%)",
+        "glass-sheen":
+          "linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0) 55%)",
+        shimmer:
+          "linear-gradient(90deg, transparent 0%, rgba(201,168,118,0.07) 50%, transparent 100%)",
+      },
+      boxShadow: {
+        gold: "0 10px 34px -16px rgba(201,168,118,0.45)",
+        "gold-lg": "0 20px 52px -20px rgba(201,168,118,0.55)",
+        glass: "0 8px 32px -12px rgba(0,0,0,0.6)",
+      },
+      keyframes: {
+        "fade-in-up": {
+          "0%": { opacity: "0", transform: "translateY(14px)" },
+          "100%": { opacity: "1", transform: "translateY(0)" },
+        },
+        "fade-in": {
+          "0%": { opacity: "0" },
+          "100%": { opacity: "1" },
+        },
+        shimmer: {
+          "0%": { transform: "translateX(-100%)" },
+          "100%": { transform: "translateX(100%)" },
+        },
+        "toast-in": {
+          "0%": { opacity: "0", transform: "translateY(18px) scale(0.96)" },
+          "100%": { opacity: "1", transform: "translateY(0) scale(1)" },
+        },
+      },
+      animation: {
+        "fade-in-up": "fade-in-up 0.5s cubic-bezier(0.16,1,0.3,1) both",
+        "fade-in": "fade-in 0.45s ease-out both",
+        shimmer: "shimmer 1.8s ease-in-out infinite",
+        "toast-in": "toast-in 0.32s cubic-bezier(0.16,1,0.3,1) both",
       },
     },
   },

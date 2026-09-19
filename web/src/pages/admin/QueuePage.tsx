@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { api } from "../../api/client";
 import { QuoteRequest, QuoteRequestStatus, QUOTE_REQUEST_STATUS_LABELS, SERVICE_LABELS } from "../../types";
-import { Badge, Card, EmptyState, Spinner } from "../../components/ui";
+import { Badge, Card, EmptyState, Reveal, SkeletonList } from "../../components/ui";
 
 const TABS: { value: QuoteRequestStatus | "ALL"; label: string }[] = [
   { value: "ALL", label: "Toutes" },
@@ -53,8 +53,10 @@ export default function QueuePage() {
           <button
             key={t.value}
             onClick={() => setTab(t.value)}
-            className={`whitespace-nowrap rounded-full border px-4 py-1.5 text-sm font-semibold ${
-              tab === t.value ? "border-primary bg-primary/15 text-primary" : "border-border text-muted"
+            className={`whitespace-nowrap rounded-full border px-4 py-1.5 text-sm font-semibold transition-all duration-200 ${
+              tab === t.value
+                ? "border-gold bg-gold/15 text-gold shadow-gold"
+                : "border-border text-muted hover:border-gold/40 hover:text-ivory"
             }`}
           >
             {t.label}
@@ -63,30 +65,28 @@ export default function QueuePage() {
       </div>
 
       {loading ? (
-        <Spinner />
+        <SkeletonList />
       ) : quoteRequests.length === 0 ? (
         <EmptyState message="Aucune demande dans cette catégorie." />
       ) : (
         <div className="flex flex-col gap-3">
-          {quoteRequests.map((q) => (
-            <Card
-              key={q.id}
-              className="cursor-pointer hover:border-primary/40"
-              onClick={() => navigate(`/admin/requests/${q.id}`)}
-            >
-              <div className="flex items-center justify-between">
-                <p className="font-semibold">
-                  {q.client?.firstName} {q.client?.lastName} · {SERVICE_LABELS[q.serviceType]}
+          {quoteRequests.map((q, i) => (
+            <Reveal key={q.id} index={i}>
+              <Card onClick={() => navigate(`/admin/requests/${q.id}`)}>
+                <div className="flex items-center justify-between gap-3">
+                  <p className="font-semibold">
+                    {q.client?.firstName} {q.client?.lastName} · {SERVICE_LABELS[q.serviceType]}
+                  </p>
+                  <Badge label={QUOTE_REQUEST_STATUS_LABELS[q.status]} tone={TONE[q.status]} />
+                </div>
+                <p className="mt-1.5 text-sm text-muted">
+                  {q.vehicleMake} {q.vehicleModel} {q.city ? `· ${q.city}` : ""}
                 </p>
-                <Badge label={QUOTE_REQUEST_STATUS_LABELS[q.status]} tone={TONE[q.status]} />
-              </div>
-              <p className="mt-1 text-sm text-muted">
-                {q.vehicleMake} {q.vehicleModel} {q.city ? `· ${q.city}` : ""}
-              </p>
-              <p className="mt-1 text-xs text-muted">
-                {q.forwards?.length ?? 0} transmise(s) · {q.quotes?.length ?? 0} devis reçu(s)
-              </p>
-            </Card>
+                <p className="mt-1.5 text-xs text-mutedDark">
+                  {q.forwards?.length ?? 0} transmise(s) · {q.quotes?.length ?? 0} devis reçu(s)
+                </p>
+              </Card>
+            </Reveal>
           ))}
         </div>
       )}

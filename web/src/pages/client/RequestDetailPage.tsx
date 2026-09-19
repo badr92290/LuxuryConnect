@@ -3,10 +3,12 @@ import { useNavigate, useParams } from "react-router-dom";
 import { api, ApiError } from "../../api/client";
 import { QuoteRequest, QUOTE_REQUEST_STATUS_LABELS, SERVICE_LABELS } from "../../types";
 import { BackLink, Badge, Button, Card, ErrorText, Input, Spinner } from "../../components/ui";
+import { useToast } from "../../context/ToastContext";
 
 export default function RequestDetailPage() {
   const { requestId } = useParams<{ requestId: string }>();
   const navigate = useNavigate();
+  const { toast } = useToast();
   const [quoteRequest, setQuoteRequest] = useState<QuoteRequest | null>(null);
   const [loading, setLoading] = useState(true);
   const [scheduledAt, setScheduledAt] = useState("");
@@ -36,6 +38,7 @@ export default function RequestDetailPage() {
         scheduledAt: new Date(scheduledAt).toISOString(),
       });
       await load();
+      toast("Offre acceptée, votre réservation est confirmée");
     } catch (err) {
       setError(err instanceof ApiError ? err.message : "Impossible d'accepter l'offre");
     } finally {
@@ -48,6 +51,7 @@ export default function RequestDetailPage() {
     try {
       await api.post(`/quote-requests/${requestId}/decline`);
       await load();
+      toast("Offre refusée", "info");
     } finally {
       setActing(false);
     }

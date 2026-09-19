@@ -8,6 +8,91 @@ const router = Router();
 
 router.use(requireAuth, requireRole("ADMIN"));
 
+// Tableau de bord : chiffre d'affaires, marge (prix client - prix pro), conversion.
+router.get("/stats", async (_req, res) => {
+  const requests = await prisma.quoteRequest.findMany({
+    select: {
+      id: true,
+      status: true,
+      createdAt: true,
+      finalPrice: true,
+      selectedProfessionalId: true,
+      quotes: { select: { professionalId: true, price: true } },
+    },
+  });
+
+  const byStatus: Record<string, number> = {};
+  for (const r of requests) byStatus[r.status] = (byStatus[r.status] ?? 0) + 1;
+
+  const accepted = requests.filter((r) => r.status === "ACCEPTED");
+
+  // Marge d'un dossier = ce que paie le client - ce que facture le professionnel retenu.
+  function marginOf(r: (typeof requests)[number]) {
+    if (r.finalPrice == null) return null;
+    const proQuote = r.quotes.find((q) => q.professionalId === r.selectedProfessionalId);
+    if (!proQuote) return null;
+    return r.finalPrice - proQuote.price;
+  }
+
+  const acceptedMargins = accepted
+    .map(marginOf)
+    .filter((m): m is number => m !== null);
+
+  const revenueTotal = accepted.reduce((sum, r) => sum + (r.finalPrice ?? 0), 0);
+  const marginTotal = acceptedMargins.reduce((sum, m) => sum + m, 0);
+  const marginAverage = acceptedMargins.length ? marginTotal / acceptedMargins.length : 0;
+
+  const now = new Date();
+  const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+  const acceptedThisMonth = accepted.filter((r) => r.createdAt >= monthStart);
+  const revenueThisMonth = acceptedThisMonth.reduce((sum, r) => sum + (r.finalPrice ?? 0), 0);
+  const marginThisMonth = acceptedThisMonth
+    .map(marginOf)
+    .filter((m): m is number => m !== null)
+    .reduce((sum, m) => sum + m, 0);
+
+  const finalizedOrBeyond = requests.filter((r) =>
+    ["FINALIZED", "ACCEPTED", "DECLINED"].includes(r.status)
+  ).length;
+
+  // Six derniers mois, du plus ancien au plus récent.
+  const monthly: { month: string; revenue: number; margin: number; count: number }[] = [];
+  for (let i = 5; i >= 0; i--) {
+    const start = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    const end = new Date(now.getFullYear(), now.getMonth() - i + 1, 1);
+    const inMonth = accepted.filter((r) => r.createdAt >= start && r.createdAt < end);
+    monthly.push({
+      month: start.toLocaleDateString("fr-FR", { month: "short" }),
+      revenue: inMonth.reduce((sum, r) => sum + (r.finalPrice ?? 0), 0),
+      margin: inMonth
+        .map(marginOf)
+        .filter((m): m is number => m !== null)
+        .reduce((sum, m) => sum + m, 0),
+      count: inMonth.length,
+    });
+  }
+
+  res.json({
+    stats: {
+      totalRequests: requests.length,
+      byStatus,
+      pendingReview: byStatus.PENDING_REVIEW ?? 0,
+      awaitingQuotes: byStatus.FORWARDED ?? 0,
+      revenueTotal,
+      revenueThisMonth,
+      marginTotal,
+      marginThisMonth,
+      marginAverage,
+      acceptedCount: accepted.length,
+      // Part des demandes qui aboutissent à une réservation.
+      conversionRate: requests.length ? accepted.length / requests.length : 0,
+      // Part des offres envoyées qui sont acceptées par le client.
+      offerAcceptanceRate: finalizedOrBeyond ? accepted.length / finalizedOrBeyond : 0,
+      monthly,
+    },
+  });
+});
+
 router.get("/quote-requests", async (req: AuthRequest, res) => {
   const { status } = req.query as { status?: string };
   const where = status ? { status: status as QuoteRequestStatus } : {};

@@ -3,10 +3,12 @@ import { useNavigate, useParams } from "react-router-dom";
 import { api, ApiError } from "../../api/client";
 import { ProfessionalProfile, QuoteRequest, QUOTE_REQUEST_STATUS_LABELS, SERVICE_LABELS } from "../../types";
 import { BackLink, Badge, Button, Card, Checkbox, ErrorText, Input, Spinner, Textarea } from "../../components/ui";
+import { useToast } from "../../context/ToastContext";
 
 export default function AdminRequestDetailPage() {
   const { requestId } = useParams<{ requestId: string }>();
   const navigate = useNavigate();
+  const { toast } = useToast();
   const [quoteRequest, setQuoteRequest] = useState<QuoteRequest | null>(null);
   const [candidates, setCandidates] = useState<ProfessionalProfile[]>([]);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
@@ -40,10 +42,12 @@ export default function AdminRequestDetailPage() {
   async function forward() {
     if (selectedIds.length === 0) return;
     setForwarding(true);
+    const count = selectedIds.length;
     try {
       await api.post(`/admin/quote-requests/${requestId}/forward`, { professionalIds: selectedIds });
       setSelectedIds([]);
       await load();
+      toast(`Demande transmise à ${count} professionnel${count > 1 ? "s" : ""}`);
     } finally {
       setForwarding(false);
     }
@@ -67,6 +71,7 @@ export default function AdminRequestDetailPage() {
       });
       setFinalizingFor(null);
       await load();
+      toast("Offre envoyée au client");
     } catch (err) {
       setError(err instanceof ApiError ? err.message : "Impossible de finaliser l'offre");
     } finally {
@@ -85,9 +90,14 @@ export default function AdminRequestDetailPage() {
   const alreadyForwarded = candidates.filter((c) => forwardedIds.has(c.id));
   const notForwardedYet = candidates.filter((c) => !forwardedIds.has(c.id));
 
+  const selectedQuote = quoteRequest.quotes?.find((q) => q.professionalId === finalizingFor);
+  const proPrice = selectedQuote?.price ?? 0;
+  const parsedFinal = parseFloat(finalPrice);
+  const margin = Number.isFinite(parsedFinal) ? parsedFinal - proPrice : null;
+
   return (
     <div className="mx-auto max-w-2xl">
-      <BackLink label="Retour à la file" onClick={() => navigate("/admin")} />
+      <BackLink label="Retour à la file" onClick={() => navigate("/admin/queue")} />
 
       <Card>
         <div className="flex items-center justify-between">
@@ -196,8 +206,32 @@ export default function AdminRequestDetailPage() {
       )}
 
       {finalizingFor && (
-        <Card className="mt-4 border-primary/40">
-          <h2 className="mb-3 font-semibold text-primary">Fixer le prix final au client</h2>
+        <Card glass className="mt-4 border-gold/40">
+          <h2 className="mb-3 font-semibold text-gold">Fixer le prix final au client</h2>
+
+          <div className="mb-4 grid grid-cols-3 gap-3 rounded-xl border border-hairline bg-background/40 p-3 text-center">
+            <div>
+              <p className="text-[10px] uppercase tracking-wider2 text-mutedDark">Prix pro</p>
+              <p className="mt-1 text-base font-semibold text-ivory">{proPrice} €</p>
+            </div>
+            <div>
+              <p className="text-[10px] uppercase tracking-wider2 text-mutedDark">Client</p>
+              <p className="mt-1 text-base font-semibold text-ivory">
+                {Number.isFinite(parsedFinal) ? `${parsedFinal} €` : "—"}
+              </p>
+            </div>
+            <div>
+              <p className="text-[10px] uppercase tracking-wider2 text-mutedDark">Votre marge</p>
+              <p
+                className={`mt-1 text-base font-bold ${
+                  margin === null ? "text-mutedDark" : margin >= 0 ? "text-success" : "text-danger"
+                }`}
+              >
+                {margin === null ? "—" : `${margin >= 0 ? "+" : ""}${margin.toFixed(0)} €`}
+              </p>
+            </div>
+          </div>
+
           <Input label="Prix facturé au client (€)" value={finalPrice} onChange={(e) => setFinalPrice(e.target.value)} inputMode="decimal" />
           <Textarea
             label="Message pour le client (optionnel)"

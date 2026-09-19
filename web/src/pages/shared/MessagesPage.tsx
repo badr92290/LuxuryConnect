@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { api } from "../../api/client";
 import { useAuth } from "../../context/AuthContext";
 import { Conversation } from "../../types";
-import { Card, EmptyState, Spinner } from "../../components/ui";
+import { Card, EmptyState, SkeletonList } from "../../components/ui";
 
 export default function MessagesPage({ basePath }: { basePath: string }) {
   const { user } = useAuth();
@@ -29,7 +29,7 @@ export default function MessagesPage({ basePath }: { basePath: string }) {
     return c.participantA?.id === user?.id ? c.participantB : c.participantA;
   }
 
-  if (loading) return <Spinner />;
+  if (loading) return <SkeletonList />;
 
   return (
     <div>

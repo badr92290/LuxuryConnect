@@ -1,5 +1,5 @@
 import React from "react";
-import { NavLink, Outlet } from "react-router-dom";
+import { NavLink, Outlet, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { IconLogout } from "../components/icons";
 import type { IconProps } from "../components/icons";
@@ -24,6 +24,7 @@ function Wordmark({ subtitle }: { subtitle: string }) {
 
 export function AppShell({ navItems, title }: { navItems: NavItem[]; title: string }) {
   const { user, logout } = useAuth();
+  const { pathname } = useLocation();
 
   return (
     <div className="min-h-screen bg-background text-ivory md:flex">
@@ -84,7 +85,7 @@ export function AppShell({ navItems, title }: { navItems: NavItem[]; title: stri
       </header>
 
       <div className="flex-1 pb-20 md:pb-0">
-        <main className="mx-auto w-full max-w-4xl px-5 py-8 md:px-10 md:py-10">
+        <main key={pathname} className="mx-auto w-full max-w-4xl animate-fade-in px-5 py-8 md:px-10 md:py-10">
           <Outlet />
         </main>
       </div>

@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { api } from "../../api/client";
 import { Contact, QUOTE_REQUEST_STATUS_LABELS, SERVICE_LABELS } from "../../types";
-import { Badge, Card, EmptyState, Input, Spinner } from "../../components/ui";
+import { Badge, Card, EmptyState, Input, SkeletonList } from "../../components/ui";
 import { IconPhone, IconMail } from "../../components/icons";
 
 const TONE: Record<string, "primary" | "muted" | "success" | "danger"> = {
@@ -62,7 +62,7 @@ export default function AgendaPage() {
       />
 
       {loading ? (
-        <Spinner />
+        <SkeletonList />
       ) : contacts.length === 0 ? (
         <EmptyState message="Aucun contact ne correspond à votre recherche." />
       ) : (

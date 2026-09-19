@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { api } from "../../api/client";
 import { Booking } from "../../types";
-import { Badge, Button, Card, EmptyState, Spinner } from "../../components/ui";
+import { Badge, Button, Card, EmptyState, SkeletonList } from "../../components/ui";
 
 const STATUS_LABELS: Record<Booking["status"], string> = {
   CONFIRMED: "Confirmée",
@@ -29,7 +29,7 @@ export default function BookingsPage() {
     load();
   }, [load]);
 
-  if (loading) return <Spinner />;
+  if (loading) return <SkeletonList />;
 
   return (
     <div>

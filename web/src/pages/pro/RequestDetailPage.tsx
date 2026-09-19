@@ -3,10 +3,12 @@ import { useNavigate, useParams } from "react-router-dom";
 import { api, ApiError } from "../../api/client";
 import { QuoteRequest, SERVICE_LABELS } from "../../types";
 import { BackLink, Badge, Button, Card, ErrorText, Input, Spinner, Textarea } from "../../components/ui";
+import { useToast } from "../../context/ToastContext";
 
 export default function ProRequestDetailPage() {
   const { requestId } = useParams<{ requestId: string }>();
   const navigate = useNavigate();
+  const { toast } = useToast();
   const [quoteRequest, setQuoteRequest] = useState<QuoteRequest | null>(null);
   const [loading, setLoading] = useState(true);
   const [price, setPrice] = useState("");
@@ -42,6 +44,7 @@ export default function ProRequestDetailPage() {
         message: message || undefined,
       });
       await load();
+      toast("Devis envoyé");
     } catch (err) {
       setError(err instanceof ApiError ? err.message : "Impossible d'envoyer le devis");
     } finally {

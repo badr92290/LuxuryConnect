@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { api } from "../../api/client";
 import { QuoteRequest, QUOTE_REQUEST_STATUS_LABELS, SERVICE_LABELS } from "../../types";
-import { Badge, Card, EmptyState, Spinner } from "../../components/ui";
+import { Badge, Card, EmptyState, Reveal, SkeletonList } from "../../components/ui";
 
 const TONE: Record<string, "primary" | "muted" | "success" | "danger"> = {
   PENDING_REVIEW: "muted",
@@ -33,7 +33,7 @@ export default function MyRequestsPage() {
     load();
   }, [load]);
 
-  if (loading) return <Spinner />;
+  if (loading) return <SkeletonList />;
 
   return (
     <div>
@@ -42,20 +42,22 @@ export default function MyRequestsPage() {
       </div>
       {quoteRequests.length === 0 && <EmptyState message="Vous n'avez pas encore fait de demande de devis." />}
       <div className="flex flex-col gap-3">
-        {quoteRequests.map((q) => (
-          <Card key={q.id} className="cursor-pointer hover:border-primary/40" onClick={() => navigate(`/app/requests/${q.id}`)}>
-            <div className="flex items-center justify-between">
-              <p className="font-semibold">{SERVICE_LABELS[q.serviceType]}</p>
-              <Badge label={QUOTE_REQUEST_STATUS_LABELS[q.status]} tone={TONE[q.status]} />
-            </div>
-            <p className="mt-1 text-sm text-muted">
-              {q.vehicleMake} {q.vehicleModel}
-              {q.vehicleYear ? ` (${q.vehicleYear})` : ""}
-            </p>
-            {q.status === "FINALIZED" && q.finalPrice && (
-              <p className="mt-2 text-sm font-semibold text-primary">Offre reçue : {q.finalPrice} €</p>
-            )}
-          </Card>
+        {quoteRequests.map((q, i) => (
+          <Reveal key={q.id} index={i}>
+            <Card onClick={() => navigate(`/app/requests/${q.id}`)}>
+              <div className="flex items-center justify-between gap-3">
+                <p className="font-semibold">{SERVICE_LABELS[q.serviceType]}</p>
+                <Badge label={QUOTE_REQUEST_STATUS_LABELS[q.status]} tone={TONE[q.status]} />
+              </div>
+              <p className="mt-1.5 text-sm text-muted">
+                {q.vehicleMake} {q.vehicleModel}
+                {q.vehicleYear ? ` (${q.vehicleYear})` : ""}
+              </p>
+              {q.status === "FINALIZED" && q.finalPrice && (
+                <p className="mt-2.5 text-sm font-semibold text-gold">Offre reçue : {q.finalPrice} €</p>
+              )}
+            </Card>
+          </Reveal>
         ))}
       </div>
     </div>

@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { api } from "../../api/client";
 import { QuoteRequest, SERVICE_LABELS } from "../../types";
-import { Badge, Card, EmptyState, Spinner } from "../../components/ui";
+import { Badge, Card, EmptyState, SkeletonList } from "../../components/ui";
 
 const FORWARD_LABELS: Record<string, string> = {
   PENDING: "Nouvelle demande",
@@ -29,7 +29,7 @@ export default function RequestsPage() {
     load();
   }, [load]);
 
-  if (loading) return <Spinner />;
+  if (loading) return <SkeletonList />;
 
   return (
     <div>

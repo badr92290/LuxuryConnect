@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { api } from "../../api/client";
 import { Booking } from "../../types";
-import { Badge, Card, EmptyState, Spinner } from "../../components/ui";
+import { Badge, Card, EmptyState, SkeletonList } from "../../components/ui";
 
 const STATUS_LABELS: Record<Booking["status"], string> = {
   CONFIRMED: "Confirmée",
@@ -20,7 +20,7 @@ export default function AdminBookingsPage() {
       .finally(() => setLoading(false));
   }, []);
 
-  if (loading) return <Spinner />;
+  if (loading) return <SkeletonList />;
 
   return (
     <div>

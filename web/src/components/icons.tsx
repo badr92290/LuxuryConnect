@@ -110,3 +110,70 @@ export const IconSearch = base(
 export const IconCrown = base(
   <path d="M4 8.5 8 12l4-6 4 6 4-3.5-1.6 9.5H5.6L4 8.5Z" strokeLinejoin="round" />
 );
+
+export const IconCheck = base(<path d="m5 12.5 4.5 4.5L19 7" />);
+
+export const IconX = base(
+  <>
+    <path d="m6 6 12 12" />
+    <path d="M18 6 6 18" />
+  </>
+);
+
+export const IconAlert = base(
+  <>
+    <circle cx="12" cy="12" r="8.5" />
+    <path d="M12 8v5" />
+    <path d="M12 16h.01" />
+  </>
+);
+
+export const IconBell = base(
+  <>
+    <path d="M6.5 10a5.5 5.5 0 0 1 11 0c0 4 1.5 5.5 1.5 5.5H5s1.5-1.5 1.5-5.5Z" />
+    <path d="M10.2 19a2 2 0 0 0 3.6 0" />
+  </>
+);
+
+export const IconChart = base(
+  <>
+    <path d="M4 19.5h16" />
+    <path d="M7 19.5v-6" />
+    <path d="M12 19.5V7" />
+    <path d="M17 19.5v-9" />
+  </>
+);
+
+export const IconCar = base(
+  <>
+    <path d="M4 15.5h16v3a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1-.5-.5v-1H7v1a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1-.5-.5v-3Z" />
+    <path d="M5 15.5 6.6 9a2 2 0 0 1 1.9-1.4h7a2 2 0 0 1 1.9 1.4L19 15.5" />
+    <path d="M7.5 12.5h9" />
+  </>
+);
+
+export const IconCamera = base(
+  <>
+    <path d="M4 8.5h3l1.3-2h7.4l1.3 2h3a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-8a1 1 0 0 1 1-1Z" />
+    <circle cx="12" cy="13" r="3.2" />
+  </>
+);
+
+export const IconShield = base(
+  <>
+    <path d="M12 3.5 19 6v6c0 4.2-2.9 7.3-7 8.5-4.1-1.2-7-4.3-7-8.5V6l7-2.5Z" />
+    <path d="m9 12 2 2 4-4" />
+  </>
+);
+
+export const IconTrash = base(
+  <>
+    <path d="M4.5 7h15" />
+    <path d="M9.5 7V5.5a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1V7" />
+    <path d="M6.5 7l.8 11.6a1 1 0 0 0 1 .9h7.4a1 1 0 0 0 1-.9L17.5 7" />
+  </>
+);
+
+export const IconSparkle = base(
+  <path d="M12 4.5 13.6 9.4 18.5 11l-4.9 1.6L12 17.5l-1.6-4.9L5.5 11l4.9-1.6L12 4.5Z" />
+);
