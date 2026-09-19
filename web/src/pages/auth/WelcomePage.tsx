@@ -9,7 +9,7 @@ export default function WelcomePage() {
       <div className="pointer-events-none absolute inset-0 bg-radial-glow" />
       <HaloBackground />
 
-      <div className="relative mx-auto flex min-h-screen max-w-md flex-col justify-between px-6 py-14 md:max-w-lg">
+      <div className="relative mx-auto flex min-h-screen max-w-md flex-col px-6 py-14 md:max-w-lg">
         <div>
           <div className="mb-8">
             <span className="text-[11px] font-semibold uppercase tracking-wider2 text-mutedDark">
@@ -33,7 +33,13 @@ export default function WelcomePage() {
           <div className="mt-10 h-px w-16 bg-gradient-to-r from-gold/60 to-transparent" />
         </div>
 
-        <div className="mt-10 flex flex-col gap-3">
+        <div className="flex flex-1 items-center justify-center py-10">
+          <span className="font-display text-4xl tracking-wide text-ivory md:text-[2.75rem]">
+            Luxury<span className="text-gold-gradient italic">Connect</span>
+          </span>
+        </div>
+
+        <div className="flex flex-col gap-3">
           <Link to="/login">
             <Button full>Se connecter</Button>
           </Link>
