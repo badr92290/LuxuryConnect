@@ -1,12 +1,13 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { Button } from "../../components/ui";
+import { HaloBackground } from "../../components/HaloBackground";
 
 export default function WelcomePage() {
   return (
     <div className="relative min-h-screen overflow-hidden bg-background">
       <div className="pointer-events-none absolute inset-0 bg-radial-glow" />
-      <div className="pointer-events-none absolute left-1/2 top-0 h-[560px] w-[560px] -translate-x-1/2 rounded-full bg-gold/5 blur-[120px]" />
+      <HaloBackground />
 
       <div className="relative mx-auto flex min-h-screen max-w-md flex-col justify-between px-6 py-14 md:max-w-lg">
         <div>
