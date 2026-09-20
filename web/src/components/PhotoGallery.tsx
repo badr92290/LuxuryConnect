@@ -33,7 +33,7 @@ export function PhotoGallery({ photos }: { photos: { id: string; imageUrl: strin
           onClick={() => setZoomed(null)}
         >
           <button
-            className="absolute right-6 top-6 text-muted transition-colors hover:text-ivory"
+            className="absolute right-4 top-4 flex h-11 w-11 items-center justify-center rounded-full text-muted transition-colors hover:bg-surface hover:text-ivory"
             aria-label="Fermer"
           >
             <IconX className="h-6 w-6" />

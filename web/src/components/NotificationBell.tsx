@@ -75,12 +75,13 @@ export function NotificationBell() {
     <div className="relative" ref={panelRef}>
       <button
         onClick={() => setOpen((v) => !v)}
-        className="relative rounded-lg p-2 text-muted transition-colors hover:bg-surfaceAlt hover:text-ivory"
-        aria-label="Notifications"
+        className="relative flex h-11 w-11 items-center justify-center rounded-lg text-muted transition-colors hover:bg-surfaceAlt hover:text-ivory"
+        aria-label={unread > 0 ? `Notifications, ${unread} non lues` : "Notifications"}
+        aria-expanded={open}
       >
         <IconBell className="h-5 w-5" />
         {unread > 0 && (
-          <span className="absolute right-1 top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-gold px-1 text-[10px] font-bold text-background">
+          <span className="absolute right-1.5 top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-gold px-1 text-[10px] font-bold text-background">
             {unread > 9 ? "9+" : unread}
           </span>
         )}

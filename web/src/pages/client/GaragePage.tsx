@@ -146,8 +146,8 @@ export default function GaragePage() {
               </div>
               <button
                 onClick={() => remove(vehicle)}
-                className="shrink-0 text-mutedDark transition-colors hover:text-danger"
-                aria-label="Supprimer le véhicule"
+                className="-mr-1.5 -mt-1.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-muted transition-colors hover:bg-surfaceAlt hover:text-danger"
+                aria-label={`Supprimer ${vehicle.make} ${vehicle.model} du garage`}
               >
                 <IconTrash className="h-4 w-4" />
               </button>

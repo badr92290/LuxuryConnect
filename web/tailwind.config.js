@@ -29,7 +29,8 @@ export default {
         accent: "#C9A876",
         ivory: "#F6F2EA",
         muted: "#9A968D",
-        mutedDark: "#6E6A62",
+        // 4.53:1 sur les surfaces, 4.84:1 sur le fond — conforme AA pour du texte.
+        mutedDark: "#827D74",
         success: "#5CB88A",
         danger: "#D97462",
       },

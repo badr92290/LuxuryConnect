@@ -54,3 +54,27 @@ body {
 .hairline {
   border-color: #232328;
 }
+
+/* Anneau de focus visible sur tout élément atteignable au clavier.
+   Posé globalement pour qu'aucun contrôle n'y échappe. */
+a:focus-visible,
+button:focus-visible,
+select:focus-visible,
+[tabindex]:focus-visible,
+[role="button"]:focus-visible {
+  outline: 2px solid #c9a876;
+  outline-offset: 2px;
+}
+
+/* Le système peut demander moins de mouvement : on neutralise animations
+   et transitions au lieu de les imposer. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

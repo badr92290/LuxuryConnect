@@ -63,7 +63,7 @@ export function PhotoPicker({
             <button
               type="button"
               onClick={() => onChange(photos.filter((_, index) => index !== i))}
-              className="absolute right-1.5 top-1.5 rounded-full bg-background/80 p-1 text-mutedDark backdrop-blur transition-colors hover:text-danger"
+              className="absolute right-1 top-1 flex h-8 w-8 items-center justify-center rounded-full bg-background/80 text-muted backdrop-blur transition-colors hover:text-danger"
               aria-label="Retirer la photo"
             >
               <IconX className="h-3.5 w-3.5" />
