@@ -5,10 +5,9 @@ import { PhotoPicker } from "../../components/PhotoPicker";
 import { VehiclePicker } from "../../components/VehiclePicker";
 import { IconCar } from "../../components/icons";
 import { api, ApiError } from "../../api/client";
-import { ServiceType, SERVICE_LABELS, Vehicle } from "../../types";
+import { OFFERED_SERVICES, SERVICE_LABELS, ServiceType, Vehicle } from "../../types";
 import { useToast } from "../../context/ToastContext";
 
-const SERVICES: ServiceType[] = ["PPF", "COVERING", "CERAMIC", "TINT", "POLISH"];
 
 export default function NewRequestPage() {
   const navigate = useNavigate();
@@ -18,7 +17,7 @@ export default function NewRequestPage() {
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [vehicleId, setVehicleId] = useState<string | null>(params.get("vehicleId"));
 
-  const [serviceType, setServiceType] = useState<ServiceType>("PPF");
+  const [serviceType, setServiceType] = useState<ServiceType>("PPF_SATIN");
   const [vehicleMake, setVehicleMake] = useState("");
   const [vehicleModel, setVehicleModel] = useState("");
   const [vehicleYear, setVehicleYear] = useState("");
@@ -84,7 +83,7 @@ export default function NewRequestPage() {
 
       <form onSubmit={handleSubmit}>
         <Select label="Prestation souhaitée" value={serviceType} onChange={(e) => setServiceType(e.target.value as ServiceType)}>
-          {SERVICES.map((s) => (
+          {OFFERED_SERVICES.map((s) => (
             <option key={s} value={s}>
               {SERVICE_LABELS[s]}
             </option>

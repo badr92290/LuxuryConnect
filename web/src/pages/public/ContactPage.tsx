@@ -5,7 +5,7 @@ import { PageMeta } from "../../seo/PageMeta";
 import { CONTACT_EMAIL } from "../../seo/siteConfig";
 import { Button, ErrorText, Input, Select, Textarea } from "../../components/ui";
 import { api, ApiError } from "../../api/client";
-import { SERVICE_LABELS, ServiceType } from "../../types";
+import { OFFERED_SERVICES, SERVICE_LABELS } from "../../types";
 import { trackEvent } from "../../lib/analytics";
 
 type Fields = {
@@ -201,7 +201,7 @@ export default function ContactPage() {
             onChange={(e) => set("serviceType", e.target.value)}
           >
             <option value="">Je ne sais pas encore</option>
-            {(Object.keys(SERVICE_LABELS) as ServiceType[]).map((key) => (
+            {OFFERED_SERVICES.map((key) => (
               <option key={key} value={key}>
                 {SERVICE_LABELS[key]}
               </option>

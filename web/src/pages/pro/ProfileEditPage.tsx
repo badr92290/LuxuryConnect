@@ -1,14 +1,13 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { api, ApiError } from "../../api/client";
 import { useAuth } from "../../context/AuthContext";
-import { ProfessionalProfile, ServiceType, SERVICE_LABELS } from "../../types";
+import { OFFERED_SERVICES, ProfessionalProfile, SERVICE_LABELS, ServiceType } from "../../types";
 import { Badge, Button, Card, Checkbox, Input, SectionLabel, Textarea } from "../../components/ui";
 import { PhotoPicker } from "../../components/PhotoPicker";
 import { TrustBadges } from "../../components/TrustBadges";
 import { fileUrl } from "../../api/client";
 import { useToast } from "../../context/ToastContext";
 
-const SERVICES: ServiceType[] = ["PPF", "COVERING", "CERAMIC", "TINT", "POLISH"];
 
 export default function ProfileEditPage() {
   const { user, logout } = useAuth();
@@ -24,7 +23,7 @@ export default function ProfileEditPage() {
   const [yearsExperience, setYearsExperience] = useState("");
   const [savingProfile, setSavingProfile] = useState(false);
 
-  const [serviceType, setServiceType] = useState<ServiceType>("PPF");
+  const [serviceType, setServiceType] = useState<ServiceType>("PPF_SATIN");
   const [priceFrom, setPriceFrom] = useState("");
   const [savingService, setSavingService] = useState(false);
 
@@ -241,7 +240,7 @@ export default function ProfileEditPage() {
               onChange={(e) => setServiceType(e.target.value as ServiceType)}
               className="w-full rounded-xl border border-border bg-surface px-4 py-2.5 text-white"
             >
-              {SERVICES.map((s) => (
+              {OFFERED_SERVICES.map((s) => (
                 <option key={s} value={s}>
                   {SERVICE_LABELS[s]}
                 </option>

@@ -7,6 +7,7 @@ import { Button } from "../../components/ui";
 /** Quelques portes de sortie valent mieux qu'un renvoi silencieux vers l'accueil. */
 const SUGGESTIONS = [
   { to: "/", label: "Accueil" },
+  { to: "/assistance", label: "Assistance" },
   { to: "/contact", label: "Nous contacter" },
   { to: "/login", label: "Se connecter" },
 ];

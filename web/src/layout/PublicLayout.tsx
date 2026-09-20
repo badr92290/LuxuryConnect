@@ -4,6 +4,7 @@ import { CONTACT_EMAIL, SITE_NAME } from "../seo/siteConfig";
 
 /** Liens de bas de page, partagés par toutes les pages publiques. */
 const FOOTER_LINKS = [
+  { to: "/assistance", label: "Assistance" },
   { to: "/contact", label: "Nous contacter" },
   { to: "/cgu", label: "Conditions générales" },
   { to: "/confidentialite", label: "Confidentialité & RGPD" },

@@ -5,6 +5,7 @@ import { HaloBackground } from "../../components/HaloBackground";
 import { ClientReviews } from "../../components/ClientReviews";
 import { PublicFooter } from "../../layout/PublicLayout";
 import { PageMeta } from "../../seo/PageMeta";
+import { OFFERED_SERVICES, SERVICE_LABELS } from "../../types";
 import { SITE_NAME } from "../../seo/siteConfig";
 import { IconInbox, IconCrown, IconShield, IconSparkle } from "../../components/icons";
 
@@ -26,13 +27,7 @@ const STEPS = [
   },
 ];
 
-const SERVICES = [
-  "PPF — film de protection",
-  "Covering",
-  "Protection céramique",
-  "Vitres teintées",
-  "Lustrage",
-];
+
 
 export default function WelcomePage() {
   return (
@@ -154,12 +149,12 @@ export default function WelcomePage() {
             Nos prestations
           </h2>
           <ul className="mt-8 flex flex-wrap gap-2.5">
-            {SERVICES.map((service) => (
+            {OFFERED_SERVICES.map((service) => (
               <li
                 key={service}
                 className="rounded-full border border-hairline bg-surface px-5 py-2.5 text-sm text-ivory"
               >
-                {service}
+                {SERVICE_LABELS[service]}
               </li>
             ))}
           </ul>

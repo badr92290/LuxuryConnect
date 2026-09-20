@@ -14,10 +14,16 @@ enum Role {
 }
 
 enum ServiceType {
-  PPF
+  PPF_SATIN
+  PPF_COLORED
+  PPF_GLOSS
   COVERING
   CERAMIC
   TINT
+
+  // Valeurs historiques : plus proposées au client, conservées pour que les
+  // demandes déjà enregistrées restent lisibles.
+  PPF
   POLISH
 }
 
@@ -66,6 +72,30 @@ enum NotificationType {
   OFFER_DECLINED
   QUOTE_REMINDER
   CONTACT_LEAD
+  SUPPORT_OPENED
+  SUPPORT_REPLY
+  SUPPORT_REMINDER
+  SUPPORT_ESCALATED
+  SUPPORT_RESOLVED
+}
+
+// Le SAV est la seule partie du service où le client et l'atelier se parlent
+// directement : une fois la prestation réalisée, l'intermédiaire n'a plus de
+// prix à fixer, et faire transiter un défaut constaté par un tiers ne ferait
+// que rallonger le délai. LuxuryConnect reste joignable en renfort.
+enum SupportTicketStatus {
+  OPEN // ouvert par le client, l'atelier n'a pas encore répondu
+  IN_PROGRESS // l'atelier a répondu, l'échange est en cours
+  ESCALATED // l'assistance LuxuryConnect a été appelée en renfort
+  RESOLVED // clos par le client ou par l'assistance
+}
+
+enum SupportTicketReason {
+  DEFECT // défaut constaté sur la pose
+  WARRANTY // mise en jeu de la garantie
+  APPOINTMENT // rendez-vous, retouche, planning
+  INVOICE // facture, paiement
+  OTHER
 }
 
 model User {
@@ -82,10 +112,12 @@ model User {
 
   professionalProfile ProfessionalProfile?
 
-  quoteRequests    QuoteRequest[] @relation("ClientQuoteRequests")
-  bookingsAsClient Booking[]      @relation("ClientBookings")
-  reviewsWritten   Review[]       @relation("ClientReviews")
-  vehicles         Vehicle[]      @relation("ClientVehicles")
+  quoteRequests    QuoteRequest[]   @relation("ClientQuoteRequests")
+  bookingsAsClient Booking[]        @relation("ClientBookings")
+  reviewsWritten   Review[]         @relation("ClientReviews")
+  supportTickets   SupportTicket[]  @relation("ClientTickets")
+  supportMessages  SupportMessage[] @relation("SupportMessages")
+  vehicles         Vehicle[]        @relation("ClientVehicles")
 
   conversationsAsA Conversation[] @relation("ConversationA")
   conversationsAsB Conversation[] @relation("ConversationB")
@@ -123,17 +155,17 @@ model Notification {
 }
 
 model ProfessionalProfile {
-  id            String   @id @default(uuid())
-  userId        String   @unique
-  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id            String  @id @default(uuid())
+  userId        String  @unique
+  user          User    @relation(fields: [userId], references: [id], onDelete: Cascade)
   businessName  String
   description   String?
   address       String?
   city          String?
   latitude      Float?
   longitude     Float?
-  averageRating Float    @default(0)
-  reviewCount   Int      @default(0)
+  averageRating Float   @default(0)
+  reviewCount   Int     @default(0)
 
   // Gages de confiance affichés au client
   isInsured       Boolean @default(false)
@@ -142,20 +174,21 @@ model ProfessionalProfile {
 
   // Site vitrine du professionnel, d'où sont importées ses réalisations.
   // L'import n'a lieu que si le professionnel a confirmé détenir les droits.
-  websiteUrl              String?
-  websiteRightsConfirmed  Boolean   @default(false)
-  websiteImportedAt       DateTime?
+  websiteUrl             String?
+  websiteRightsConfirmed Boolean   @default(false)
+  websiteImportedAt      DateTime?
 
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  services         ProfessionalService[]
-  portfolioImages  PortfolioImage[]
-  quoteForwards    QuoteForward[]
-  quotes           Quote[]
-  bookings         Booking[]              @relation("ProBookings")
-  reviews          Review[]               @relation("ProReviews")
-  selectedForRequests QuoteRequest[]      @relation("SelectedProfessional")
+  services            ProfessionalService[]
+  portfolioImages     PortfolioImage[]
+  quoteForwards       QuoteForward[]
+  quotes              Quote[]
+  bookings            Booking[]             @relation("ProBookings")
+  reviews             Review[]              @relation("ProReviews")
+  supportTickets      SupportTicket[]       @relation("ProTickets")
+  selectedForRequests QuoteRequest[]        @relation("SelectedProfessional")
 }
 
 model ProfessionalService {
@@ -209,28 +242,28 @@ model QuoteRequestPhoto {
 }
 
 model QuoteRequest {
-  id          String             @id @default(uuid())
+  id          String      @id @default(uuid())
   clientId    String
-  client      User               @relation("ClientQuoteRequests", fields: [clientId], references: [id], onDelete: Cascade)
+  client      User        @relation("ClientQuoteRequests", fields: [clientId], references: [id], onDelete: Cascade)
   serviceType ServiceType
 
   // Le véhicule est recopié sur la demande (historique figé) et peut pointer
   // vers une fiche du garage quand le client en a sélectionné une.
-  vehicleId   String?
-  vehicle     Vehicle?           @relation(fields: [vehicleId], references: [id], onDelete: SetNull)
-  vehicleMake String
+  vehicleId    String?
+  vehicle      Vehicle?           @relation(fields: [vehicleId], references: [id], onDelete: SetNull)
+  vehicleMake  String
   vehicleModel String
-  vehicleYear Int?
-  description String?
-  city        String?
-  status      QuoteRequestStatus @default(PENDING_REVIEW)
+  vehicleYear  Int?
+  description  String?
+  city         String?
+  status       QuoteRequestStatus @default(PENDING_REVIEW)
 
   // Fixés par l'admin lors de la finalisation
   selectedProfessionalId String?
   selectedProfessional   ProfessionalProfile? @relation("SelectedProfessional", fields: [selectedProfessionalId], references: [id])
-  finalPrice              Float?
-  finalMessage             String?
-  adminNote                String?
+  finalPrice             Float?
+  finalMessage           String?
+  adminNote              String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -281,7 +314,65 @@ model Booking {
   createdAt      DateTime            @default(now())
   updatedAt      DateTime            @updatedAt
 
-  review Review?
+  review         Review?
+  supportTickets SupportTicket[]
+}
+
+// Dossier de service après-vente, rattaché à une prestation réalisée.
+// Le fil de discussion lui est propre : il relie directement le client et
+// l'atelier, alors que le modèle `Conversation` relie toujours quelqu'un à
+// l'intermédiaire.
+model SupportTicket {
+  id             String              @id @default(uuid())
+  bookingId      String
+  booking        Booking             @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  clientId       String
+  client         User                @relation("ClientTickets", fields: [clientId], references: [id], onDelete: Cascade)
+  professionalId String
+  professional   ProfessionalProfile @relation("ProTickets", fields: [professionalId], references: [id], onDelete: Cascade)
+
+  reason  SupportTicketReason
+  subject String
+  status  SupportTicketStatus @default(OPEN)
+
+  // Horodatages qui pilotent l'automatisation : relance de l'atelier resté
+  // muet, escalade vers l'assistance, clôture.
+  firstResponseAt DateTime?
+  lastReminderAt  DateTime?
+  escalatedAt     DateTime?
+  resolvedAt      DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  messages SupportMessage[]
+  photos   SupportTicketPhoto[]
+
+  @@index([status, createdAt])
+  @@index([professionalId, status])
+}
+
+model SupportMessage {
+  id        String        @id @default(uuid())
+  ticketId  String
+  ticket    SupportTicket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  senderId  String
+  sender    User          @relation("SupportMessages", fields: [senderId], references: [id], onDelete: Cascade)
+  content   String
+  // Message posté par le système (ouverture, relance, escalade) plutôt que
+  // par une personne : affiché différemment dans le fil.
+  isSystem  Boolean       @default(false)
+  createdAt DateTime      @default(now())
+
+  @@index([ticketId, createdAt])
+}
+
+model SupportTicketPhoto {
+  id        String        @id @default(uuid())
+  ticketId  String
+  ticket    SupportTicket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  imageUrl  String
+  createdAt DateTime      @default(now())
 }
 
 model Review {

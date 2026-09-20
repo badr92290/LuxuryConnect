@@ -35,17 +35,23 @@ import PrivacyPage from "./pages/public/PrivacyPage";
 import TermsPage from "./pages/public/TermsPage";
 import ContactPage from "./pages/public/ContactPage";
 import NotFoundPage from "./pages/public/NotFoundPage";
+import HelpPage from "./pages/public/HelpPage";
+
+import SupportListPage from "./pages/shared/SupportListPage";
+import SupportTicketPage from "./pages/shared/SupportTicketPage";
+import NewSupportTicketPage from "./pages/client/NewSupportTicketPage";
 
 import MessagesPage from "./pages/shared/MessagesPage";
 import ChatPage from "./pages/shared/ChatPage";
 
-import { IconPlus, IconList, IconCalendar, IconMessage, IconUser, IconInbox, IconContacts, IconChart, IconCar, IconStar, IconMail } from "./components/icons";
+import { IconPlus, IconList, IconCalendar, IconMessage, IconUser, IconInbox, IconContacts, IconChart, IconCar, IconStar, IconMail, IconLifebuoy } from "./components/icons";
 
 const CLIENT_NAV: NavItem[] = [
   { to: "/app/requests/new", label: "Nouvelle demande", icon: IconPlus },
   { to: "/app/requests", label: "Mes demandes", icon: IconList },
   { to: "/app/garage", label: "Mon garage", icon: IconCar },
   { to: "/app/bookings", label: "Réservations", icon: IconCalendar },
+  { to: "/app/sav", label: "Service après-vente", icon: IconLifebuoy },
   { to: "/app/messages", label: "Messages", icon: IconMessage },
   { to: "/app/profile", label: "Profil", icon: IconUser },
 ];
@@ -53,6 +59,7 @@ const CLIENT_NAV: NavItem[] = [
 const PRO_NAV: NavItem[] = [
   { to: "/pro/requests", label: "Demandes", icon: IconList },
   { to: "/pro/bookings", label: "Réservations", icon: IconCalendar },
+  { to: "/pro/sav", label: "Service après-vente", icon: IconLifebuoy },
   { to: "/pro/messages", label: "Messages", icon: IconMessage },
   { to: "/pro/profile", label: "Profil", icon: IconUser },
 ];
@@ -64,6 +71,7 @@ const ADMIN_NAV: NavItem[] = [
   { to: "/admin/agenda", label: "Agenda", icon: IconContacts },
   { to: "/admin/bookings", label: "Réservations", icon: IconCalendar },
   { to: "/admin/reviews", label: "Avis clients", icon: IconStar },
+  { to: "/admin/sav", label: "Assistance SAV", icon: IconLifebuoy },
   { to: "/admin/messages", label: "Messages", icon: IconMessage },
 ];
 
@@ -104,6 +112,7 @@ function AppRoutes() {
       <Route path="/register" element={<PublicOnly><RegisterPage /></PublicOnly>} />
 
       {/* Pages publiques accessibles connecté comme déconnecté. */}
+      <Route path="/assistance" element={<HelpPage />} />
       <Route path="/contact" element={<ContactPage />} />
       <Route path="/cgu" element={<TermsPage />} />
       <Route path="/confidentialite" element={<PrivacyPage />} />
@@ -123,6 +132,9 @@ function AppRoutes() {
         <Route path="garage" element={<GaragePage />} />
         <Route path="bookings" element={<BookingsPage />} />
         <Route path="bookings/:bookingId/review" element={<LeaveReviewPage />} />
+        <Route path="bookings/:bookingId/sav" element={<NewSupportTicketPage />} />
+        <Route path="sav" element={<SupportListPage basePath="/app" />} />
+        <Route path="sav/:ticketId" element={<SupportTicketPage basePath="/app" />} />
         <Route path="messages" element={<MessagesPage basePath="/app" />} />
         <Route path="messages/:conversationId" element={<ChatPage basePath="/app" />} />
         <Route path="profile" element={<ProfilePage />} />
@@ -140,6 +152,8 @@ function AppRoutes() {
         <Route path="requests" element={<ProRequestsPage />} />
         <Route path="requests/:requestId" element={<ProRequestDetailPage />} />
         <Route path="bookings" element={<ProBookingsPage />} />
+        <Route path="sav" element={<SupportListPage basePath="/pro" />} />
+        <Route path="sav/:ticketId" element={<SupportTicketPage basePath="/pro" />} />
         <Route path="messages" element={<MessagesPage basePath="/pro" />} />
         <Route path="messages/:conversationId" element={<ChatPage basePath="/pro" />} />
         <Route path="profile" element={<ProfileEditPage />} />
@@ -160,6 +174,8 @@ function AppRoutes() {
         <Route path="bookings" element={<AdminBookingsPage />} />
         <Route path="reviews" element={<AdminReviewsPage />} />
         <Route path="leads" element={<AdminLeadsPage />} />
+        <Route path="sav" element={<SupportListPage basePath="/admin" />} />
+        <Route path="sav/:ticketId" element={<SupportTicketPage basePath="/admin" />} />
         <Route path="messages" element={<MessagesPage basePath="/admin" />} />
         <Route path="messages/:conversationId" element={<ChatPage basePath="/admin" />} />
       </Route>

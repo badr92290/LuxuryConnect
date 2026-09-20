@@ -48,9 +48,10 @@ async function main() {
       latitude: 45.764043,
       longitude: 4.835659,
       services: [
-        { serviceType: ServiceType.PPF, priceFrom: 890 },
+        { serviceType: ServiceType.PPF_GLOSS, priceFrom: 890 },
+        { serviceType: ServiceType.PPF_SATIN, priceFrom: 990 },
         { serviceType: ServiceType.COVERING, priceFrom: 1200 },
-        { serviceType: ServiceType.POLISH, priceFrom: 150 },
+        { serviceType: ServiceType.PPF_COLORED, priceFrom: 1290 },
       ],
       portfolio: [
         { imageUrl: "https://picsum.photos/seed/autoshine1/800/600", caption: "PPF capot avant/après", isBeforeAfter: true },
@@ -69,7 +70,7 @@ async function main() {
       longitude: 2.288334,
       services: [
         { serviceType: ServiceType.CERAMIC, priceFrom: 650 },
-        { serviceType: ServiceType.POLISH, priceFrom: 180 },
+        { serviceType: ServiceType.PPF_SATIN, priceFrom: 1050 },
         { serviceType: ServiceType.TINT, priceFrom: 220 },
       ],
       portfolio: [
@@ -89,7 +90,7 @@ async function main() {
       longitude: 5.402857,
       services: [
         { serviceType: ServiceType.TINT, priceFrom: 180 },
-        { serviceType: ServiceType.POLISH, priceFrom: 120 },
+        { serviceType: ServiceType.PPF_GLOSS, priceFrom: 940 },
         { serviceType: ServiceType.CERAMIC, priceFrom: 600 },
       ],
       portfolio: [
@@ -108,7 +109,7 @@ async function main() {
       longitude: -0.57918,
       services: [
         { serviceType: ServiceType.COVERING, priceFrom: 1100 },
-        { serviceType: ServiceType.PPF, priceFrom: 950 },
+        { serviceType: ServiceType.PPF_COLORED, priceFrom: 1350 },
       ],
       portfolio: [
         { imageUrl: "https://picsum.photos/seed/wrapstudio1/800/600", caption: "Covering vert chrome" },
@@ -176,7 +177,7 @@ async function main() {
   await prisma.quoteRequest.create({
     data: {
       clientId: client1.id,
-      serviceType: ServiceType.PPF,
+      serviceType: ServiceType.PPF_GLOSS,
       vehicleMake: "Peugeot",
       vehicleModel: "308",
       vehicleYear: 2022,
@@ -248,7 +249,7 @@ async function main() {
   const completedRequest = await prisma.quoteRequest.create({
     data: {
       clientId: client2.id,
-      serviceType: ServiceType.PPF,
+      serviceType: ServiceType.PPF_GLOSS,
       vehicleMake: "BMW",
       vehicleModel: "Serie 1",
       vehicleYear: 2023,
@@ -307,7 +308,7 @@ async function main() {
   const pastReviews = [
     {
       firstName: "Karim", lastName: "Benali", email: "karim.b@example.com",
-      service: ServiceType.PPF, make: "Porsche", model: "911 (992)", year: 2022,
+      service: ServiceType.PPF_SATIN, make: "Porsche", model: "911 (992)", year: 2022,
       city: "Lyon", pro: proLyon, proPrice: 2400, finalPrice: 2790, rating: 5,
       daysAgo: 12,
       comment: "Le devis est arrivé en deux jours, un seul prix, pas de marchandage. L'atelier proposé faisait exactement ce que je cherchais.",
@@ -335,7 +336,7 @@ async function main() {
     },
     {
       firstName: "Nicolas", lastName: "Perrot", email: "nicolas.p@example.com",
-      service: ServiceType.POLISH, make: "Mercedes-Benz", model: "Classe C", year: 2019,
+      service: ServiceType.PPF_COLORED, make: "Mercedes-Benz", model: "Classe C", year: 2019,
       city: "Lyon", pro: proLyon, proPrice: 280, finalPrice: 390, rating: 5,
       daysAgo: 73,
       comment: "Micro-rayures parties, la peinture a retrouvé sa profondeur. Le fait de n'avoir qu'un interlocuteur change vraiment tout.",
@@ -411,6 +412,48 @@ async function main() {
       data: { averageRating: stats._avg.rating ?? 0, reviewCount: stats._count.rating },
     });
   }
+
+  console.log("Dossier SAV de démonstration (client <-> atelier, en direct)...");
+  // Le SAV est le seul endroit où le client et l'atelier échangent sans
+  // passer par l'intermédiaire : on en sème un pour que l'écran ne soit pas vide.
+  const savTicket = await prisma.supportTicket.create({
+    data: {
+      bookingId: booking.id,
+      clientId: client2.id,
+      professionalId: proLyon.id,
+      reason: "DEFECT",
+      subject: "Léger décollement du film sur le pare-chocs avant",
+      status: "IN_PROGRESS",
+      firstResponseAt: new Date(Date.now() - 20 * 3600 * 1000),
+      messages: {
+        create: [
+          {
+            senderId: client2.id,
+            content:
+              "Bonjour, j'ai constaté un léger décollement du film sur l'angle du pare-chocs avant, " +
+              "côté conducteur. Est-ce que cela se reprend sous garantie ?",
+            createdAt: new Date(Date.now() - 26 * 3600 * 1000),
+          },
+          {
+            senderId: client2.id,
+            isSystem: true,
+            content:
+              "Dossier ouvert auprès de Auto Shine Lyon. Vos échanges sont directs. " +
+              "LuxuryConnect peut être appelé en renfort à tout moment.",
+            createdAt: new Date(Date.now() - 26 * 3600 * 1000),
+          },
+          {
+            senderId: professionals[0].id,
+            content:
+              "Bonjour, oui c'est couvert par la garantie pose. Passez quand vous voulez cette semaine, " +
+              "comptez une heure sur place.",
+            createdAt: new Date(Date.now() - 20 * 3600 * 1000),
+          },
+        ],
+      },
+    },
+  });
+  console.log(`  dossier SAV : ${savTicket.subject}`);
 
   console.log("Création des conversations (client <-> admin, pro <-> admin)...");
   function pairId(a: string, b: string): [string, string] {

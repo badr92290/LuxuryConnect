@@ -15,6 +15,7 @@ import adminRoutes from "./routes/admin";
 import vehicleRoutes from "./routes/vehicles";
 import notificationRoutes from "./routes/notifications";
 import contactRoutes from "./routes/contact";
+import supportRoutes from "./routes/support";
 import { registerChatSockets } from "./sockets/chat";
 import { UPLOAD_DIR } from "./utils/uploads";
 import { startReminderJob } from "./jobs/reminders";
@@ -62,6 +63,7 @@ app.use("/conversations", conversationRoutes);
 app.use("/vehicles", vehicleRoutes);
 app.use("/notifications", notificationRoutes);
 app.use("/contact", contactRoutes);
+app.use("/support", supportRoutes);
 app.use("/admin", adminRoutes);
 
 app.use((err: any, _req: express.Request, res: express.Response, _next: express.NextFunction) => {

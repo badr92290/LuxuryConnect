@@ -13,6 +13,12 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://luxuryconnect.fr/assistance</loc>
+    <lastmod>2026-09-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
     <loc>https://luxuryconnect.fr/cgu</loc>
     <lastmod>2026-09-20</lastmod>
     <changefreq>yearly</changefreq>

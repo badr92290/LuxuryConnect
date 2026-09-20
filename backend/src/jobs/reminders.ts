@@ -1,5 +1,6 @@
 import { prisma } from "../prisma";
 import { notify, notifyAdmins } from "../utils/notify";
+import { runSupportAutomation } from "./support";
 
 const REMINDER_AFTER_DAYS = 2;
 const CHECK_INTERVAL_MS = 60 * 60 * 1000;
@@ -56,12 +57,18 @@ export async function sendQuoteReminders() {
 }
 
 export function startReminderJob() {
-  const run = () =>
-    sendQuoteReminders()
-      .then((sent) => {
-        if (sent > 0) console.log(`Relances envoyées : ${sent}`);
-      })
-      .catch((err) => console.error("Échec des relances :", err));
+  const run = async () => {
+    try {
+      const sent = await sendQuoteReminders();
+      if (sent > 0) console.log(`Relances devis envoyées : ${sent}`);
+
+      const { reminded, escalated } = await runSupportAutomation();
+      if (reminded > 0) console.log(`Ateliers relancés sur un SAV : ${reminded}`);
+      if (escalated > 0) console.log(`Dossiers SAV remontés à l'assistance : ${escalated}`);
+    } catch (err) {
+      console.error("Échec des traitements automatiques :", err);
+    }
+  };
 
   run();
   setInterval(run, CHECK_INTERVAL_MS);

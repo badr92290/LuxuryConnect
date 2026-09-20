@@ -45,10 +45,20 @@ export default function BookingsPage() {
             <p className="mt-1 text-sm text-muted">
               Rendez-vous le {new Date(b.scheduledAt).toLocaleDateString("fr-FR")} · {b.price} €
             </p>
-            {b.status === "COMPLETED" && !b.review && (
-              <Button variant="secondary" className="mt-3" onClick={() => navigate(`/app/bookings/${b.id}/review`)}>
-                Laisser un avis
-              </Button>
+            {b.status === "COMPLETED" && (
+              <div className="mt-4 flex flex-wrap gap-2">
+                {!b.review && (
+                  <Button
+                    variant="secondary"
+                    onClick={() => navigate(`/app/bookings/${b.id}/review`)}
+                  >
+                    Laisser un avis
+                  </Button>
+                )}
+                <Button variant="secondary" onClick={() => navigate(`/app/bookings/${b.id}/sav`)}>
+                  Un souci ? Ouvrir un dossier SAV
+                </Button>
+              </div>
             )}
           </Card>
         ))}
