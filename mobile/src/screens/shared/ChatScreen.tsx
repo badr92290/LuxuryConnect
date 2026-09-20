@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { FlatList, KeyboardAvoidingView, Platform, StyleSheet, Text, View } from "react-native";
 import { io, Socket } from "socket.io-client";
-import { colors, radius, spacing } from "../../theme/colors";
+import { colors, fonts, radius, spacing } from "../../theme/colors";
 import { Input, Button, Screen } from "../../components/ui";
 import { api, getToken } from "../../api/client";
 import { API_BASE_URL } from "../../api/config";
@@ -64,7 +64,7 @@ export default function ChatScreen({ route, navigation }: Props) {
           ref={listRef}
           data={messages}
           keyExtractor={(m) => m.id}
-          contentContainerStyle={{ padding: spacing.md, gap: spacing.sm }}
+          contentContainerStyle={{ padding: spacing.gutter, gap: spacing.sm }}
           onContentSizeChange={() => listRef.current?.scrollToEnd({ animated: true })}
           renderItem={({ item }) => {
             const mine = item.senderId === user?.id;
@@ -102,7 +102,7 @@ const styles = StyleSheet.create({
     alignSelf: "flex-start",
   },
   textMine: { color: colors.background },
-  textTheirs: { color: colors.text },
+  textTheirs: { fontFamily: fonts.body, color: colors.text },
   inputRow: {
     flexDirection: "row",
     alignItems: "center",

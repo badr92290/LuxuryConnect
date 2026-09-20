@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
-import { colors, spacing } from "../../theme/colors";
+import { colors, fonts, spacing } from "../../theme/colors";
 import { Button, Input, Screen } from "../../components/ui";
 import { api, ApiError } from "../../api/client";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
@@ -30,7 +30,7 @@ export default function LeaveReviewScreen({ route, navigation }: Props) {
 
   return (
     <Screen>
-      <View style={{ padding: spacing.md }}>
+      <View style={{ padding: spacing.gutter }}>
         <Text style={styles.title}>Laisser un avis</Text>
         <Text style={styles.subtitle}>{businessName}</Text>
 
@@ -60,9 +60,9 @@ export default function LeaveReviewScreen({ route, navigation }: Props) {
 }
 
 const styles = StyleSheet.create({
-  title: { fontSize: 22, fontWeight: "700", color: colors.text },
-  subtitle: { color: colors.textMuted, marginBottom: spacing.lg },
+  title: { fontFamily: fonts.display, fontSize: 28, color: colors.text },
+  subtitle: { fontFamily: fonts.body, color: colors.textMuted, marginBottom: spacing.lg },
   stars: { flexDirection: "row", gap: spacing.sm, marginBottom: spacing.lg },
-  star: { fontSize: 36 },
+  star: { fontFamily: fonts.body, fontSize: 36 },
   error: { color: colors.danger, marginBottom: spacing.md },
 });

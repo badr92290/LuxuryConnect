@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { FlatList, Pressable, StyleSheet, Text, View } from "react-native";
 import { api } from "../api/client";
-import { colors, radius, spacing } from "../theme/colors";
+import { colors, fonts, radius, spacing } from "../theme/colors";
 import { SERVICE_LABELS, ServiceType } from "../types";
 import { StarRating } from "./ui";
 
@@ -126,11 +126,11 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     marginBottom: spacing.md,
   },
-  title: { fontSize: 16, fontWeight: "600", color: colors.text },
+  title: { fontFamily: fonts.display, fontSize: 16, color: colors.text },
   score: { flexDirection: "row", alignItems: "baseline", gap: 5, flexShrink: 1 },
-  average: { fontSize: 20, fontWeight: "700", color: colors.text },
-  outOf: { fontSize: 11, color: colors.textMuted },
-  count: { fontSize: 11, color: colors.textMuted, letterSpacing: 0.6 },
+  average: { fontFamily: fonts.bodyBold, fontSize: 20, color: colors.text },
+  outOf: { fontFamily: fonts.body, fontSize: 11, color: colors.textMuted },
+  count: { fontFamily: fonts.body, fontSize: 11, color: colors.textMuted, letterSpacing: 0.6 },
   list: { gap: spacing.md, paddingRight: spacing.md },
   stripCard: { width: 256 },
   card: {
@@ -143,13 +143,15 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   quote: {
+    fontFamily: fonts.body,
     fontSize: 14,
     lineHeight: 21,
     fontStyle: "italic",
     color: colors.text,
   },
-  author: { fontSize: 13, fontWeight: "700", color: colors.text },
+  author: { fontFamily: fonts.bodyBold, fontSize: 13, color: colors.text },
   meta: {
+    fontFamily: fonts.body,
     marginTop: 3,
     fontSize: 10,
     letterSpacing: 0.7,
@@ -157,5 +159,5 @@ const styles = StyleSheet.create({
     color: colors.textMuted,
   },
   seeAll: { marginTop: spacing.md, alignSelf: "flex-start", paddingVertical: 6 },
-  seeAllText: { fontSize: 13, fontWeight: "600", color: colors.primary },
+  seeAllText: { fontFamily: fonts.bodySemi, fontSize: 13, color: colors.primary },
 });

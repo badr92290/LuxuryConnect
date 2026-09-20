@@ -10,6 +10,25 @@ export const SERVICE_LABELS: Record<ServiceType, string> = {
   POLISH: "Lustrage",
 };
 
+export type QuoteRequestStatus =
+  | "PENDING_REVIEW"
+  | "FORWARDED"
+  | "QUOTED"
+  | "FINALIZED"
+  | "ACCEPTED"
+  | "DECLINED"
+  | "CANCELLED";
+
+export const QUOTE_REQUEST_STATUS_LABELS: Record<QuoteRequestStatus, string> = {
+  PENDING_REVIEW: "En attente de traitement",
+  FORWARDED: "Transmise à des professionnels",
+  QUOTED: "Devis reçus",
+  FINALIZED: "Offre finale envoyée",
+  ACCEPTED: "Réservée",
+  DECLINED: "Refusée",
+  CANCELLED: "Annulée",
+};
+
 export interface User {
   id: string;
   email: string;
@@ -62,7 +81,8 @@ export interface QuoteRequest {
   vehicleModel: string;
   vehicleYear?: number | null;
   description?: string | null;
-  status: "PENDING" | "QUOTED" | "ACCEPTED" | "DECLINED" | "CANCELLED";
+  status: QuoteRequestStatus;
+  finalPrice?: number | null;
   createdAt: string;
   professional?: { businessName: string };
   client?: { firstName: string; lastName: string; phone?: string | null };
@@ -85,6 +105,7 @@ export interface Booking {
   quoteRequestId: string;
   clientId: string;
   professionalId: string;
+  price: number;
   scheduledAt: string;
   status: "CONFIRMED" | "COMPLETED" | "CANCELLED";
   professional?: { businessName: string };

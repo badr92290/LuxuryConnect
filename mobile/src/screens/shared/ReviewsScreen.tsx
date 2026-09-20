@@ -2,7 +2,7 @@ import React from "react";
 import { FlatList, StyleSheet, Text, View } from "react-native";
 import { Screen, StarRating } from "../../components/ui";
 import { ReviewCard, usePublicReviews } from "../../components/ClientReviews";
-import { colors, spacing } from "../../theme/colors";
+import { colors, fonts, spacing } from "../../theme/colors";
 
 /** Liste complète des avis publiés, accessible depuis l'accueil et le profil. */
 export default function ReviewsScreen() {
@@ -44,12 +44,23 @@ export default function ReviewsScreen() {
 const styles = StyleSheet.create({
   list: { padding: spacing.lg, gap: spacing.md },
   header: { marginBottom: spacing.sm },
-  title: { fontSize: 24, fontWeight: "600", color: colors.text },
-  subtitle: { marginTop: spacing.sm, fontSize: 14, lineHeight: 21, color: colors.textMuted },
+  title: { fontFamily: fonts.display, fontSize: 24, color: colors.text },
+  subtitle: {
+    fontFamily: fonts.body,
+    marginTop: spacing.sm,
+    fontSize: 14,
+    lineHeight: 21,
+    color: colors.textMuted,
+  },
   score: { flexDirection: "row", alignItems: "center", gap: 8, marginTop: spacing.md },
-  average: { fontSize: 30, fontWeight: "700", color: colors.text },
-  outOf: { fontSize: 12, color: colors.textMuted },
-  count: { fontSize: 11, letterSpacing: 0.7, color: colors.textMuted },
+  average: { fontFamily: fonts.bodyBold, fontSize: 30, color: colors.text },
+  outOf: { fontFamily: fonts.body, fontSize: 12, color: colors.textMuted },
+  count: { fontFamily: fonts.body, fontSize: 11, letterSpacing: 0.7, color: colors.textMuted },
   card: { minHeight: 150 },
-  empty: { textAlign: "center", color: colors.textMuted, paddingVertical: spacing.xl },
+  empty: {
+    fontFamily: fonts.body,
+    textAlign: "center",
+    color: colors.textMuted,
+    paddingVertical: spacing.xl,
+  },
 });

@@ -8,7 +8,7 @@ import {
   Text,
   View,
 } from "react-native";
-import { colors, radius, spacing } from "../../theme/colors";
+import { colors, fonts, radius, spacing } from "../../theme/colors";
 import { Badge, Input, Screen, StarRating } from "../../components/ui";
 import { api } from "../../api/client";
 import { ProfessionalProfile, ServiceType, SERVICE_LABELS } from "../../types";
@@ -78,7 +78,7 @@ export default function SearchScreen({ navigation }: Props) {
       <FlatList
         data={professionals}
         keyExtractor={(p) => p.id}
-        contentContainerStyle={{ padding: spacing.md, gap: spacing.md }}
+        contentContainerStyle={{ padding: spacing.gutter, gap: spacing.md }}
         refreshControl={<RefreshControl refreshing={loading} onRefresh={load} tintColor={colors.primary} />}
         ListEmptyComponent={
           !loading ? <Text style={styles.empty}>Aucun professionnel trouvé pour ces critères.</Text> : null
@@ -113,32 +113,25 @@ export default function SearchScreen({ navigation }: Props) {
 
 const styles = StyleSheet.create({
   header: {
-    padding: spacing.md,
+    paddingHorizontal: spacing.gutter,
+    paddingTop: spacing.lg,
     gap: spacing.sm,
   },
-  title: {
-    fontSize: 22,
-    fontWeight: "700",
-    color: colors.text,
-    marginBottom: spacing.xs,
-  },
+  title: { fontFamily: fonts.display, fontSize: 28, color: colors.text, marginBottom: spacing.xs },
   chip: {
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: colors.hairline,
+    backgroundColor: colors.surface,
     borderRadius: radius.full,
-    paddingHorizontal: spacing.md,
-    paddingVertical: 8,
+    paddingHorizontal: spacing.lg,
+    paddingVertical: 9,
     marginRight: spacing.sm,
   },
   chipActive: {
     backgroundColor: colors.primary,
     borderColor: colors.primary,
   },
-  chipText: {
-    color: colors.textMuted,
-    fontSize: 13,
-    fontWeight: "600",
-  },
+  chipText: { fontFamily: fonts.bodySemi, color: colors.textMuted, fontSize: 13 },
   chipTextActive: {
     color: colors.background,
   },
@@ -147,8 +140,8 @@ const styles = StyleSheet.create({
     backgroundColor: colors.surface,
     borderRadius: radius.lg,
     borderWidth: 1,
-    borderColor: colors.border,
-    padding: spacing.sm,
+    borderColor: colors.hairline,
+    padding: spacing.md,
     gap: spacing.md,
   },
   image: {
@@ -157,20 +150,9 @@ const styles = StyleSheet.create({
     borderRadius: radius.md,
     backgroundColor: colors.surfaceAlt,
   },
-  businessName: {
-    color: colors.text,
-    fontSize: 16,
-    fontWeight: "700",
-  },
-  city: {
-    color: colors.textMuted,
-    fontSize: 13,
-    marginTop: 2,
-  },
-  reviewCount: {
-    color: colors.textMuted,
-    fontSize: 12,
-  },
+  businessName: { fontFamily: fonts.bodyBold, color: colors.text, fontSize: 16 },
+  city: { fontFamily: fonts.body, color: colors.textMuted, fontSize: 13, marginTop: 2 },
+  reviewCount: { fontFamily: fonts.body, color: colors.textMuted, fontSize: 12 },
   badgeRow: {
     flexDirection: "row",
     flexWrap: "wrap",
@@ -178,6 +160,7 @@ const styles = StyleSheet.create({
     marginTop: spacing.xs,
   },
   empty: {
+    fontFamily: fonts.body,
     color: colors.textMuted,
     textAlign: "center",
     marginTop: spacing.xl,

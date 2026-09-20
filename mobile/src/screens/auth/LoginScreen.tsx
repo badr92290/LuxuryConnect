@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import { StyleSheet, Text, View, KeyboardAvoidingView, Platform, ScrollView } from "react-native";
-import { colors, spacing } from "../../theme/colors";
-import { Button, Input, Screen } from "../../components/ui";
+import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, View } from "react-native";
+import { colors, fonts, spacing } from "../../theme/colors";
+import { Button, ErrorText, Input, Screen, Subtitle, Title, Wordmark } from "../../components/ui";
 import { HaloBackground } from "../../components/HaloBackground";
 import { useAuth } from "../../context/AuthContext";
 import { ApiError } from "../../api/client";
@@ -31,10 +31,18 @@ export default function LoginScreen({ navigation }: Props) {
 
   return (
     <Screen>
-      <HaloBackground />
-      <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : undefined} style={{ flex: 1 }}>
-        <ScrollView contentContainerStyle={styles.container}>
-          <Text style={styles.title}>Connexion</Text>
+      <HaloBackground opacity={0.45} />
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
+        style={{ flex: 1 }}
+      >
+        <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
+          <View style={styles.mark}>
+            <Wordmark size={19} />
+          </View>
+
+          <Title>Connexion</Title>
+          <Subtitle style={styles.lede}>Accédez à votre espace.</Subtitle>
 
           <Input
             label="Email"
@@ -52,19 +60,24 @@ export default function LoginScreen({ navigation }: Props) {
             placeholder="••••••••"
           />
 
-          {error && <Text style={styles.error}>{error}</Text>}
+          {error && <ErrorText>{error}</ErrorText>}
 
           <Button title="Se connecter" onPress={handleSubmit} loading={loading} />
 
-          <Text style={styles.link} onPress={() => navigation.navigate("Register", { role: "CLIENT" })}>
-            Pas encore de compte ? Créer un compte client
-          </Text>
-          <Text
-            style={styles.link}
-            onPress={() => navigation.navigate("Register", { role: "PROFESSIONAL" })}
-          >
-            Vous êtes un professionnel ? Créer un compte pro
-          </Text>
+          <View style={styles.footer}>
+            <Text
+              style={styles.linkGold}
+              onPress={() => navigation.navigate("Register", { role: "CLIENT" })}
+            >
+              Pas encore de compte ? Créer un compte client
+            </Text>
+            <Text
+              style={styles.linkMuted}
+              onPress={() => navigation.navigate("Register", { role: "PROFESSIONAL" })}
+            >
+              Vous êtes un professionnel ? Créer un compte pro
+            </Text>
+          </View>
         </ScrollView>
       </KeyboardAvoidingView>
     </Screen>
@@ -72,23 +85,26 @@ export default function LoginScreen({ navigation }: Props) {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    padding: spacing.lg,
-    paddingTop: 80,
+  container: { flexGrow: 1, justifyContent: "center", padding: spacing.lg, paddingVertical: 56 },
+  mark: { marginBottom: spacing.xl },
+  lede: { marginTop: 4, marginBottom: spacing.xl },
+  footer: {
+    marginTop: spacing.xl,
+    paddingTop: spacing.lg,
+    borderTopWidth: 1,
+    borderTopColor: colors.hairline,
+    gap: spacing.sm,
   },
-  title: {
-    fontSize: 26,
-    fontWeight: "700",
-    color: colors.text,
-    marginBottom: spacing.lg,
-  },
-  error: {
-    color: colors.danger,
-    marginBottom: spacing.md,
-  },
-  link: {
+  linkGold: {
+    fontFamily: fonts.body,
+    fontSize: 14,
     color: colors.primary,
-    marginTop: spacing.lg,
+    textAlign: "center",
+  },
+  linkMuted: {
+    fontFamily: fonts.body,
+    fontSize: 14,
+    color: colors.textMuted,
     textAlign: "center",
   },
 });

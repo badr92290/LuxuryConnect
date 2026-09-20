@@ -1,7 +1,7 @@
 import React from "react";
 import { ActivityIndicator, View } from "react-native";
 import { NavigationContainer, DarkTheme } from "@react-navigation/native";
-import { colors } from "../theme/colors";
+import { colors, fonts } from "../theme/colors";
 import { useAuth } from "../context/AuthContext";
 import AuthNavigator from "./AuthNavigator";
 import ClientNavigator from "./ClientNavigator";
@@ -12,10 +12,17 @@ const navTheme = {
   colors: {
     ...DarkTheme.colors,
     background: colors.background,
-    card: colors.background,
+    card: colors.surface,
     text: colors.text,
-    border: colors.border,
+    border: colors.hairline,
     primary: colors.primary,
+  },
+  fonts: {
+    ...DarkTheme.fonts,
+    regular: { fontFamily: fonts.body, fontWeight: "400" as const },
+    medium: { fontFamily: fonts.bodyMedium, fontWeight: "500" as const },
+    bold: { fontFamily: fonts.bodySemi, fontWeight: "600" as const },
+    heavy: { fontFamily: fonts.bodyBold, fontWeight: "700" as const },
   },
 };
 

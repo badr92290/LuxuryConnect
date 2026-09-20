@@ -2,9 +2,9 @@ import React from "react";
 import { StyleSheet, View } from "react-native";
 import { colors } from "../theme/colors";
 
-export function HaloBackground() {
+export function HaloBackground({ opacity = 1 }: { opacity?: number } = {}) {
   return (
-    <View style={styles.wrap} pointerEvents="none">
+    <View style={[styles.wrap, { opacity }]} pointerEvents="none">
       <View style={[styles.circle, styles.glow]} />
       <View style={[styles.circle, styles.ringOuter]} />
       <View style={[styles.circle, styles.ringMid]} />

@@ -1,17 +1,24 @@
 import React, { useCallback, useState } from "react";
 import { FlatList, RefreshControl, StyleSheet, Text, View } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
-import { colors, radius, spacing } from "../../theme/colors";
-import { Badge, Button, Card, Screen } from "../../components/ui";
+import { colors, fonts, spacing } from "../../theme/colors";
+import { Badge, Button, Card, EmptyState, Screen, Title } from "../../components/ui";
 import { api } from "../../api/client";
-import { QuoteRequest, SERVICE_LABELS } from "../../types";
+import {
+  QuoteRequest,
+  QuoteRequestStatus,
+  QUOTE_REQUEST_STATUS_LABELS,
+  SERVICE_LABELS,
+} from "../../types";
 
-const STATUS_LABELS: Record<QuoteRequest["status"], string> = {
-  PENDING: "En attente de devis",
-  QUOTED: "Devis reçu",
-  ACCEPTED: "Réservé",
-  DECLINED: "Refusée",
-  CANCELLED: "Annulée",
+const TONE: Record<QuoteRequestStatus, "primary" | "muted" | "success" | "danger"> = {
+  PENDING_REVIEW: "muted",
+  FORWARDED: "muted",
+  QUOTED: "primary",
+  FINALIZED: "primary",
+  ACCEPTED: "success",
+  DECLINED: "danger",
+  CANCELLED: "danger",
 };
 
 export default function MyQuotesScreen() {
@@ -35,11 +42,13 @@ export default function MyQuotesScreen() {
     }, [load])
   );
 
-  async function acceptQuote(quoteRequestId: string, quoteId: string) {
-    setAcceptingId(quoteId);
+  // L'offre finale vient de LuxuryConnect : le client accepte un prix,
+  // jamais le devis d'un atelier en particulier.
+  async function acceptOffer(quoteRequestId: string) {
+    setAcceptingId(quoteRequestId);
     try {
       const scheduledAt = new Date(Date.now() + 3 * 24 * 3600 * 1000).toISOString();
-      await api.post(`/quote-requests/${quoteRequestId}/quotes/${quoteId}/accept`, { scheduledAt });
+      await api.post(`/quote-requests/${quoteRequestId}/accept`, { scheduledAt });
       await load();
     } finally {
       setAcceptingId(null);
@@ -48,46 +57,40 @@ export default function MyQuotesScreen() {
 
   return (
     <Screen>
-      <View style={styles.header}>
-        <Text style={styles.title}>Mes demandes de devis</Text>
-      </View>
       <FlatList
         data={quoteRequests}
         keyExtractor={(q) => q.id}
-        contentContainerStyle={{ padding: spacing.md, gap: spacing.md }}
-        refreshControl={<RefreshControl refreshing={loading} onRefresh={load} tintColor={colors.primary} />}
+        contentContainerStyle={{ padding: spacing.gutter, gap: spacing.md }}
+        refreshControl={
+          <RefreshControl refreshing={loading} onRefresh={load} tintColor={colors.primary} />
+        }
+        ListHeaderComponent={<Title style={styles.title}>Mes demandes</Title>}
         ListEmptyComponent={
-          !loading ? <Text style={styles.empty}>Vous n'avez pas encore fait de demande de devis.</Text> : null
+          !loading ? (
+            <EmptyState message="Vous n'avez pas encore fait de demande de devis." />
+          ) : null
         }
         renderItem={({ item }) => (
           <Card>
             <View style={styles.rowBetween}>
-              <Text style={styles.businessName}>{item.professional?.businessName}</Text>
-              <Badge label={STATUS_LABELS[item.status]} />
+              <Text style={styles.service}>{SERVICE_LABELS[item.serviceType]}</Text>
+              <Badge label={QUOTE_REQUEST_STATUS_LABELS[item.status]} tone={TONE[item.status]} />
             </View>
             <Text style={styles.meta}>
-              {SERVICE_LABELS[item.serviceType]} · {item.vehicleMake} {item.vehicleModel}
+              {item.vehicleMake} {item.vehicleModel}
               {item.vehicleYear ? ` (${item.vehicleYear})` : ""}
             </Text>
-            {item.quotes && item.quotes.length > 0 && (
-              <View style={{ marginTop: spacing.sm, gap: spacing.sm }}>
-                {item.quotes.map((q) => (
-                  <View key={q.id} style={styles.quoteRow}>
-                    <View style={{ flex: 1 }}>
-                      <Text style={styles.price}>{q.price} €</Text>
-                      {q.message && <Text style={styles.quoteMessage}>{q.message}</Text>}
-                    </View>
-                    {item.status === "QUOTED" && (
-                      <Button
-                        title="Accepter"
-                        onPress={() => acceptQuote(item.id, q.id)}
-                        loading={acceptingId === q.id}
-                        style={{ paddingVertical: 8, paddingHorizontal: spacing.md }}
-                      />
-                    )}
-                  </View>
-                ))}
-              </View>
+
+            {item.status === "FINALIZED" && item.finalPrice != null && (
+              <>
+                <Text style={styles.offer}>Offre reçue : {item.finalPrice} €</Text>
+                <Button
+                  title="Accepter l'offre"
+                  onPress={() => acceptOffer(item.id)}
+                  loading={acceptingId === item.id}
+                  style={{ marginTop: spacing.md }}
+                />
+              </>
             )}
           </Card>
         )}
@@ -97,20 +100,14 @@ export default function MyQuotesScreen() {
 }
 
 const styles = StyleSheet.create({
-  header: { padding: spacing.md, paddingBottom: 0 },
-  title: { fontSize: 22, fontWeight: "700", color: colors.text },
-  rowBetween: { flexDirection: "row", justifyContent: "space-between", alignItems: "center" },
-  businessName: { color: colors.text, fontWeight: "700", fontSize: 16 },
-  meta: { color: colors.textMuted, marginTop: 4 },
-  quoteRow: {
+  title: { marginBottom: spacing.md },
+  rowBetween: {
     flexDirection: "row",
+    justifyContent: "space-between",
     alignItems: "center",
-    backgroundColor: colors.surfaceAlt,
-    borderRadius: radius.md,
-    padding: spacing.sm,
-    gap: spacing.sm,
+    gap: spacing.md,
   },
-  price: { color: colors.primary, fontWeight: "700", fontSize: 16 },
-  quoteMessage: { color: colors.textMuted, fontSize: 13, marginTop: 2 },
-  empty: { color: colors.textMuted, textAlign: "center", marginTop: spacing.xl },
+  service: { fontFamily: fonts.bodySemi, color: colors.text, fontSize: 15, flexShrink: 1 },
+  meta: { fontFamily: fonts.body, color: colors.textMuted, fontSize: 14, marginTop: 6 },
+  offer: { fontFamily: fonts.bodySemi, color: colors.primary, fontSize: 14, marginTop: 10 },
 });

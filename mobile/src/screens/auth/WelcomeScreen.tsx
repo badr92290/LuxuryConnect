@@ -1,6 +1,6 @@
 import React from "react";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
-import { colors, spacing } from "../../theme/colors";
+import { colors, eyebrow, fonts, spacing } from "../../theme/colors";
 import { Button, Screen } from "../../components/ui";
 import { HaloBackground } from "../../components/HaloBackground";
 import { ClientReviewsStrip } from "../../components/ClientReviews";
@@ -66,27 +66,20 @@ const styles = StyleSheet.create({
     paddingTop: 100,
     paddingBottom: 50,
   },
-  eyebrow: {
-    fontSize: 11,
-    fontWeight: "700",
-    letterSpacing: 1.2,
-    color: colors.textMuted,
-    marginBottom: spacing.md,
-  },
+  eyebrow: { ...eyebrow, color: colors.primary, marginBottom: spacing.md },
   headline: {
-    fontSize: 32,
-    lineHeight: 38,
-    fontWeight: "600",
+    fontFamily: fonts.display,
+    fontSize: 34,
+    lineHeight: 40,
+    letterSpacing: -0.8,
     color: colors.text,
   },
-  headlineAccent: {
-    color: colors.primary,
-    fontStyle: "italic",
-  },
+  headlineAccent: { fontFamily: fonts.displayItalic, color: colors.primary },
   tagline: {
+    fontFamily: fonts.body,
     fontSize: 15,
     color: colors.textMuted,
-    lineHeight: 22,
+    lineHeight: 23,
     marginTop: spacing.md,
   },
   wordmarkWrap: {
@@ -101,14 +94,11 @@ const styles = StyleSheet.create({
     right: 0,
     textAlign: "center",
     transform: [{ translateY: -40 }],
-    fontSize: 28,
-    fontWeight: "500",
+    fontFamily: fonts.display,
+    fontSize: 27,
     color: colors.text,
   },
-  wordmarkAccent: {
-    color: colors.primary,
-    fontStyle: "italic",
-  },
+  wordmarkAccent: { fontFamily: fonts.displayItalic, color: colors.primary },
   actions: {
     width: "100%",
     marginTop: spacing.xl,

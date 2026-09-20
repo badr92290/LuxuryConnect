@@ -1,8 +1,8 @@
 import React, { useCallback, useState } from "react";
 import { FlatList, RefreshControl, StyleSheet, Text, View } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
-import { colors, spacing } from "../../theme/colors";
-import { Badge, Button, Card, Screen } from "../../components/ui";
+import { colors, fonts, spacing } from "../../theme/colors";
+import { Badge, Button, Card, EmptyState, Screen, Title } from "../../components/ui";
 import { api } from "../../api/client";
 import { Booking } from "../../types";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
@@ -43,22 +43,24 @@ export default function MyBookingsScreen({ navigation }: Props) {
 
   return (
     <Screen>
-      <View style={styles.header}>
-        <Text style={styles.title}>Mes réservations</Text>
-      </View>
       <FlatList
         data={bookings}
         keyExtractor={(b) => b.id}
-        contentContainerStyle={{ padding: spacing.md, gap: spacing.md }}
+        contentContainerStyle={{ padding: spacing.gutter, gap: spacing.md }}
         refreshControl={<RefreshControl refreshing={loading} onRefresh={load} tintColor={colors.primary} />}
-        ListEmptyComponent={!loading ? <Text style={styles.empty}>Aucune réservation pour le moment.</Text> : null}
+        ListHeaderComponent={<Title style={styles.title}>Mes réservations</Title>}
+        ListEmptyComponent={
+          !loading ? <EmptyState message="Aucune réservation pour le moment." /> : null
+        }
         renderItem={({ item }) => (
           <Card>
             <View style={styles.rowBetween}>
               <Text style={styles.businessName}>{item.professional?.businessName}</Text>
               <Badge label={STATUS_LABELS[item.status]} />
             </View>
-            <Text style={styles.meta}>Rendez-vous le {new Date(item.scheduledAt).toLocaleDateString("fr-FR")}</Text>
+            <Text style={styles.meta}>
+              Rendez-vous le {new Date(item.scheduledAt).toLocaleDateString("fr-FR")} · {item.price} €
+            </Text>
             {item.status === "COMPLETED" && !item.review && (
               <Button
                 title="Laisser un avis"
@@ -80,10 +82,13 @@ export default function MyBookingsScreen({ navigation }: Props) {
 }
 
 const styles = StyleSheet.create({
-  header: { padding: spacing.md, paddingBottom: 0 },
-  title: { fontSize: 22, fontWeight: "700", color: colors.text },
-  rowBetween: { flexDirection: "row", justifyContent: "space-between", alignItems: "center" },
-  businessName: { color: colors.text, fontWeight: "700", fontSize: 16 },
-  meta: { color: colors.textMuted, marginTop: 4 },
-  empty: { color: colors.textMuted, textAlign: "center", marginTop: spacing.xl },
+  title: { marginBottom: spacing.md },
+  rowBetween: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    gap: spacing.md,
+  },
+  businessName: { fontFamily: fonts.bodySemi, color: colors.text, fontSize: 15, flexShrink: 1 },
+  meta: { fontFamily: fonts.body, color: colors.textMuted, fontSize: 14, marginTop: 6 },
 });

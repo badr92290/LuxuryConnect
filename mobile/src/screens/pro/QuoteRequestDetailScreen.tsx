@@ -1,7 +1,7 @@
 import React, { useCallback, useState } from "react";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
-import { colors, spacing } from "../../theme/colors";
+import { colors, fonts, spacing } from "../../theme/colors";
 import { Badge, Button, Card, Input, Screen } from "../../components/ui";
 import { api } from "../../api/client";
 import { QuoteRequest, SERVICE_LABELS } from "../../types";
@@ -48,7 +48,7 @@ export default function QuoteRequestDetailScreen({ route }: Props) {
 
   return (
     <Screen>
-      <ScrollView contentContainerStyle={{ padding: spacing.md, gap: spacing.md }}>
+      <ScrollView contentContainerStyle={{ padding: spacing.gutter, gap: spacing.md }}>
         <Card>
           <Text style={styles.clientName}>
             {quoteRequest.client?.firstName} {quoteRequest.client?.lastName}
@@ -77,7 +77,7 @@ export default function QuoteRequestDetailScreen({ route }: Props) {
           </View>
         )}
 
-        {quoteRequest.status === "PENDING" || quoteRequest.status === "QUOTED" ? (
+        {quoteRequest.status === "FORWARDED" || quoteRequest.status === "QUOTED" ? (
           <View>
             <Text style={styles.sectionTitle}>Proposer un devis</Text>
             <Input label="Prix (€)" value={price} onChangeText={setPrice} keyboardType="decimal-pad" placeholder="890" />
@@ -98,9 +98,9 @@ export default function QuoteRequestDetailScreen({ route }: Props) {
 }
 
 const styles = StyleSheet.create({
-  clientName: { color: colors.text, fontWeight: "700", fontSize: 18 },
-  meta: { color: colors.textMuted, marginTop: 4 },
-  description: { color: colors.text, marginTop: spacing.sm },
-  sectionTitle: { color: colors.text, fontSize: 16, fontWeight: "700" },
-  price: { color: colors.primary, fontWeight: "700", fontSize: 18 },
+  clientName: { fontFamily: fonts.bodyBold, color: colors.text, fontSize: 18 },
+  meta: { fontFamily: fonts.body, color: colors.textMuted, marginTop: 4 },
+  description: { fontFamily: fonts.body, color: colors.text, marginTop: spacing.sm },
+  sectionTitle: { fontFamily: fonts.display, color: colors.text, fontSize: 20 },
+  price: { fontFamily: fonts.bodyBold, color: colors.primary, fontSize: 18 },
 });

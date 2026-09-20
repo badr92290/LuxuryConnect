@@ -1,8 +1,14 @@
 import React from "react";
-import { Text } from "react-native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { colors } from "../theme/colors";
+import { stackScreenOptions, tabScreenOptions } from "./screenOptions";
+import {
+  IconCalendar,
+  IconInbox,
+  IconMessage,
+  IconUser,
+  type IconProps,
+} from "../components/icons";
 import RequestsScreen from "../screens/pro/RequestsScreen";
 import ProBookingsScreen from "../screens/pro/ProBookingsScreen";
 import ProProfileScreen from "../screens/pro/ProProfileScreen";
@@ -14,25 +20,23 @@ import type { ProTabParamList, ProStackParamList } from "./types";
 const Tab = createBottomTabNavigator<ProTabParamList>();
 const Stack = createNativeStackNavigator<ProStackParamList>();
 
-const TAB_ICONS: Record<keyof ProTabParamList, string> = {
-  Requests: "📋",
-  ProBookings: "📅",
-  Messages: "💬",
-  ProProfile: "👤",
+const TAB_ICONS: Record<keyof ProTabParamList, React.ComponentType<IconProps>> = {
+  Requests: IconInbox,
+  ProBookings: IconCalendar,
+  Messages: IconMessage,
+  ProProfile: IconUser,
 };
 
 function ProTabs() {
   return (
     <Tab.Navigator
-      screenOptions={({ route }) => ({
-        headerStyle: { backgroundColor: colors.background },
-        headerTintColor: colors.text,
-        headerShadowVisible: false,
-        tabBarStyle: { backgroundColor: colors.surface, borderTopColor: colors.border },
-        tabBarActiveTintColor: colors.primary,
-        tabBarInactiveTintColor: colors.textMuted,
-        tabBarIcon: () => <Text style={{ fontSize: 18 }}>{TAB_ICONS[route.name]}</Text>,
-      })}
+      screenOptions={({ route }) => {
+        const Icon = TAB_ICONS[route.name];
+        return {
+          ...tabScreenOptions,
+          tabBarIcon: ({ color }) => <Icon size={21} color={color} />,
+        };
+      }}
     >
       <Tab.Screen name="Requests" component={RequestsScreen} options={{ title: "Demandes" }} />
       <Tab.Screen name="ProBookings" component={ProBookingsScreen} options={{ title: "Réservations" }} />
@@ -45,11 +49,7 @@ function ProTabs() {
 export default function ProNavigator() {
   return (
     <Stack.Navigator
-      screenOptions={{
-        headerStyle: { backgroundColor: colors.background },
-        headerTintColor: colors.text,
-        headerShadowVisible: false,
-      }}
+      screenOptions={stackScreenOptions}
     >
       <Stack.Screen name="ProTabs" component={ProTabs} options={{ headerShown: false }} />
       <Stack.Screen

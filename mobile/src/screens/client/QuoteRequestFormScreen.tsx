@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
-import { colors, radius, spacing } from "../../theme/colors";
+import { colors, eyebrow, fonts, radius, spacing } from "../../theme/colors";
 import { Button, Input, Screen } from "../../components/ui";
 import { api, ApiError } from "../../api/client";
 import { ServiceType, SERVICE_LABELS } from "../../types";
@@ -47,8 +47,7 @@ export default function QuoteRequestFormScreen({ route, navigation }: Props) {
 
   return (
     <Screen>
-      <ScrollView contentContainerStyle={{ padding: spacing.md }}>
-        <Text style={styles.title}>Demande de devis</Text>
+      <ScrollView contentContainerStyle={{ padding: spacing.gutter }}>
         <Text style={styles.subtitle}>Auprès de {businessName}</Text>
 
         <Text style={styles.label}>Prestation souhaitée</Text>
@@ -93,19 +92,19 @@ export default function QuoteRequestFormScreen({ route, navigation }: Props) {
 }
 
 const styles = StyleSheet.create({
-  title: { fontSize: 22, fontWeight: "700", color: colors.text },
-  subtitle: { color: colors.textMuted, marginBottom: spacing.lg },
-  label: { color: colors.textMuted, fontSize: 13, marginBottom: spacing.sm },
+  subtitle: { fontFamily: fonts.body, fontSize: 14, color: colors.textMuted, marginBottom: spacing.lg },
+  label: { ...eyebrow, color: colors.textMuted, marginBottom: spacing.sm },
   serviceGrid: { flexDirection: "row", flexWrap: "wrap", gap: spacing.sm, marginBottom: spacing.md },
   serviceOption: {
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: colors.hairline,
+    backgroundColor: colors.surface,
     borderRadius: radius.full,
     paddingHorizontal: spacing.md,
     paddingVertical: 8,
   },
   serviceOptionActive: { backgroundColor: colors.primary, borderColor: colors.primary },
-  serviceText: { color: colors.textMuted, fontSize: 13, fontWeight: "600" },
+  serviceText: { fontFamily: fonts.bodySemi, color: colors.textMuted, fontSize: 13 },
   serviceTextActive: { color: colors.background },
-  error: { color: colors.danger, marginBottom: spacing.md },
+  error: { fontFamily: fonts.body, fontSize: 14, color: colors.danger, marginBottom: spacing.md },
 });

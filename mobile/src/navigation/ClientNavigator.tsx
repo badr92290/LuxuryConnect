@@ -1,8 +1,15 @@
 import React from "react";
-import { Text } from "react-native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { colors } from "../theme/colors";
+import { stackScreenOptions, tabScreenOptions } from "./screenOptions";
+import {
+  IconCalendar,
+  IconList,
+  IconMessage,
+  IconSearch,
+  IconUser,
+  type IconProps,
+} from "../components/icons";
 import SearchScreen from "../screens/client/SearchScreen";
 import MyQuotesScreen from "../screens/client/MyQuotesScreen";
 import MyBookingsScreen from "../screens/client/MyBookingsScreen";
@@ -18,26 +25,24 @@ import type { ClientTabParamList, ClientStackParamList } from "./types";
 const Tab = createBottomTabNavigator<ClientTabParamList>();
 const Stack = createNativeStackNavigator<ClientStackParamList>();
 
-const TAB_ICONS: Record<keyof ClientTabParamList, string> = {
-  Search: "🔍",
-  MyQuotes: "📋",
-  MyBookings: "📅",
-  Messages: "💬",
-  Profile: "👤",
+const TAB_ICONS: Record<keyof ClientTabParamList, React.ComponentType<IconProps>> = {
+  Search: IconSearch,
+  MyQuotes: IconList,
+  MyBookings: IconCalendar,
+  Messages: IconMessage,
+  Profile: IconUser,
 };
 
 function ClientTabs() {
   return (
     <Tab.Navigator
-      screenOptions={({ route }) => ({
-        headerStyle: { backgroundColor: colors.background },
-        headerTintColor: colors.text,
-        headerShadowVisible: false,
-        tabBarStyle: { backgroundColor: colors.surface, borderTopColor: colors.border },
-        tabBarActiveTintColor: colors.primary,
-        tabBarInactiveTintColor: colors.textMuted,
-        tabBarIcon: () => <Text style={{ fontSize: 18 }}>{TAB_ICONS[route.name]}</Text>,
-      })}
+      screenOptions={({ route }) => {
+        const Icon = TAB_ICONS[route.name];
+        return {
+          ...tabScreenOptions,
+          tabBarIcon: ({ color }) => <Icon size={21} color={color} />,
+        };
+      }}
     >
       <Tab.Screen name="Search" component={SearchScreen} options={{ title: "Recherche" }} />
       <Tab.Screen name="MyQuotes" component={MyQuotesScreen} options={{ title: "Devis" }} />
@@ -51,11 +56,7 @@ function ClientTabs() {
 export default function ClientNavigator() {
   return (
     <Stack.Navigator
-      screenOptions={{
-        headerStyle: { backgroundColor: colors.background },
-        headerTintColor: colors.text,
-        headerShadowVisible: false,
-      }}
+      screenOptions={stackScreenOptions}
     >
       <Stack.Screen name="ClientTabs" component={ClientTabs} options={{ headerShown: false }} />
       <Stack.Screen

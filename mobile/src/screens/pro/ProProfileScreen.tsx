@@ -1,7 +1,7 @@
 import React, { useCallback, useState } from "react";
 import { Image, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
-import { colors, radius, spacing } from "../../theme/colors";
+import { colors, fonts, radius, spacing } from "../../theme/colors";
 import { Badge, Button, Card, Input, Screen } from "../../components/ui";
 import { api } from "../../api/client";
 import { useAuth } from "../../context/AuthContext";
@@ -87,7 +87,7 @@ export default function ProProfileScreen() {
 
   return (
     <Screen>
-      <ScrollView contentContainerStyle={{ padding: spacing.md, gap: spacing.lg }}>
+      <ScrollView contentContainerStyle={{ padding: spacing.gutter, gap: spacing.lg }}>
         <Text style={styles.title}>Mon profil professionnel</Text>
 
         <View>
@@ -164,8 +164,13 @@ export default function ProProfileScreen() {
 }
 
 const styles = StyleSheet.create({
-  title: { fontSize: 22, fontWeight: "700", color: colors.text },
-  sectionTitle: { color: colors.text, fontSize: 16, fontWeight: "700", marginBottom: spacing.sm },
+  title: { fontFamily: fonts.display, fontSize: 28, color: colors.text },
+  sectionTitle: {
+    fontFamily: fonts.display,
+    color: colors.text,
+    fontSize: 20,
+    marginBottom: spacing.sm,
+  },
   badgeRow: { flexDirection: "row", flexWrap: "wrap", gap: 6, marginBottom: spacing.sm },
   serviceGrid: { flexDirection: "row", flexWrap: "wrap", gap: spacing.sm, marginBottom: spacing.md },
   serviceOption: {
@@ -176,10 +181,16 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
   },
   serviceOptionActive: { backgroundColor: colors.primary, borderColor: colors.primary },
-  serviceText: { color: colors.textMuted, fontSize: 13, fontWeight: "600" },
+  serviceText: { fontFamily: fonts.bodySemi, color: colors.textMuted, fontSize: 13 },
   serviceTextActive: { color: colors.background },
   portfolioImage: { width: 140, height: 100, borderRadius: radius.md, backgroundColor: colors.surfaceAlt },
-  removeLink: { color: colors.danger, fontSize: 12, marginTop: 4, textAlign: "center" },
-  name: { color: colors.text, fontSize: 16, fontWeight: "700" },
-  meta: { color: colors.textMuted, marginTop: 4 },
+  removeLink: {
+    fontFamily: fonts.body,
+    color: colors.danger,
+    fontSize: 12,
+    marginTop: 4,
+    textAlign: "center",
+  },
+  name: { fontFamily: fonts.bodyBold, color: colors.text, fontSize: 16 },
+  meta: { fontFamily: fonts.body, color: colors.textMuted, marginTop: 4 },
 });

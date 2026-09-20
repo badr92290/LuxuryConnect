@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Image, ScrollView, StyleSheet, Text, View } from "react-native";
-import { colors, radius, spacing } from "../../theme/colors";
+import { colors, fonts, radius, spacing } from "../../theme/colors";
 import { Badge, Button, Card, Screen, StarRating } from "../../components/ui";
 import { api } from "../../api/client";
 import { ProfessionalProfile, SERVICE_LABELS } from "../../types";
@@ -47,7 +47,7 @@ export default function ProfessionalDetailScreen({ route, navigation }: Props) {
 
   return (
     <Screen>
-      <ScrollView contentContainerStyle={{ padding: spacing.md, gap: spacing.md }}>
+      <ScrollView contentContainerStyle={{ padding: spacing.gutter, gap: spacing.md }}>
         <View>
           <Text style={styles.name}>{professional.businessName}</Text>
           <Text style={styles.city}>{professional.city}</Text>
@@ -125,12 +125,12 @@ export default function ProfessionalDetailScreen({ route, navigation }: Props) {
 
 const styles = StyleSheet.create({
   centered: { flex: 1, alignItems: "center", justifyContent: "center" },
-  name: { fontSize: 24, fontWeight: "700", color: colors.text },
-  city: { color: colors.textMuted, marginTop: 2 },
-  reviewCount: { color: colors.textMuted, fontSize: 13 },
-  description: { color: colors.text, lineHeight: 20 },
+  name: { fontFamily: fonts.display, fontSize: 28, letterSpacing: -0.5, color: colors.text },
+  city: { fontFamily: fonts.body, fontSize: 14, color: colors.textMuted, marginTop: 4 },
+  reviewCount: { fontFamily: fonts.body, color: colors.textMuted, fontSize: 13 },
+  description: { fontFamily: fonts.body, fontSize: 15, color: colors.text, lineHeight: 23 },
   badgeRow: { flexDirection: "row", flexWrap: "wrap", gap: 6 },
-  sectionTitle: { color: colors.text, fontSize: 16, fontWeight: "700", marginBottom: spacing.xs },
+  sectionTitle: { fontFamily: fonts.display, color: colors.text, fontSize: 20, marginBottom: spacing.sm },
   portfolioImage: {
     width: 220,
     height: 150,
@@ -139,6 +139,6 @@ const styles = StyleSheet.create({
     backgroundColor: colors.surfaceAlt,
   },
   actions: { marginTop: spacing.sm },
-  reviewAuthor: { color: colors.text, fontWeight: "600" },
-  reviewComment: { color: colors.textMuted, marginTop: 4 },
+  reviewAuthor: { fontFamily: fonts.bodySemi, color: colors.text },
+  reviewComment: { fontFamily: fonts.body, color: colors.textMuted, marginTop: 4 },
 });

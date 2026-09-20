@@ -1,7 +1,7 @@
 import React, { useCallback, useState } from "react";
 import { FlatList, RefreshControl, StyleSheet, Text, View } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
-import { colors, spacing } from "../../theme/colors";
+import { colors, fonts, spacing } from "../../theme/colors";
 import { Badge, Button, Card, Screen } from "../../components/ui";
 import { api } from "../../api/client";
 import { Booking } from "../../types";
@@ -51,7 +51,7 @@ export default function ProBookingsScreen() {
       <FlatList
         data={bookings}
         keyExtractor={(b) => b.id}
-        contentContainerStyle={{ padding: spacing.md, gap: spacing.md }}
+        contentContainerStyle={{ padding: spacing.gutter, gap: spacing.md }}
         refreshControl={<RefreshControl refreshing={loading} onRefresh={load} tintColor={colors.primary} />}
         ListEmptyComponent={!loading ? <Text style={styles.empty}>Aucune réservation pour le moment.</Text> : null}
         renderItem={({ item }) => (
@@ -80,10 +80,15 @@ export default function ProBookingsScreen() {
 }
 
 const styles = StyleSheet.create({
-  header: { padding: spacing.md, paddingBottom: 0 },
-  title: { fontSize: 22, fontWeight: "700", color: colors.text },
+  header: { paddingHorizontal: spacing.gutter, paddingTop: spacing.lg },
+  title: { fontFamily: fonts.display, fontSize: 28, color: colors.text },
   rowBetween: { flexDirection: "row", justifyContent: "space-between", alignItems: "center" },
-  clientName: { color: colors.text, fontWeight: "700", fontSize: 16 },
-  meta: { color: colors.textMuted, marginTop: 4 },
-  empty: { color: colors.textMuted, textAlign: "center", marginTop: spacing.xl },
+  clientName: { fontFamily: fonts.bodyBold, color: colors.text, fontSize: 16 },
+  meta: { fontFamily: fonts.body, color: colors.textMuted, marginTop: 4 },
+  empty: {
+    fontFamily: fonts.body,
+    color: colors.textMuted,
+    textAlign: "center",
+    marginTop: spacing.xl,
+  },
 });

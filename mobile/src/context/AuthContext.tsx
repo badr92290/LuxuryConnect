@@ -10,6 +10,8 @@ interface RegisterInput {
   lastName: string;
   phone?: string;
   businessName?: string;
+  websiteUrl?: string;
+  websiteRightsConfirmed?: boolean;
 }
 
 interface AuthContextValue {

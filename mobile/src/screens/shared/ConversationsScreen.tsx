@@ -1,7 +1,7 @@
 import React, { useCallback, useState } from "react";
 import { FlatList, RefreshControl, StyleSheet, Text, View, Pressable } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
-import { colors, spacing } from "../../theme/colors";
+import { colors, fonts, spacing } from "../../theme/colors";
 import { Screen } from "../../components/ui";
 import { api } from "../../api/client";
 import { useAuth } from "../../context/AuthContext";
@@ -45,7 +45,7 @@ export default function ConversationsScreen({ navigation }: Props) {
       <FlatList
         data={conversations}
         keyExtractor={(c) => c.id}
-        contentContainerStyle={{ padding: spacing.md, gap: spacing.sm }}
+        contentContainerStyle={{ padding: spacing.gutter, gap: spacing.sm }}
         refreshControl={<RefreshControl refreshing={loading} onRefresh={load} tintColor={colors.primary} />}
         ListEmptyComponent={!loading ? <Text style={styles.empty}>Aucune conversation pour le moment.</Text> : null}
         renderItem={({ item }) => {
@@ -72,16 +72,21 @@ export default function ConversationsScreen({ navigation }: Props) {
 }
 
 const styles = StyleSheet.create({
-  header: { padding: spacing.md, paddingBottom: 0 },
-  title: { fontSize: 22, fontWeight: "700", color: colors.text },
+  header: { paddingHorizontal: spacing.gutter, paddingTop: spacing.lg },
+  title: { fontFamily: fonts.display, fontSize: 28, color: colors.text },
   row: {
     backgroundColor: colors.surface,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: colors.hairline,
     padding: spacing.md,
   },
-  name: { color: colors.text, fontWeight: "700", fontSize: 15 },
-  preview: { color: colors.textMuted, marginTop: 4 },
-  empty: { color: colors.textMuted, textAlign: "center", marginTop: spacing.xl },
+  name: { fontFamily: fonts.bodyBold, color: colors.text, fontSize: 15 },
+  preview: { fontFamily: fonts.body, color: colors.textMuted, marginTop: 4 },
+  empty: {
+    fontFamily: fonts.body,
+    color: colors.textMuted,
+    textAlign: "center",
+    marginTop: spacing.xl,
+  },
 });
