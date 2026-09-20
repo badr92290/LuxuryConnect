@@ -121,7 +121,7 @@ export default function AdminRequestDetailPage() {
         {quoteRequest.photos && quoteRequest.photos.length > 0 && (
           <div className="mt-4 border-t border-border pt-4">
             <SectionLabel>Photos envoyées par le client</SectionLabel>
-            <PhotoGallery photos={quoteRequest.photos} />
+            <PhotoGallery photos={quoteRequest.photos} label="Photos jointes à la demande" />
           </div>
         )}
         <Button variant="secondary" className="mt-4" onClick={() => messageUser(quoteRequest.clientId)}>

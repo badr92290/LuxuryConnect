@@ -5,6 +5,7 @@ import { prisma } from "../prisma";
 import { signToken } from "../utils/jwt";
 import { requireAuth, AuthRequest } from "../middleware/auth";
 import { importPortfolioFromWebsite, normalizeWebsiteUrl } from "../services/websiteImport";
+import { authLimiter } from "../middleware/security";
 
 const router = Router();
 
@@ -20,7 +21,7 @@ const registerSchema = z.object({
   websiteRightsConfirmed: z.boolean().optional(),
 });
 
-router.post("/register", async (req, res) => {
+router.post("/register", authLimiter, async (req, res) => {
   const parsed = registerSchema.safeParse(req.body);
   if (!parsed.success) {
     return res.status(400).json({ error: parsed.error.flatten() });
@@ -80,7 +81,7 @@ const loginSchema = z.object({
   password: z.string(),
 });
 
-router.post("/login", async (req, res) => {
+router.post("/login", authLimiter, async (req, res) => {
   const parsed = loginSchema.safeParse(req.body);
   if (!parsed.success) {
     return res.status(400).json({ error: parsed.error.flatten() });

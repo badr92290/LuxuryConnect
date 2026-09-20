@@ -5,6 +5,7 @@ import { useAuth } from "../../context/AuthContext";
 import { ApiError } from "../../api/client";
 import type { Role } from "../../types";
 import { HaloBackground } from "../../components/HaloBackground";
+import { PageMeta } from "../../seo/PageMeta";
 
 export default function RegisterPage() {
   const { register } = useAuth();
@@ -58,6 +59,11 @@ export default function RegisterPage() {
 
   return (
     <div className="relative min-h-screen overflow-hidden bg-background">
+      <PageMeta
+        title="Créer un compte"
+        description="Créez votre compte client ou professionnel et recevez une offre unique et ferme pour la protection de votre véhicule."
+        noIndex
+      />
       <div className="pointer-events-none absolute inset-0 bg-radial-glow" />
       <HaloBackground />
       <div className="relative mx-auto flex min-h-screen max-w-md flex-col justify-center px-6 py-14">

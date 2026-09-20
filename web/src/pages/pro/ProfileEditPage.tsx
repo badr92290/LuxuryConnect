@@ -265,7 +265,20 @@ export default function ProfileEditPage() {
           <div className="mb-5 grid grid-cols-3 gap-2 sm:grid-cols-4">
             {profile.portfolioImages.map((img) => (
               <div key={img.id} className="group relative aspect-square overflow-hidden rounded-xl border border-hairline">
-                <img src={fileUrl(img.imageUrl)} alt={img.caption ?? ""} className="h-full w-full object-cover" />
+                <img
+                  src={fileUrl(img.imageUrl)}
+                  alt={
+                    img.caption?.trim() ||
+                    (img.isBeforeAfter
+                      ? "Réalisation, comparaison avant et après"
+                      : "Réalisation de l'atelier")
+                  }
+                  width={400}
+                  height={400}
+                  loading="lazy"
+                  decoding="async"
+                  className="h-full w-full object-cover"
+                />
                 {img.isBeforeAfter && (
                   <span className="absolute left-1.5 top-1.5 rounded-full bg-background/80 px-2 py-0.5 text-[9px] font-semibold uppercase tracking-wide text-gold backdrop-blur">
                     Avant / après

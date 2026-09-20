@@ -1,0 +1,14 @@
+# LuxuryConnect — règles d'exploration
+User-agent: *
+Allow: /
+
+# Espaces authentifiés : rien d'utile pour un moteur, et des données privées.
+Disallow: /app
+Disallow: /pro
+Disallow: /admin
+
+# /login et /register ne sont volontairement pas bloqués ici : un robot doit
+# pouvoir lire leur balise « noindex ». Une page interdite d'exploration peut
+# rester indexée sur la seule foi des liens qui pointent vers elle.
+
+Sitemap: https://luxuryconnect.fr/sitemap.xml

@@ -89,7 +89,7 @@ export default function RequestDetailPage() {
         {quoteRequest.description && <p className="mt-3 text-sm">{quoteRequest.description}</p>}
         {quoteRequest.photos && quoteRequest.photos.length > 0 && (
           <div className="mt-4">
-            <PhotoGallery photos={quoteRequest.photos} />
+            <PhotoGallery photos={quoteRequest.photos} label="Photos jointes à votre demande" />
           </div>
         )}
       </Card>
@@ -126,7 +126,10 @@ export default function RequestDetailPage() {
                   <SectionLabel>
                     {beforeAfter.length > 0 ? "Ses réalisations avant / après" : "Ses réalisations"}
                   </SectionLabel>
-                  <PhotoGallery photos={showcase} />
+                  <PhotoGallery
+                    photos={showcase}
+                    label={`Réalisations de ${pro.businessName}`}
+                  />
                 </div>
               )}
             </div>

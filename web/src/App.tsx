@@ -2,6 +2,8 @@ import React from "react";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { AuthProvider, useAuth } from "./context/AuthContext";
 import { ToastProvider } from "./context/ToastContext";
+import { CookieBanner } from "./components/CookieBanner";
+import { ScrollToTop } from "./components/ScrollToTop";
 import { AppShell, NavItem } from "./layout/AppShell";
 
 import WelcomePage from "./pages/auth/WelcomePage";
@@ -27,11 +29,17 @@ import AdminRequestDetailPage from "./pages/admin/RequestDetailPage";
 import AdminBookingsPage from "./pages/admin/BookingsPage";
 import AgendaPage from "./pages/admin/AgendaPage";
 import AdminReviewsPage from "./pages/admin/ReviewsPage";
+import AdminLeadsPage from "./pages/admin/LeadsPage";
+
+import PrivacyPage from "./pages/public/PrivacyPage";
+import TermsPage from "./pages/public/TermsPage";
+import ContactPage from "./pages/public/ContactPage";
+import NotFoundPage from "./pages/public/NotFoundPage";
 
 import MessagesPage from "./pages/shared/MessagesPage";
 import ChatPage from "./pages/shared/ChatPage";
 
-import { IconPlus, IconList, IconCalendar, IconMessage, IconUser, IconInbox, IconContacts, IconChart, IconCar, IconStar } from "./components/icons";
+import { IconPlus, IconList, IconCalendar, IconMessage, IconUser, IconInbox, IconContacts, IconChart, IconCar, IconStar, IconMail } from "./components/icons";
 
 const CLIENT_NAV: NavItem[] = [
   { to: "/app/requests/new", label: "Nouvelle demande", icon: IconPlus },
@@ -52,6 +60,7 @@ const PRO_NAV: NavItem[] = [
 const ADMIN_NAV: NavItem[] = [
   { to: "/admin", label: "Tableau de bord", icon: IconChart, end: true },
   { to: "/admin/queue", label: "File d'attente", icon: IconInbox },
+  { to: "/admin/leads", label: "Demandes du site", icon: IconMail },
   { to: "/admin/agenda", label: "Agenda", icon: IconContacts },
   { to: "/admin/bookings", label: "Réservations", icon: IconCalendar },
   { to: "/admin/reviews", label: "Avis clients", icon: IconStar },
@@ -93,6 +102,11 @@ function AppRoutes() {
       <Route path="/" element={<PublicOnly><WelcomePage /></PublicOnly>} />
       <Route path="/login" element={<PublicOnly><LoginPage /></PublicOnly>} />
       <Route path="/register" element={<PublicOnly><RegisterPage /></PublicOnly>} />
+
+      {/* Pages publiques accessibles connecté comme déconnecté. */}
+      <Route path="/contact" element={<ContactPage />} />
+      <Route path="/cgu" element={<TermsPage />} />
+      <Route path="/confidentialite" element={<PrivacyPage />} />
 
       <Route
         path="/app"
@@ -145,11 +159,13 @@ function AppRoutes() {
         <Route path="agenda" element={<AgendaPage />} />
         <Route path="bookings" element={<AdminBookingsPage />} />
         <Route path="reviews" element={<AdminReviewsPage />} />
+        <Route path="leads" element={<AdminLeadsPage />} />
         <Route path="messages" element={<MessagesPage basePath="/admin" />} />
         <Route path="messages/:conversationId" element={<ChatPage basePath="/admin" />} />
       </Route>
 
-      <Route path="*" element={<Navigate to="/" replace />} />
+      {/* Une adresse inconnue mérite une explication, pas une redirection muette. */}
+      <Route path="*" element={<NotFoundPage />} />
     </Routes>
   );
 }
@@ -159,7 +175,9 @@ export default function App() {
     <BrowserRouter>
       <AuthProvider>
         <ToastProvider>
+          <ScrollToTop />
           <AppRoutes />
+          <CookieBanner />
         </ToastProvider>
       </AuthProvider>
     </BrowserRouter>

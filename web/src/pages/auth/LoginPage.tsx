@@ -4,6 +4,7 @@ import { Button, ErrorText, Input } from "../../components/ui";
 import { useAuth } from "../../context/AuthContext";
 import { ApiError } from "../../api/client";
 import { HaloBackground } from "../../components/HaloBackground";
+import { PageMeta } from "../../seo/PageMeta";
 
 export default function LoginPage() {
   const { login } = useAuth();
@@ -31,6 +32,11 @@ export default function LoginPage() {
 
   return (
     <div className="relative min-h-screen overflow-hidden bg-background">
+      <PageMeta
+        title="Connexion"
+        description="Accédez à votre espace LuxuryConnect : suivi de vos demandes, offres reçues et réservations."
+        noIndex
+      />
       <div className="pointer-events-none absolute inset-0 bg-radial-glow" />
       <HaloBackground />
       <div className="relative mx-auto flex min-h-screen max-w-md flex-col justify-center px-6">
@@ -64,11 +70,17 @@ export default function LoginPage() {
           </Button>
         </form>
 
-        <div className="mt-8 flex flex-col items-center gap-2 border-t border-hairline pt-6 text-center text-sm">
-          <Link to="/register?role=CLIENT" className="text-gold hover:text-gold-200">
+        <div className="mt-8 flex flex-col items-center border-t border-hairline pt-4 text-center text-sm">
+          <Link
+            to="/register?role=CLIENT"
+            className="inline-block px-2 py-2.5 text-gold transition-colors hover:text-gold-200"
+          >
             Pas encore de compte ? Créer un compte client
           </Link>
-          <Link to="/register?role=PROFESSIONAL" className="text-muted hover:text-ivory">
+          <Link
+            to="/register?role=PROFESSIONAL"
+            className="inline-block px-2 py-2.5 text-muted transition-colors hover:text-ivory"
+          >
             Vous êtes un professionnel ? Créer un compte pro
           </Link>
         </div>

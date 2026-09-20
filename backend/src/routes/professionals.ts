@@ -166,7 +166,7 @@ router.post("/me/portfolio", requireAuth, requireRole("PROFESSIONAL"), async (re
   if (!profile) return res.status(404).json({ error: "Profil professionnel introuvable" });
 
   const { imageData, imageUrl, ...rest } = parsed.data;
-  const storedUrl = imageData ? saveDataUrlImage(imageData) : imageUrl;
+  const storedUrl = imageData ? await saveDataUrlImage(imageData) : imageUrl;
   if (!storedUrl) return res.status(400).json({ error: "Image invalide ou trop lourde" });
 
   const image = await prisma.portfolioImage.create({

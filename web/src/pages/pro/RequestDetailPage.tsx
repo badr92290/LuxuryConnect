@@ -77,7 +77,7 @@ export default function ProRequestDetailPage() {
         {quoteRequest.description && <p className="mt-3 text-sm">{quoteRequest.description}</p>}
         {quoteRequest.photos && quoteRequest.photos.length > 0 && (
           <div className="mt-4">
-            <PhotoGallery photos={quoteRequest.photos} />
+            <PhotoGallery photos={quoteRequest.photos} label="Photos jointes à la demande" />
           </div>
         )}
       </Card>

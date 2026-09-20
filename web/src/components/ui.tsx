@@ -92,66 +92,120 @@ export function Button({
   );
 }
 
+/** Identifiant stable pour relier un champ à son message d'erreur. */
+function useFieldIds(label?: string, explicit?: string) {
+  const auto = React.useId();
+  const id = explicit ?? auto;
+  return { id, errorId: `${id}-error`, hasLabel: Boolean(label) };
+}
+
+/** Message d'erreur d'un champ : annoncé aux lecteurs d'écran dès son apparition. */
+function FieldError({ id, message }: { id: string; message?: string }) {
+  if (!message) return null;
+  return (
+    <span id={id} role="alert" className="mt-1.5 block text-xs text-danger">
+      {message}
+    </span>
+  );
+}
+
+const fieldClass = (invalid: boolean) =>
+  `w-full rounded-xl border bg-surface px-4 py-3 text-ivory placeholder:text-mutedDark focus:outline-none focus:ring-1 transition-colors ${
+    invalid
+      ? "border-danger focus:border-danger focus:ring-danger/40"
+      : "border-border focus:border-gold/60 focus:ring-gold/40"
+  }`;
+
 export function Input({
   label,
+  error,
   className = "",
+  id,
   ...props
-}: React.InputHTMLAttributes<HTMLInputElement> & { label?: string }) {
+}: React.InputHTMLAttributes<HTMLInputElement> & { label?: string; error?: string }) {
+  const ids = useFieldIds(label, id);
   return (
-    <label className="block mb-4">
+    <div className="mb-4">
       {label && (
-        <span className="mb-2 block text-[11px] font-semibold uppercase tracking-wider2 text-muted">
+        <label
+          htmlFor={ids.id}
+          className="mb-2 block text-[11px] font-semibold uppercase tracking-wider2 text-muted"
+        >
           {label}
-        </span>
+        </label>
       )}
       <input
         {...props}
-        className={`w-full rounded-xl border border-border bg-surface px-4 py-3 text-ivory placeholder:text-mutedDark focus:outline-none focus:border-gold/60 focus:ring-1 focus:ring-gold/40 transition-colors ${className}`}
+        id={ids.id}
+        aria-invalid={error ? true : undefined}
+        aria-describedby={error ? ids.errorId : undefined}
+        className={`${fieldClass(Boolean(error))} ${className}`}
       />
-    </label>
+      <FieldError id={ids.errorId} message={error} />
+    </div>
   );
 }
 
 export function Textarea({
   label,
+  error,
   className = "",
+  id,
   ...props
-}: React.TextareaHTMLAttributes<HTMLTextAreaElement> & { label?: string }) {
+}: React.TextareaHTMLAttributes<HTMLTextAreaElement> & { label?: string; error?: string }) {
+  const ids = useFieldIds(label, id);
   return (
-    <label className="block mb-4">
+    <div className="mb-4">
       {label && (
-        <span className="mb-2 block text-[11px] font-semibold uppercase tracking-wider2 text-muted">
+        <label
+          htmlFor={ids.id}
+          className="mb-2 block text-[11px] font-semibold uppercase tracking-wider2 text-muted"
+        >
           {label}
-        </span>
+        </label>
       )}
       <textarea
         {...props}
-        className={`w-full rounded-xl border border-border bg-surface px-4 py-3 text-ivory placeholder:text-mutedDark focus:outline-none focus:border-gold/60 focus:ring-1 focus:ring-gold/40 transition-colors ${className}`}
+        id={ids.id}
+        aria-invalid={error ? true : undefined}
+        aria-describedby={error ? ids.errorId : undefined}
+        className={`${fieldClass(Boolean(error))} ${className}`}
       />
-    </label>
+      <FieldError id={ids.errorId} message={error} />
+    </div>
   );
 }
 
 export function Select({
   label,
+  error,
   className = "",
   children,
+  id,
   ...props
-}: React.SelectHTMLAttributes<HTMLSelectElement> & { label?: string }) {
+}: React.SelectHTMLAttributes<HTMLSelectElement> & { label?: string; error?: string }) {
+  const ids = useFieldIds(label, id);
   return (
-    <label className="block mb-4">
+    <div className="mb-4">
       {label && (
-        <span className="mb-2 block text-[11px] font-semibold uppercase tracking-wider2 text-muted">
+        <label
+          htmlFor={ids.id}
+          className="mb-2 block text-[11px] font-semibold uppercase tracking-wider2 text-muted"
+        >
           {label}
-        </span>
+        </label>
       )}
       <select
         {...props}
-        className={`w-full rounded-xl border border-border bg-surface px-4 py-3 text-ivory focus:outline-none focus:border-gold/60 focus:ring-1 focus:ring-gold/40 transition-colors ${className}`}
+        id={ids.id}
+        aria-invalid={error ? true : undefined}
+        aria-describedby={error ? ids.errorId : undefined}
+        className={`${fieldClass(Boolean(error))} ${className}`}
       >
         {children}
       </select>
-    </label>
+      <FieldError id={ids.errorId} message={error} />
+    </div>
   );
 }
 

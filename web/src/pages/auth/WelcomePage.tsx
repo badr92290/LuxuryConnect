@@ -3,6 +3,9 @@ import { Link } from "react-router-dom";
 import { Button } from "../../components/ui";
 import { HaloBackground } from "../../components/HaloBackground";
 import { ClientReviews } from "../../components/ClientReviews";
+import { PublicFooter } from "../../layout/PublicLayout";
+import { PageMeta } from "../../seo/PageMeta";
+import { SITE_NAME } from "../../seo/siteConfig";
 import { IconInbox, IconCrown, IconShield, IconSparkle } from "../../components/icons";
 
 const STEPS = [
@@ -34,6 +37,11 @@ const SERVICES = [
 export default function WelcomePage() {
   return (
     <div className="relative min-h-screen overflow-hidden bg-background">
+      <PageMeta
+        title={SITE_NAME}
+        description="Une seule demande, un seul prix. Nous consultons pour vous les ateliers de PPF, covering, protection céramique, vitres teintées et lustrage, puis vous transmettons une offre unique et ferme."
+      />
+
       {/* Grain discret : casse l'aplat numérique et donne de la matière. */}
       <div
         className="pointer-events-none fixed inset-0 z-0 opacity-[0.035] mix-blend-overlay"
@@ -176,11 +184,7 @@ export default function WelcomePage() {
           </div>
         </section>
 
-        <footer className="mt-16 border-t border-hairline pt-8 text-center">
-          <p className="text-[11px] uppercase tracking-wider2 text-mutedDark">
-            LuxuryConnect — Est. 2026
-          </p>
-        </footer>
+        <PublicFooter />
       </div>
     </div>
   );

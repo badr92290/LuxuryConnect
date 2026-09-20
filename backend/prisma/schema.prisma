@@ -65,6 +65,7 @@ enum NotificationType {
   OFFER_ACCEPTED
   OFFER_DECLINED
   QUOTE_REMINDER
+  CONTACT_LEAD
 }
 
 model User {

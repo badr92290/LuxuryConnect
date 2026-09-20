@@ -4,6 +4,7 @@ import { useAuth } from "../context/AuthContext";
 import { IconLogout } from "../components/icons";
 import { NotificationBell } from "../components/NotificationBell";
 import type { IconProps } from "../components/icons";
+import { PageMeta } from "../seo/PageMeta";
 
 export interface NavItem {
   to: string;
@@ -29,6 +30,9 @@ export function AppShell({ navItems, title }: { navItems: NavItem[]; title: stri
 
   return (
     <div className="min-h-screen bg-background text-ivory md:flex">
+      {/* Les espaces authentifiés n'ont rien à faire dans un index de recherche. */}
+      <PageMeta title={title} noIndex />
+
       {/* Sidebar (desktop / tablette) */}
       <aside className="hidden md:flex md:w-72 md:flex-col md:border-r md:border-hairline md:bg-surface md:p-6">
         <div className="mb-10 flex items-start justify-between gap-2 px-1 pt-1">

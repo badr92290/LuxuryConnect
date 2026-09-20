@@ -34,9 +34,9 @@ router.post("/", requireAuth, requireRole("CLIENT"), async (req: AuthRequest, re
     if (vehicle && vehicle.ownerId === req.user!.userId) linkedVehicleId = vehicle.id;
   }
 
-  const savedPaths = (photos ?? [])
-    .map(saveDataUrlImage)
-    .filter((p): p is string => p !== null);
+  const savedPaths = (await Promise.all((photos ?? []).map(saveDataUrlImage))).filter(
+    (p): p is string => p !== null,
+  );
 
   const quoteRequest = await prisma.quoteRequest.create({
     data: {

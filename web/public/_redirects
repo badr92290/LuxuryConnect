@@ -1,0 +1,3 @@
+# Application à page unique : toute adresse inconnue est servie par index.html,
+# qui affiche alors la page 404 du site.
+/*  /index.html  200

@@ -78,3 +78,107 @@ select:focus-visible,
     scroll-behavior: auto !important;
   }
 }
+
+/* Mise en forme des pages légales : le texte y est long, il a besoin de
+   respiration et d'une hiérarchie claire sans classe sur chaque balise. */
+.legal-body h2 {
+  margin-top: 2.5rem;
+  margin-bottom: 0.75rem;
+  font-family: "Fraunces", serif;
+  font-size: 1.375rem;
+  line-height: 1.3;
+  color: #f6f2ea;
+}
+.legal-body h3 {
+  margin-top: 1.75rem;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  color: #f6f2ea;
+}
+.legal-body p,
+.legal-body ul,
+.legal-body ol {
+  margin-bottom: 1rem;
+}
+.legal-body ul {
+  list-style: disc;
+  padding-left: 1.25rem;
+}
+.legal-body ol {
+  list-style: decimal;
+  padding-left: 1.25rem;
+}
+.legal-body li {
+  margin-bottom: 0.375rem;
+}
+.legal-body a {
+  color: #c9a876;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.legal-body strong {
+  color: #f6f2ea;
+  font-weight: 600;
+}
+.legal-body table {
+  width: 100%;
+  margin-bottom: 1.25rem;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+.legal-body th,
+.legal-body td {
+  border: 1px solid #232328;
+  padding: 0.625rem 0.75rem;
+  text-align: left;
+  vertical-align: top;
+}
+.legal-body th {
+  color: #f6f2ea;
+  font-weight: 600;
+}
+
+/* Le tableau des traitements RGPD compte quatre colonnes : au-dessous de
+   640 px il s'empile en blocs, chaque cellule reprenant l'intitulé de sa
+   colonne, plutôt que de déborder de l'écran. */
+@media (max-width: 639px) {
+  .legal-table thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+  .legal-table table,
+  .legal-table tbody,
+  .legal-table tr,
+  .legal-table td {
+    display: block;
+    width: 100%;
+  }
+  .legal-table tr {
+    margin-bottom: 1rem;
+    border: 1px solid #232328;
+    border-radius: 16px;
+    overflow: hidden;
+  }
+  .legal-table td {
+    border: 0;
+    border-bottom: 1px solid #232328;
+    padding: 0.75rem 0.875rem;
+  }
+  .legal-table tr td:last-child {
+    border-bottom: 0;
+  }
+  .legal-table td::before {
+    content: attr(data-label);
+    display: block;
+    margin-bottom: 0.25rem;
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #827d74;
+  }
+}

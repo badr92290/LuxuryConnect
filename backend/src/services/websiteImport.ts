@@ -1,8 +1,5 @@
-import { randomUUID } from "crypto";
-import { mkdirSync, writeFileSync } from "fs";
-import path from "path";
 import { prisma } from "../prisma";
-import { UPLOAD_DIR } from "../utils/uploads";
+import { saveImageBuffer } from "../utils/uploads";
 
 const MAX_IMAGES = 6;
 const FETCH_TIMEOUT_MS = 15000;
@@ -164,7 +161,6 @@ export async function importPortfolioFromWebsite(professionalId: string): Promis
   });
   const alreadyImported = new Set(existing.map((e) => e.sourceUrl));
 
-  mkdirSync(UPLOAD_DIR, { recursive: true });
   let imported = 0;
 
   for (const candidate of candidates) {
@@ -174,13 +170,15 @@ export async function importPortfolioFromWebsite(professionalId: string): Promis
     const downloaded = await downloadImage(candidate);
     if (!downloaded) continue;
 
-    const fileName = `${randomUUID()}.${downloaded.extension}`;
-    writeFileSync(path.join(UPLOAD_DIR, fileName), downloaded.buffer);
+    // Les photos d'un site tiers arrivent en pleine résolution : on les
+    // recompresse avant de les servir depuis notre domaine.
+    const storedUrl = await saveImageBuffer(downloaded.buffer);
+    if (!storedUrl) continue;
 
     await prisma.portfolioImage.create({
       data: {
         professionalId,
-        imageUrl: `/uploads/${fileName}`,
+        imageUrl: storedUrl,
         sourceUrl: candidate,
         caption: "Réalisation",
       },

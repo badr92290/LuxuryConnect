@@ -59,12 +59,19 @@ export function PhotoPicker({
       <div className="grid grid-cols-3 gap-2 sm:grid-cols-4">
         {photos.map((src, i) => (
           <div key={i} className="group relative aspect-square overflow-hidden rounded-xl border border-hairline">
-            <img src={src} alt="" className="h-full w-full object-cover" />
+            <img
+              src={src}
+              alt={`Photo ${i + 1} sur ${photos.length} ajoutée à votre demande`}
+              width={400}
+              height={400}
+              decoding="async"
+              className="h-full w-full object-cover"
+            />
             <button
               type="button"
               onClick={() => onChange(photos.filter((_, index) => index !== i))}
               className="absolute right-1 top-1 flex h-8 w-8 items-center justify-center rounded-full bg-background/80 text-muted backdrop-blur transition-colors hover:text-danger"
-              aria-label="Retirer la photo"
+              aria-label={`Retirer la photo ${i + 1}`}
             >
               <IconX className="h-3.5 w-3.5" />
             </button>
