@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { api } from "../../api/client";
+import { api, ApiError } from "../../api/client";
 import { useAuth } from "../../context/AuthContext";
 import { ProfessionalProfile, ServiceType, SERVICE_LABELS } from "../../types";
 import { Badge, Button, Card, Checkbox, Input, SectionLabel, Textarea } from "../../components/ui";
@@ -28,6 +28,10 @@ export default function ProfileEditPage() {
   const [priceFrom, setPriceFrom] = useState("");
   const [savingService, setSavingService] = useState(false);
 
+  const [websiteUrl, setWebsiteUrl] = useState("");
+  const [websiteRightsConfirmed, setWebsiteRightsConfirmed] = useState(false);
+  const [importing, setImporting] = useState(false);
+
   const [newPhotos, setNewPhotos] = useState<string[]>([]);
   const [caption, setCaption] = useState("");
   const [isBeforeAfter, setIsBeforeAfter] = useState(true);
@@ -44,6 +48,8 @@ export default function ProfileEditPage() {
     setIsInsured(data.professional.isInsured ?? false);
     setIsCertified(data.professional.isCertified ?? false);
     setYearsExperience(data.professional.yearsExperience ? String(data.professional.yearsExperience) : "");
+    setWebsiteUrl(data.professional.websiteUrl ?? "");
+    setWebsiteRightsConfirmed(data.professional.websiteRightsConfirmed ?? false);
   }, [user]);
 
   useEffect(() => {
@@ -61,11 +67,33 @@ export default function ProfileEditPage() {
         isInsured,
         isCertified,
         yearsExperience: yearsExperience ? parseInt(yearsExperience) : null,
+        websiteUrl: websiteUrl.trim() || null,
+        websiteRightsConfirmed,
       });
       await load();
       toast("Profil mis à jour");
     } finally {
       setSavingProfile(false);
+    }
+  }
+
+  async function importFromWebsite() {
+    setImporting(true);
+    try {
+      const result = await api.post<{ imported: number; scanned: number }>(
+        "/professionals/me/import-website"
+      );
+      await load();
+      toast(
+        result.imported > 0
+          ? `${result.imported} réalisation${result.imported > 1 ? "s" : ""} importée${result.imported > 1 ? "s" : ""}`
+          : "Aucune photo exploitable trouvée sur votre site",
+        result.imported > 0 ? "success" : "info"
+      );
+    } catch (err) {
+      toast(err instanceof ApiError ? err.message : "Import impossible", "error");
+    } finally {
+      setImporting(false);
     }
   }
 
@@ -150,9 +178,50 @@ export default function ProfileEditPage() {
           </div>
         </div>
 
-        <Button onClick={saveProfile} loading={savingProfile}>
-          Enregistrer
-        </Button>
+        <div className="mb-4 border-t border-hairline pt-4">
+          <SectionLabel>Site internet</SectionLabel>
+          <p className="mb-3 text-xs text-mutedDark">
+            Vos réalisations y sont reprises automatiquement (jusqu'à six photos) pour remplir votre
+            fiche sans rien téléverser.
+          </p>
+          <Input
+            label="Adresse de votre site"
+            value={websiteUrl}
+            onChange={(e) => setWebsiteUrl(e.target.value)}
+            placeholder="www.mon-atelier.fr"
+          />
+          {websiteUrl.trim() !== "" && (
+            <Checkbox
+              checked={websiteRightsConfirmed}
+              onChange={() => setWebsiteRightsConfirmed((v) => !v)}
+              label={
+                <span className="text-[13px] leading-snug">
+                  Je certifie détenir les droits sur ces photos et j'autorise leur affichage sur
+                  LuxuryConnect.
+                </span>
+              }
+            />
+          )}
+          {profile?.websiteImportedAt && (
+            <p className="mt-2 text-xs text-mutedDark">
+              Dernier import : {new Date(profile.websiteImportedAt).toLocaleDateString("fr-FR")}
+            </p>
+          )}
+        </div>
+
+        <div className="flex flex-wrap gap-3">
+          <Button onClick={saveProfile} loading={savingProfile}>
+            Enregistrer
+          </Button>
+          <Button
+            variant="secondary"
+            onClick={importFromWebsite}
+            loading={importing}
+            disabled={!websiteUrl.trim() || !websiteRightsConfirmed}
+          >
+            Importer depuis mon site
+          </Button>
+        </div>
       </Card>
 
       <Card className="mb-6">

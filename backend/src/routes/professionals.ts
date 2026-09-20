@@ -4,6 +4,7 @@ import { prisma } from "../prisma";
 import { requireAuth, requireRole, AuthRequest } from "../middleware/auth";
 import { distanceKm } from "../utils/geo";
 import { saveDataUrlImage } from "../utils/uploads";
+import { importPortfolioFromWebsite, normalizeWebsiteUrl } from "../services/websiteImport";
 import { ServiceType } from "@prisma/client";
 
 const router = Router();
@@ -77,17 +78,36 @@ const updateProfileSchema = z.object({
   isInsured: z.boolean().optional(),
   isCertified: z.boolean().optional(),
   yearsExperience: z.number().int().min(0).max(80).nullable().optional(),
+  websiteUrl: z.string().nullable().optional(),
+  websiteRightsConfirmed: z.boolean().optional(),
 });
 
 router.put("/me", requireAuth, requireRole("PROFESSIONAL"), async (req: AuthRequest, res) => {
   const parsed = updateProfileSchema.safeParse(req.body);
   if (!parsed.success) return res.status(400).json({ error: parsed.error.flatten() });
 
+  const { websiteUrl, ...rest } = parsed.data;
+
   const profile = await prisma.professionalProfile.update({
     where: { userId: req.user!.userId },
-    data: parsed.data,
+    data: {
+      ...rest,
+      ...(websiteUrl === undefined
+        ? {}
+        : { websiteUrl: websiteUrl ? normalizeWebsiteUrl(websiteUrl) : null }),
+    },
   });
   res.json({ professional: profile });
+});
+
+// Relance l'import des réalisations depuis le site du professionnel.
+router.post("/me/import-website", requireAuth, requireRole("PROFESSIONAL"), async (req: AuthRequest, res) => {
+  const profile = await prisma.professionalProfile.findUnique({ where: { userId: req.user!.userId } });
+  if (!profile) return res.status(404).json({ error: "Profil professionnel introuvable" });
+
+  const result = await importPortfolioFromWebsite(profile.id);
+  if (result.error) return res.status(400).json({ error: result.error });
+  res.json(result);
 });
 
 const serviceSchema = z.object({

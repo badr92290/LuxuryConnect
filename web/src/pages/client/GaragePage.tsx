@@ -4,6 +4,7 @@ import { api, ApiError } from "../../api/client";
 import { Vehicle } from "../../types";
 import { Button, Card, EmptyState, ErrorText, Input, Reveal, SkeletonList } from "../../components/ui";
 import { IconCar, IconPlus, IconTrash } from "../../components/icons";
+import { VehiclePicker } from "../../components/VehiclePicker";
 import { useToast } from "../../context/ToastContext";
 
 export default function GaragePage() {
@@ -88,12 +89,15 @@ export default function GaragePage() {
       {adding && (
         <Card glass className="mb-4 border-gold/30">
           <h2 className="mb-4 font-semibold text-ivory">Nouveau véhicule</h2>
-          <div className="grid gap-x-3 sm:grid-cols-2">
-            <Input label="Marque" value={make} onChange={(e) => setMake(e.target.value)} placeholder="Porsche" />
-            <Input label="Modèle" value={model} onChange={(e) => setModel(e.target.value)} placeholder="911 Carrera" />
-            <Input label="Année" value={year} onChange={(e) => setYear(e.target.value)} inputMode="numeric" placeholder="2024" />
-            <Input label="Plaque (optionnel)" value={plate} onChange={(e) => setPlate(e.target.value)} placeholder="AB-123-CD" />
-          </div>
+          <VehiclePicker
+            value={{ make, model, year }}
+            onChange={(v) => {
+              setMake(v.make);
+              setModel(v.model);
+              setYear(v.year);
+            }}
+          />
+          <Input label="Plaque (optionnel)" value={plate} onChange={(e) => setPlate(e.target.value)} placeholder="AB-123-CD" />
           {error && <ErrorText>{error}</ErrorText>}
           <div className="flex gap-3">
             <Button onClick={save} loading={saving}>

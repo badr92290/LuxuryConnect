@@ -68,6 +68,9 @@ export interface ProfessionalProfile {
   isInsured?: boolean;
   isCertified?: boolean;
   yearsExperience?: number | null;
+  websiteUrl?: string | null;
+  websiteRightsConfirmed?: boolean;
+  websiteImportedAt?: string | null;
   services?: ProfessionalService[];
   portfolioImages?: PortfolioImage[];
   user?: { firstName: string; lastName: string; email?: string; avatarUrl?: string | null; phone?: string | null };

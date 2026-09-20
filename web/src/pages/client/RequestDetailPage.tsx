@@ -67,7 +67,10 @@ export default function RequestDetailPage() {
   if (loading || !quoteRequest) return <Spinner />;
 
   const pro = quoteRequest.selectedProfessional;
-  const beforeAfter = (pro?.portfolioImages ?? []).filter((img) => img.isBeforeAfter);
+  const portfolio = pro?.portfolioImages ?? [];
+  // On met en avant les avant/après quand il y en a, sinon le reste du portfolio.
+  const beforeAfter = portfolio.filter((img) => img.isBeforeAfter);
+  const showcase = beforeAfter.length > 0 ? beforeAfter : portfolio;
 
   return (
     <div className="mx-auto max-w-lg">
@@ -118,10 +121,12 @@ export default function RequestDetailPage() {
                   yearsExperience={pro.yearsExperience}
                 />
               </div>
-              {beforeAfter.length > 0 && (
+              {showcase.length > 0 && (
                 <div className="mt-4">
-                  <SectionLabel>Ses réalisations avant / après</SectionLabel>
-                  <PhotoGallery photos={beforeAfter} />
+                  <SectionLabel>
+                    {beforeAfter.length > 0 ? "Ses réalisations avant / après" : "Ses réalisations"}
+                  </SectionLabel>
+                  <PhotoGallery photos={showcase} />
                 </div>
               )}
             </div>

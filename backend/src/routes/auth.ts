@@ -4,6 +4,7 @@ import { z } from "zod";
 import { prisma } from "../prisma";
 import { signToken } from "../utils/jwt";
 import { requireAuth, AuthRequest } from "../middleware/auth";
+import { importPortfolioFromWebsite, normalizeWebsiteUrl } from "../services/websiteImport";
 
 const router = Router();
 
@@ -15,6 +16,8 @@ const registerSchema = z.object({
   lastName: z.string().min(1),
   phone: z.string().optional(),
   businessName: z.string().optional(),
+  websiteUrl: z.string().optional(),
+  websiteRightsConfirmed: z.boolean().optional(),
 });
 
 router.post("/register", async (req, res) => {
@@ -22,7 +25,8 @@ router.post("/register", async (req, res) => {
   if (!parsed.success) {
     return res.status(400).json({ error: parsed.error.flatten() });
   }
-  const { email, password, role, firstName, lastName, phone, businessName } = parsed.data;
+  const { email, password, role, firstName, lastName, phone, businessName, websiteUrl, websiteRightsConfirmed } =
+    parsed.data;
 
   if (role === "PROFESSIONAL" && !businessName) {
     return res.status(400).json({ error: "businessName est requis pour un compte professionnel" });
@@ -44,11 +48,27 @@ router.post("/register", async (req, res) => {
       lastName,
       phone,
       ...(role === "PROFESSIONAL"
-        ? { professionalProfile: { create: { businessName: businessName! } } }
+        ? {
+            professionalProfile: {
+              create: {
+                businessName: businessName!,
+                websiteUrl: websiteUrl ? normalizeWebsiteUrl(websiteUrl) : null,
+                websiteRightsConfirmed: websiteRightsConfirmed ?? false,
+              },
+            },
+          }
         : {}),
     },
     include: { professionalProfile: true },
   });
+
+  // L'import des réalisations tourne en tâche de fond : l'inscription ne doit pas
+  // attendre un site tiers potentiellement lent.
+  if (user.professionalProfile?.websiteUrl && user.professionalProfile.websiteRightsConfirmed) {
+    importPortfolioFromWebsite(user.professionalProfile.id).catch((err) =>
+      console.error("Import du site échoué :", err)
+    );
+  }
 
   const token = signToken({ userId: user.id, role: user.role });
   const { passwordHash: _, ...userSafe } = user;

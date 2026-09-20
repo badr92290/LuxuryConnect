@@ -92,6 +92,20 @@ model User {
   notifications    Notification[]
 }
 
+// Demande de contact déposée depuis le site public, sans création de compte.
+model ContactLead {
+  id          String       @id @default(uuid())
+  firstName   String
+  lastName    String
+  email       String
+  phone       String?
+  serviceType ServiceType?
+  message     String?
+  city        String?
+  handledAt   DateTime?
+  createdAt   DateTime     @default(now())
+}
+
 model Notification {
   id        String           @id @default(uuid())
   userId    String
@@ -125,6 +139,12 @@ model ProfessionalProfile {
   isCertified     Boolean @default(false)
   yearsExperience Int?
 
+  // Site vitrine du professionnel, d'où sont importées ses réalisations.
+  // L'import n'a lieu que si le professionnel a confirmé détenir les droits.
+  websiteUrl              String?
+  websiteRightsConfirmed  Boolean   @default(false)
+  websiteImportedAt       DateTime?
+
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
@@ -155,7 +175,12 @@ model PortfolioImage {
   imageUrl       String
   caption        String?
   isBeforeAfter  Boolean             @default(false)
+  // Renseigné quand l'image vient d'un import depuis le site du professionnel,
+  // ce qui permet d'éviter les doublons lors d'un réimport.
+  sourceUrl      String?
   createdAt      DateTime            @default(now())
+
+  @@unique([professionalId, sourceUrl])
 }
 
 // Véhicule enregistré dans le garage d'un client, réutilisable d'une demande à l'autre.

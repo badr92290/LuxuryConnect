@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Button, ErrorText, Input, Select, SectionLabel, Textarea } from "../../components/ui";
 import { PhotoPicker } from "../../components/PhotoPicker";
+import { VehiclePicker } from "../../components/VehiclePicker";
 import { IconCar } from "../../components/icons";
 import { api, ApiError } from "../../api/client";
 import { ServiceType, SERVICE_LABELS, Vehicle } from "../../types";
@@ -113,20 +114,15 @@ export default function NewRequestPage() {
           </div>
         )}
 
-        <div className="grid grid-cols-2 gap-3">
-          <Input label="Marque" value={vehicleMake} onChange={(e) => setVehicleMake(e.target.value)} placeholder="Peugeot" />
-          <Input label="Modèle" value={vehicleModel} onChange={(e) => setVehicleModel(e.target.value)} placeholder="308" />
-        </div>
-        <div className="grid grid-cols-2 gap-3">
-          <Input
-            label="Année (optionnel)"
-            value={vehicleYear}
-            onChange={(e) => setVehicleYear(e.target.value)}
-            placeholder="2022"
-            inputMode="numeric"
-          />
-          <Input label="Ville" value={city} onChange={(e) => setCity(e.target.value)} placeholder="Lyon" />
-        </div>
+        <VehiclePicker
+          value={{ make: vehicleMake, model: vehicleModel, year: vehicleYear }}
+          onChange={(v) => {
+            setVehicleMake(v.make);
+            setVehicleModel(v.model);
+            setVehicleYear(v.year);
+          }}
+        />
+        <Input label="Ville" value={city} onChange={(e) => setCity(e.target.value)} placeholder="Lyon" />
 
         <PhotoPicker photos={photos} onChange={setPhotos} />
 

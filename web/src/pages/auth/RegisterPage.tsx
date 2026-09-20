@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
-import { Button, ErrorText, Input } from "../../components/ui";
+import { Button, Checkbox, ErrorText, Input } from "../../components/ui";
 import { useAuth } from "../../context/AuthContext";
 import { ApiError } from "../../api/client";
 import type { Role } from "../../types";
@@ -16,6 +16,8 @@ export default function RegisterPage() {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [businessName, setBusinessName] = useState("");
+  const [websiteUrl, setWebsiteUrl] = useState("");
+  const [websiteRightsConfirmed, setWebsiteRightsConfirmed] = useState(false);
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
@@ -43,6 +45,8 @@ export default function RegisterPage() {
         lastName,
         phone: phone || undefined,
         businessName: role === "PROFESSIONAL" ? businessName : undefined,
+        websiteUrl: role === "PROFESSIONAL" && websiteUrl.trim() ? websiteUrl.trim() : undefined,
+        websiteRightsConfirmed: role === "PROFESSIONAL" ? websiteRightsConfirmed : undefined,
       });
       navigate(user.role === "PROFESSIONAL" ? "/pro" : "/app");
     } catch (err) {
@@ -85,12 +89,38 @@ export default function RegisterPage() {
             <Input label="Nom" value={lastName} onChange={(e) => setLastName(e.target.value)} />
           </div>
           {role === "PROFESSIONAL" && (
-            <Input
-              label="Nom de l'entreprise"
-              value={businessName}
-              onChange={(e) => setBusinessName(e.target.value)}
-              placeholder="ex: Auto Shine Lyon"
-            />
+            <>
+              <Input
+                label="Nom de l'entreprise"
+                value={businessName}
+                onChange={(e) => setBusinessName(e.target.value)}
+                placeholder="ex: Auto Shine Lyon"
+              />
+              <Input
+                label="Site internet (optionnel)"
+                value={websiteUrl}
+                onChange={(e) => setWebsiteUrl(e.target.value)}
+                placeholder="www.mon-atelier.fr"
+              />
+              {websiteUrl.trim() !== "" && (
+                <div className="mb-4">
+                  <Checkbox
+                    checked={websiteRightsConfirmed}
+                    onChange={() => setWebsiteRightsConfirmed((v) => !v)}
+                    label={
+                      <span className="text-[13px] leading-snug">
+                        Je certifie détenir les droits sur les photos de mon site et j'autorise
+                        LuxuryConnect à en afficher jusqu'à six sur ma fiche.
+                      </span>
+                    }
+                  />
+                  <p className="mt-2 text-xs text-mutedDark">
+                    Vos réalisations seront reprises automatiquement. Vous pourrez les retirer ou en
+                    ajouter d'autres depuis votre profil.
+                  </p>
+                </div>
+              )}
+            </>
           )}
           <Input label="Email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
           <Input label="Téléphone (optionnel)" value={phone} onChange={(e) => setPhone(e.target.value)} />
