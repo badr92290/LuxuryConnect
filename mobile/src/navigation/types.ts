@@ -4,6 +4,7 @@ export type AuthStackParamList = {
   Welcome: undefined;
   Login: undefined;
   Register: { role: Role };
+  Reviews: undefined;
 };
 
 export type ClientStackParamList = {
@@ -12,6 +13,7 @@ export type ClientStackParamList = {
   QuoteRequestForm: { professionalId: string; businessName: string };
   Chat: { conversationId: string; title: string };
   LeaveReview: { bookingId: string; businessName: string };
+  Reviews: undefined;
 };
 
 export type ClientTabParamList = {

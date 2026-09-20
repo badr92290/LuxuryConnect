@@ -12,6 +12,7 @@ import ChatScreen from "../screens/shared/ChatScreen";
 import ProfessionalDetailScreen from "../screens/client/ProfessionalDetailScreen";
 import QuoteRequestFormScreen from "../screens/client/QuoteRequestFormScreen";
 import LeaveReviewScreen from "../screens/client/LeaveReviewScreen";
+import ReviewsScreen from "../screens/shared/ReviewsScreen";
 import type { ClientTabParamList, ClientStackParamList } from "./types";
 
 const Tab = createBottomTabNavigator<ClientTabParamList>();
@@ -69,6 +70,7 @@ export default function ClientNavigator() {
       />
       <Stack.Screen name="Chat" component={ChatScreen} options={{ title: "Message" }} />
       <Stack.Screen name="LeaveReview" component={LeaveReviewScreen} options={{ title: "Avis" }} />
+      <Stack.Screen name="Reviews" component={ReviewsScreen} options={{ title: "Avis clients" }} />
     </Stack.Navigator>
   );
 }

@@ -177,3 +177,7 @@ export const IconTrash = base(
 export const IconSparkle = base(
   <path d="M12 4.5 13.6 9.4 18.5 11l-4.9 1.6L12 17.5l-1.6-4.9L5.5 11l4.9-1.6L12 4.5Z" />
 );
+
+export const IconStar = base(
+  <path d="M12 3.5l2.6 5.6 6 .7-4.5 4.1 1.3 5.9L12 16.9 6.6 19.8l1.3-5.9L3.4 9.8l6-.7z" />
+);

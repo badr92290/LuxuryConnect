@@ -301,6 +301,117 @@ async function main() {
     data: { averageRating: agg._avg.rating ?? 0, reviewCount: agg._count.rating },
   });
 
+  console.log("Historique d'avis clients pour alimenter la vitrine publique...");
+  // Chaque avis public s'appuie sur une prestation réellement terminée : on rejoue
+  // donc le parcours complet (demande -> devis pro -> prix final -> réservation -> avis).
+  const pastReviews = [
+    {
+      firstName: "Karim", lastName: "Benali", email: "karim.b@example.com",
+      service: ServiceType.PPF, make: "Porsche", model: "911 (992)", year: 2022,
+      city: "Lyon", pro: proLyon, proPrice: 2400, finalPrice: 2790, rating: 5,
+      daysAgo: 12,
+      comment: "Le devis est arrivé en deux jours, un seul prix, pas de marchandage. L'atelier proposé faisait exactement ce que je cherchais.",
+    },
+    {
+      firstName: "Élodie", lastName: "Mercier", email: "elodie.m@example.com",
+      service: ServiceType.COVERING, make: "Audi", model: "RS3", year: 2021,
+      city: "Bordeaux", pro: proBordeaux, proPrice: 1450, finalPrice: 1690, rating: 5,
+      daysAgo: 26,
+      comment: "J'avais appelé quatre carrossiers sans obtenir de réponse claire. Ici je n'ai parlé qu'à une personne, et le prix annoncé est celui que j'ai payé.",
+    },
+    {
+      firstName: "Sofiane", lastName: "Acher", email: "sofiane.a@example.com",
+      service: ServiceType.CERAMIC, make: "BMW", model: "M3", year: 2023,
+      city: "Paris", pro: proParis, proPrice: 780, finalPrice: 950, rating: 5,
+      daysAgo: 41,
+      comment: "Suivi impeccable du dépôt au retour du véhicule. La céramique tient toujours après deux hivers.",
+    },
+    {
+      firstName: "Claire", lastName: "Dubois", email: "claire.d@example.com",
+      service: ServiceType.TINT, make: "Tesla", model: "Model 3", year: 2024,
+      city: "Marseille", pro: proMarseille, proPrice: 320, finalPrice: 420, rating: 4,
+      daysAgo: 58,
+      comment: "Pose nickel et conforme à la réglementation. J'aurais aimé un créneau un peu plus tôt, mais rien à redire sur le résultat.",
+    },
+    {
+      firstName: "Nicolas", lastName: "Perrot", email: "nicolas.p@example.com",
+      service: ServiceType.POLISH, make: "Mercedes-Benz", model: "Classe C", year: 2019,
+      city: "Lyon", pro: proLyon, proPrice: 280, finalPrice: 390, rating: 5,
+      daysAgo: 73,
+      comment: "Micro-rayures parties, la peinture a retrouvé sa profondeur. Le fait de n'avoir qu'un interlocuteur change vraiment tout.",
+    },
+  ];
+
+  for (const entry of pastReviews) {
+    const reviewer = await prisma.user.create({
+      data: {
+        email: entry.email,
+        passwordHash,
+        role: "CLIENT",
+        firstName: entry.firstName,
+        lastName: entry.lastName,
+      },
+    });
+    const request = await prisma.quoteRequest.create({
+      data: {
+        clientId: reviewer.id,
+        serviceType: entry.service,
+        vehicleMake: entry.make,
+        vehicleModel: entry.model,
+        vehicleYear: entry.year,
+        city: entry.city,
+        status: "ACCEPTED",
+        selectedProfessionalId: entry.pro.id,
+        finalPrice: entry.finalPrice,
+        createdAt: new Date(Date.now() - (entry.daysAgo + 10) * 24 * 3600 * 1000),
+      },
+    });
+    await prisma.quoteForward.create({
+      data: { quoteRequestId: request.id, professionalId: entry.pro.id, status: "QUOTED" },
+    });
+    await prisma.quote.create({
+      data: {
+        quoteRequestId: request.id,
+        professionalId: entry.pro.id,
+        price: entry.proPrice,
+        status: "SELECTED",
+      },
+    });
+    const pastBooking = await prisma.booking.create({
+      data: {
+        quoteRequestId: request.id,
+        clientId: reviewer.id,
+        professionalId: entry.pro.id,
+        price: entry.finalPrice,
+        scheduledAt: new Date(Date.now() - (entry.daysAgo + 2) * 24 * 3600 * 1000),
+        status: "COMPLETED",
+      },
+    });
+    await prisma.review.create({
+      data: {
+        bookingId: pastBooking.id,
+        clientId: reviewer.id,
+        professionalId: entry.pro.id,
+        rating: entry.rating,
+        comment: entry.comment,
+        createdAt: new Date(Date.now() - entry.daysAgo * 24 * 3600 * 1000),
+      },
+    });
+  }
+
+  // Recalcule la note moyenne de chaque atelier après l'insertion de l'historique.
+  for (const profile of [proLyon, proParis, proMarseille, proBordeaux]) {
+    const stats = await prisma.review.aggregate({
+      where: { professionalId: profile.id },
+      _avg: { rating: true },
+      _count: { rating: true },
+    });
+    await prisma.professionalProfile.update({
+      where: { id: profile.id },
+      data: { averageRating: stats._avg.rating ?? 0, reviewCount: stats._count.rating },
+    });
+  }
+
   console.log("Création des conversations (client <-> admin, pro <-> admin)...");
   function pairId(a: string, b: string): [string, string] {
     return a < b ? [a, b] : [b, a];

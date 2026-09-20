@@ -26,11 +26,12 @@ import QueuePage from "./pages/admin/QueuePage";
 import AdminRequestDetailPage from "./pages/admin/RequestDetailPage";
 import AdminBookingsPage from "./pages/admin/BookingsPage";
 import AgendaPage from "./pages/admin/AgendaPage";
+import AdminReviewsPage from "./pages/admin/ReviewsPage";
 
 import MessagesPage from "./pages/shared/MessagesPage";
 import ChatPage from "./pages/shared/ChatPage";
 
-import { IconPlus, IconList, IconCalendar, IconMessage, IconUser, IconInbox, IconContacts, IconChart, IconCar } from "./components/icons";
+import { IconPlus, IconList, IconCalendar, IconMessage, IconUser, IconInbox, IconContacts, IconChart, IconCar, IconStar } from "./components/icons";
 
 const CLIENT_NAV: NavItem[] = [
   { to: "/app/requests/new", label: "Nouvelle demande", icon: IconPlus },
@@ -53,6 +54,7 @@ const ADMIN_NAV: NavItem[] = [
   { to: "/admin/queue", label: "File d'attente", icon: IconInbox },
   { to: "/admin/agenda", label: "Agenda", icon: IconContacts },
   { to: "/admin/bookings", label: "Réservations", icon: IconCalendar },
+  { to: "/admin/reviews", label: "Avis clients", icon: IconStar },
   { to: "/admin/messages", label: "Messages", icon: IconMessage },
 ];
 
@@ -142,6 +144,7 @@ function AppRoutes() {
         <Route path="requests/:requestId" element={<AdminRequestDetailPage />} />
         <Route path="agenda" element={<AgendaPage />} />
         <Route path="bookings" element={<AdminBookingsPage />} />
+        <Route path="reviews" element={<AdminReviewsPage />} />
         <Route path="messages" element={<MessagesPage basePath="/admin" />} />
         <Route path="messages/:conversationId" element={<ChatPage basePath="/admin" />} />
       </Route>

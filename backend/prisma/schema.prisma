@@ -293,7 +293,11 @@ model Review {
   professional   ProfessionalProfile @relation("ProReviews", fields: [professionalId], references: [id], onDelete: Cascade)
   rating         Int
   comment        String?
+  // Un avis est visible publiquement par défaut ; l'admin peut le retirer de la vitrine.
+  published      Boolean             @default(true)
   createdAt      DateTime            @default(now())
+
+  @@index([published, createdAt])
 }
 
 // Conversation générique entre deux utilisateurs (client <-> admin, ou admin <-> professionnel).

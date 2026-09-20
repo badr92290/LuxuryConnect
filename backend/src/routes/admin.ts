@@ -310,4 +310,40 @@ router.get("/bookings", async (_req, res) => {
   res.json({ bookings });
 });
 
+// Modération des avis : la vitrine publique ne montre que les avis publiés.
+router.get("/reviews", async (_req, res) => {
+  const reviews = await prisma.review.findMany({
+    orderBy: { createdAt: "desc" },
+    include: {
+      client: { select: { firstName: true, lastName: true, email: true } },
+      professional: { select: { businessName: true } },
+      booking: {
+        select: {
+          price: true,
+          quoteRequest: {
+            select: { serviceType: true, vehicleMake: true, vehicleModel: true, vehicleYear: true },
+          },
+        },
+      },
+    },
+  });
+  res.json({ reviews });
+});
+
+const publishSchema = z.object({ published: z.boolean() });
+
+router.patch("/reviews/:id", async (req, res) => {
+  const parsed = publishSchema.safeParse(req.body);
+  if (!parsed.success) return res.status(400).json({ error: parsed.error.flatten() });
+
+  const existing = await prisma.review.findUnique({ where: { id: req.params.id } });
+  if (!existing) return res.status(404).json({ error: "Avis introuvable" });
+
+  const review = await prisma.review.update({
+    where: { id: req.params.id },
+    data: { published: parsed.data.published },
+  });
+  res.json({ review });
+});
+
 export default router;

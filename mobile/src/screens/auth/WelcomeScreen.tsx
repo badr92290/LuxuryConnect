@@ -1,8 +1,9 @@
 import React from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { colors, spacing } from "../../theme/colors";
 import { Button, Screen } from "../../components/ui";
 import { HaloBackground } from "../../components/HaloBackground";
+import { ClientReviewsStrip } from "../../components/ClientReviews";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import type { AuthStackParamList } from "../../navigation/types";
 
@@ -11,7 +12,10 @@ type Props = NativeStackScreenProps<AuthStackParamList, "Welcome">;
 export default function WelcomeScreen({ navigation }: Props) {
   return (
     <Screen>
-      <View style={styles.container}>
+      <ScrollView
+        contentContainerStyle={styles.container}
+        showsVerticalScrollIndicator={false}
+      >
         <View>
           <Text style={styles.eyebrow}>CONCIERGE PPF · COVERING · CÉRAMIQUE</Text>
           <Text style={styles.headline}>
@@ -32,6 +36,8 @@ export default function WelcomeScreen({ navigation }: Props) {
           </Text>
         </View>
 
+        <ClientReviewsStrip onSeeAll={() => navigation.navigate("Reviews")} />
+
         <View style={styles.actions}>
           <Button title="Se connecter" onPress={() => navigation.navigate("Login")} />
           <Button
@@ -47,14 +53,14 @@ export default function WelcomeScreen({ navigation }: Props) {
             style={{ marginTop: spacing.sm }}
           />
         </View>
-      </View>
+      </ScrollView>
     </Screen>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    flexGrow: 1,
     justifyContent: "space-between",
     padding: spacing.lg,
     paddingTop: 100,
@@ -84,7 +90,8 @@ const styles = StyleSheet.create({
     marginTop: spacing.md,
   },
   wordmarkWrap: {
-    flex: 1,
+    height: 260,
+    marginVertical: spacing.lg,
     overflow: "hidden",
   },
   wordmark: {
@@ -104,5 +111,6 @@ const styles = StyleSheet.create({
   },
   actions: {
     width: "100%",
+    marginTop: spacing.xl,
   },
 });

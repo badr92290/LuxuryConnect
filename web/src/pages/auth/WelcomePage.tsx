@@ -2,6 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { Button } from "../../components/ui";
 import { HaloBackground } from "../../components/HaloBackground";
+import { ClientReviews } from "../../components/ClientReviews";
 import { IconInbox, IconCrown, IconShield, IconSparkle } from "../../components/icons";
 
 const STEPS = [
@@ -155,6 +156,9 @@ export default function WelcomePage() {
             ))}
           </ul>
         </section>
+
+        {/* ─── Avis clients ─── */}
+        <ClientReviews />
 
         {/* ─── CTA final ─── */}
         <section className="relative mt-20 overflow-hidden rounded-3xl border border-gold/20 px-8 py-14 text-center md:mt-28 md:py-20">
