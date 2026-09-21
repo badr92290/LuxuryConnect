@@ -61,18 +61,33 @@ export default function MyBookingsScreen({ navigation }: Props) {
             <Text style={styles.meta}>
               Rendez-vous le {new Date(item.scheduledAt).toLocaleDateString("fr-FR")} · {item.price} €
             </Text>
-            {item.status === "COMPLETED" && !item.review && (
-              <Button
-                title="Laisser un avis"
-                variant="secondary"
-                style={{ marginTop: spacing.sm }}
-                onPress={() =>
-                  navigation.navigate("LeaveReview", {
-                    bookingId: item.id,
-                    businessName: item.professional?.businessName ?? "",
-                  })
-                }
-              />
+            {item.status === "COMPLETED" && (
+              <>
+                {!item.review && (
+                  <Button
+                    title="Laisser un avis"
+                    variant="secondary"
+                    style={{ marginTop: spacing.md }}
+                    onPress={() =>
+                      navigation.navigate("LeaveReview", {
+                        bookingId: item.id,
+                        businessName: item.professional?.businessName ?? "",
+                      })
+                    }
+                  />
+                )}
+                <Button
+                  title="Un souci ? Ouvrir un dossier SAV"
+                  variant="secondary"
+                  style={{ marginTop: spacing.sm }}
+                  onPress={() =>
+                    navigation.navigate("NewSupportTicket", {
+                      bookingId: item.id,
+                      businessName: item.professional?.businessName ?? "l'atelier",
+                    })
+                  }
+                />
+              </>
             )}
           </Card>
         )}

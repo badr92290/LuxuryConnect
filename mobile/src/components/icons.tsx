@@ -149,3 +149,11 @@ export const IconSparkle = base(() => (
 export const IconStar = base(() => (
   <Path d="M12 3.5l2.6 5.6 6 .7-4.5 4.1 1.3 5.9L12 16.9 6.6 19.8l1.3-5.9L3.4 9.8l6-.7z" />
 ));
+
+export const IconLifebuoy = base(() => (
+  <>
+    <Circle cx="12" cy="12" r="8.5" />
+    <Circle cx="12" cy="12" r="3.5" />
+    <Path d="m6 6 3.5 3.5M18 6l-3.5 3.5M6 18l3.5-3.5M18 18l-3.5-3.5" />
+  </>
+));

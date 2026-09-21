@@ -5,21 +5,30 @@ export type AuthStackParamList = {
   Login: undefined;
   Register: { role: Role };
   Reviews: undefined;
+  Help: undefined;
 };
 
+/**
+ * Parcours client. Aucun écran ne mène à un professionnel : la demande part
+ * chez LuxuryConnect, qui la transmet et fixe le prix. Seul le service
+ * après-vente met le client en relation directe avec l'atelier.
+ */
 export type ClientStackParamList = {
   ClientTabs: undefined;
-  ProfessionalDetail: { professionalId: string };
-  QuoteRequestForm: { professionalId: string; businessName: string };
+  RequestDetail: { requestId: string };
   Chat: { conversationId: string; title: string };
   LeaveReview: { bookingId: string; businessName: string };
+  NewSupportTicket: { bookingId: string; businessName: string };
+  SupportTicket: { ticketId: string };
   Reviews: undefined;
+  Help: undefined;
 };
 
 export type ClientTabParamList = {
-  Search: undefined;
-  MyQuotes: undefined;
+  NewRequest: undefined;
+  MyRequests: undefined;
   MyBookings: undefined;
+  Support: undefined;
   Messages: undefined;
   Profile: undefined;
 };
@@ -28,11 +37,14 @@ export type ProStackParamList = {
   ProTabs: undefined;
   QuoteRequestDetail: { quoteRequestId: string };
   Chat: { conversationId: string; title: string };
+  SupportTicket: { ticketId: string };
+  Help: undefined;
 };
 
 export type ProTabParamList = {
   Requests: undefined;
   ProBookings: undefined;
+  Support: undefined;
   Messages: undefined;
   ProProfile: undefined;
 };

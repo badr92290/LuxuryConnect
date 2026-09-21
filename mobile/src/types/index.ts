@@ -1,14 +1,41 @@
+/** Rôles proposés à l'inscription depuis l'application. */
 export type Role = "CLIENT" | "PROFESSIONAL";
 
-export type ServiceType = "PPF" | "COVERING" | "CERAMIC" | "TINT" | "POLISH";
+/** Rôle porté par un compte, y compris celui de l'intermédiaire. */
+export type AccountRole = Role | "ADMIN";
+
+export type ServiceType =
+  | "PPF_SATIN"
+  | "PPF_COLORED"
+  | "PPF_GLOSS"
+  | "COVERING"
+  | "CERAMIC"
+  | "TINT"
+  // Valeurs historiques : plus proposées, conservées pour l'affichage des
+  // demandes déjà enregistrées.
+  | "PPF"
+  | "POLISH";
 
 export const SERVICE_LABELS: Record<ServiceType, string> = {
-  PPF: "PPF (Paint Protection Film)",
+  PPF_SATIN: "PPF satin",
+  PPF_COLORED: "PPF coloré",
+  PPF_GLOSS: "PPF brillant",
   COVERING: "Covering",
-  CERAMIC: "Protection céramique",
+  CERAMIC: "Céramique",
   TINT: "Vitres teintées",
+  PPF: "PPF",
   POLISH: "Lustrage",
 };
+
+/** Prestations réellement proposées aujourd'hui, dans l'ordre d'affichage. */
+export const OFFERED_SERVICES: ServiceType[] = [
+  "PPF_SATIN",
+  "PPF_COLORED",
+  "PPF_GLOSS",
+  "COVERING",
+  "CERAMIC",
+  "TINT",
+];
 
 export type QuoteRequestStatus =
   | "PENDING_REVIEW"
@@ -81,8 +108,18 @@ export interface QuoteRequest {
   vehicleModel: string;
   vehicleYear?: number | null;
   description?: string | null;
+  city?: string | null;
   status: QuoteRequestStatus;
+  // Fixés par LuxuryConnect au moment de transmettre l'offre au client.
   finalPrice?: number | null;
+  finalMessage?: string | null;
+  selectedProfessional?: {
+    businessName: string;
+    city?: string | null;
+    isInsured?: boolean;
+    isCertified?: boolean;
+    yearsExperience?: number | null;
+  } | null;
   createdAt: string;
   professional?: { businessName: string };
   client?: { firstName: string; lastName: string; phone?: string | null };
@@ -125,13 +162,24 @@ export interface Review {
   client?: { firstName: string; lastName: string };
 }
 
+/**
+ * Conversation à deux. Hors service après-vente, l'un des participants est
+ * toujours LuxuryConnect : le client et l'atelier ne se parlent pas ici.
+ */
+export interface ConversationParticipant {
+  id: string;
+  firstName: string;
+  lastName: string;
+  role: AccountRole;
+}
+
 export interface Conversation {
   id: string;
-  clientId: string;
-  professionalId: string;
+  participantAId: string;
+  participantBId: string;
+  participantA?: ConversationParticipant;
+  participantB?: ConversationParticipant;
   createdAt: string;
-  professional?: { businessName: string };
-  client?: { firstName: string; lastName: string };
   messages?: Message[];
 }
 
@@ -141,4 +189,77 @@ export interface Message {
   senderId: string;
   content: string;
   createdAt: string;
+}
+
+// ── Service après-vente ──────────────────────────────────────────────────
+// Seule partie du service où le client et l'atelier se parlent directement.
+
+export type SupportTicketStatus = "OPEN" | "IN_PROGRESS" | "ESCALATED" | "RESOLVED";
+export type SupportTicketReason = "DEFECT" | "WARRANTY" | "APPOINTMENT" | "INVOICE" | "OTHER";
+
+export const SUPPORT_STATUS_LABELS: Record<SupportTicketStatus, string> = {
+  OPEN: "En attente de l'atelier",
+  IN_PROGRESS: "Échange en cours",
+  ESCALATED: "Assistance saisie",
+  RESOLVED: "Réglé",
+};
+
+export const SUPPORT_REASON_LABELS: Record<SupportTicketReason, string> = {
+  DEFECT: "Défaut constaté",
+  WARRANTY: "Garantie",
+  APPOINTMENT: "Rendez-vous ou retouche",
+  INVOICE: "Facture",
+  OTHER: "Autre",
+};
+
+export const SUPPORT_REASONS: SupportTicketReason[] = [
+  "DEFECT",
+  "WARRANTY",
+  "APPOINTMENT",
+  "INVOICE",
+  "OTHER",
+];
+
+export interface SupportMessage {
+  id: string;
+  content: string;
+  isSystem: boolean;
+  createdAt: string;
+  senderId: string;
+  sender?: { id: string; firstName: string; lastName: string; role: AccountRole };
+}
+
+export interface SupportTicket {
+  id: string;
+  bookingId: string;
+  clientId: string;
+  professionalId: string;
+  reason: SupportTicketReason;
+  subject: string;
+  status: SupportTicketStatus;
+  escalatedAt?: string | null;
+  resolvedAt?: string | null;
+  createdAt: string;
+  updatedAt: string;
+  booking: {
+    id: string;
+    price: number;
+    scheduledAt: string;
+    quoteRequest: {
+      serviceType: ServiceType;
+      vehicleMake: string;
+      vehicleModel: string;
+      vehicleYear?: number | null;
+    };
+  };
+  client: { id: string; firstName: string; lastName: string; phone?: string | null; email: string };
+  professional: {
+    id: string;
+    businessName: string;
+    city?: string | null;
+    address?: string | null;
+    user: { id: string; firstName: string; lastName: string; phone?: string | null };
+  };
+  photos: { id: string; imageUrl: string }[];
+  messages: SupportMessage[];
 }

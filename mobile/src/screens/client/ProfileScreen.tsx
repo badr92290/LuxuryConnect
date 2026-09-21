@@ -4,7 +4,7 @@ import { colors, fonts, spacing } from "../../theme/colors";
 import { Button, Card, Screen } from "../../components/ui";
 import { useAuth } from "../../context/AuthContext";
 
-export default function ProfileScreen() {
+export default function ProfileScreen({ navigation }: { navigation: any }) {
   const { user, logout } = useAuth();
 
   return (
@@ -18,6 +18,11 @@ export default function ProfileScreen() {
           <Text style={styles.email}>{user?.email}</Text>
           {user?.phone && <Text style={styles.email}>{user.phone}</Text>}
         </Card>
+        <Button
+          title="Assistance et questions fréquentes"
+          variant="secondary"
+          onPress={() => navigation.navigate("Help")}
+        />
         <Button title="Se déconnecter" variant="secondary" onPress={logout} />
       </View>
     </Screen>

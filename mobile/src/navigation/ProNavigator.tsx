@@ -5,6 +5,7 @@ import { stackScreenOptions, tabScreenOptions } from "./screenOptions";
 import {
   IconCalendar,
   IconInbox,
+  IconLifebuoy,
   IconMessage,
   IconUser,
   type IconProps,
@@ -15,6 +16,9 @@ import ProProfileScreen from "../screens/pro/ProProfileScreen";
 import ConversationsScreen from "../screens/shared/ConversationsScreen";
 import ChatScreen from "../screens/shared/ChatScreen";
 import QuoteRequestDetailScreen from "../screens/pro/QuoteRequestDetailScreen";
+import SupportListScreen from "../screens/shared/SupportListScreen";
+import SupportTicketScreen from "../screens/shared/SupportTicketScreen";
+import HelpScreen from "../screens/shared/HelpScreen";
 import type { ProTabParamList, ProStackParamList } from "./types";
 
 const Tab = createBottomTabNavigator<ProTabParamList>();
@@ -23,6 +27,7 @@ const Stack = createNativeStackNavigator<ProStackParamList>();
 const TAB_ICONS: Record<keyof ProTabParamList, React.ComponentType<IconProps>> = {
   Requests: IconInbox,
   ProBookings: IconCalendar,
+  Support: IconLifebuoy,
   Messages: IconMessage,
   ProProfile: IconUser,
 };
@@ -39,7 +44,8 @@ function ProTabs() {
       }}
     >
       <Tab.Screen name="Requests" component={RequestsScreen} options={{ title: "Demandes" }} />
-      <Tab.Screen name="ProBookings" component={ProBookingsScreen} options={{ title: "Réservations" }} />
+      <Tab.Screen name="ProBookings" component={ProBookingsScreen} options={{ title: "Agenda" }} />
+      <Tab.Screen name="Support" component={SupportListScreen} options={{ title: "SAV" }} />
       <Tab.Screen name="Messages" component={ConversationsScreen} options={{ title: "Messages" }} />
       <Tab.Screen name="ProProfile" component={ProProfileScreen} options={{ title: "Profil" }} />
     </Tab.Navigator>
@@ -58,6 +64,12 @@ export default function ProNavigator() {
         options={{ title: "Demande de devis" }}
       />
       <Stack.Screen name="Chat" component={ChatScreen} options={{ title: "Message" }} />
+      <Stack.Screen
+        name="SupportTicket"
+        component={SupportTicketScreen}
+        options={{ title: "Dossier SAV" }}
+      />
+      <Stack.Screen name="Help" component={HelpScreen} options={{ title: "Assistance" }} />
     </Stack.Navigator>
   );
 }

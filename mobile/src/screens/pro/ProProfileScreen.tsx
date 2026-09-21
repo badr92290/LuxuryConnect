@@ -5,11 +5,10 @@ import { colors, fonts, radius, spacing } from "../../theme/colors";
 import { Badge, Button, Card, Input, Screen } from "../../components/ui";
 import { api } from "../../api/client";
 import { useAuth } from "../../context/AuthContext";
-import { ProfessionalProfile, ServiceType, SERVICE_LABELS } from "../../types";
+import { OFFERED_SERVICES, ProfessionalProfile, SERVICE_LABELS, ServiceType } from "../../types";
 
-const SERVICES: ServiceType[] = ["PPF", "COVERING", "CERAMIC", "TINT", "POLISH"];
 
-export default function ProProfileScreen() {
+export default function ProProfileScreen({ navigation }: { navigation: any }) {
   const { user, logout } = useAuth();
   const [profile, setProfile] = useState<ProfessionalProfile | null>(null);
 
@@ -19,7 +18,7 @@ export default function ProProfileScreen() {
   const [address, setAddress] = useState("");
   const [savingProfile, setSavingProfile] = useState(false);
 
-  const [serviceType, setServiceType] = useState<ServiceType>("PPF");
+  const [serviceType, setServiceType] = useState<ServiceType>("PPF_SATIN");
   const [priceFrom, setPriceFrom] = useState("");
   const [savingService, setSavingService] = useState(false);
 
@@ -116,7 +115,7 @@ export default function ProProfileScreen() {
             </View>
           )}
           <View style={styles.serviceGrid}>
-            {SERVICES.map((s) => (
+            {OFFERED_SERVICES.map((s) => (
               <Pressable
                 key={s}
                 onPress={() => setServiceType(s)}
@@ -157,6 +156,12 @@ export default function ProProfileScreen() {
           </Text>
           <Text style={styles.meta}>{user?.email}</Text>
         </Card>
+        <Button
+          title="Assistance et questions fréquentes"
+          variant="secondary"
+          onPress={() => navigation.navigate("Help")}
+          style={{ marginBottom: spacing.sm }}
+        />
         <Button title="Se déconnecter" variant="secondary" onPress={logout} />
       </ScrollView>
     </Screen>

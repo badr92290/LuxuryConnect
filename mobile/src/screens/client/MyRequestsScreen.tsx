@@ -2,7 +2,7 @@ import React, { useCallback, useState } from "react";
 import { FlatList, RefreshControl, StyleSheet, Text, View } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
 import { colors, fonts, spacing } from "../../theme/colors";
-import { Badge, Button, Card, EmptyState, Screen, Title } from "../../components/ui";
+import { Badge, Card, EmptyState, Screen, Title } from "../../components/ui";
 import { api } from "../../api/client";
 import {
   QuoteRequest,
@@ -10,6 +10,15 @@ import {
   QUOTE_REQUEST_STATUS_LABELS,
   SERVICE_LABELS,
 } from "../../types";
+import type { NativeStackScreenProps } from "@react-navigation/native-stack";
+import type { CompositeScreenProps } from "@react-navigation/native";
+import type { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
+import type { ClientStackParamList, ClientTabParamList } from "../../navigation/types";
+
+type Props = CompositeScreenProps<
+  BottomTabScreenProps<ClientTabParamList, "MyRequests">,
+  NativeStackScreenProps<ClientStackParamList>
+>;
 
 const TONE: Record<QuoteRequestStatus, "primary" | "muted" | "success" | "danger"> = {
   PENDING_REVIEW: "muted",
@@ -21,16 +30,15 @@ const TONE: Record<QuoteRequestStatus, "primary" | "muted" | "success" | "danger
   CANCELLED: "danger",
 };
 
-export default function MyQuotesScreen() {
-  const [quoteRequests, setQuoteRequests] = useState<QuoteRequest[]>([]);
+export default function MyRequestsScreen({ navigation }: Props) {
+  const [requests, setRequests] = useState<QuoteRequest[]>([]);
   const [loading, setLoading] = useState(false);
-  const [acceptingId, setAcceptingId] = useState<string | null>(null);
 
   const load = useCallback(async () => {
     setLoading(true);
     try {
       const data = await api.get<{ quoteRequests: QuoteRequest[] }>("/quote-requests");
-      setQuoteRequests(data.quoteRequests);
+      setRequests(data.quoteRequests);
     } finally {
       setLoading(false);
     }
@@ -39,26 +47,13 @@ export default function MyQuotesScreen() {
   useFocusEffect(
     useCallback(() => {
       load();
-    }, [load])
+    }, [load]),
   );
-
-  // L'offre finale vient de LuxuryConnect : le client accepte un prix,
-  // jamais le devis d'un atelier en particulier.
-  async function acceptOffer(quoteRequestId: string) {
-    setAcceptingId(quoteRequestId);
-    try {
-      const scheduledAt = new Date(Date.now() + 3 * 24 * 3600 * 1000).toISOString();
-      await api.post(`/quote-requests/${quoteRequestId}/accept`, { scheduledAt });
-      await load();
-    } finally {
-      setAcceptingId(null);
-    }
-  }
 
   return (
     <Screen>
       <FlatList
-        data={quoteRequests}
+        data={requests}
         keyExtractor={(q) => q.id}
         contentContainerStyle={{ padding: spacing.gutter, gap: spacing.md }}
         refreshControl={
@@ -67,11 +62,11 @@ export default function MyQuotesScreen() {
         ListHeaderComponent={<Title style={styles.title}>Mes demandes</Title>}
         ListEmptyComponent={
           !loading ? (
-            <EmptyState message="Vous n'avez pas encore fait de demande de devis." />
+            <EmptyState message="Vous n'avez pas encore fait de demande. Décrivez votre besoin, nous nous occupons du reste." />
           ) : null
         }
         renderItem={({ item }) => (
-          <Card>
+          <Card onPress={() => navigation.navigate("RequestDetail", { requestId: item.id })}>
             <View style={styles.rowBetween}>
               <Text style={styles.service}>{SERVICE_LABELS[item.serviceType]}</Text>
               <Badge label={QUOTE_REQUEST_STATUS_LABELS[item.status]} tone={TONE[item.status]} />
@@ -80,17 +75,8 @@ export default function MyQuotesScreen() {
               {item.vehicleMake} {item.vehicleModel}
               {item.vehicleYear ? ` (${item.vehicleYear})` : ""}
             </Text>
-
             {item.status === "FINALIZED" && item.finalPrice != null && (
-              <>
-                <Text style={styles.offer}>Offre reçue : {item.finalPrice} €</Text>
-                <Button
-                  title="Accepter l'offre"
-                  onPress={() => acceptOffer(item.id)}
-                  loading={acceptingId === item.id}
-                  style={{ marginTop: spacing.md }}
-                />
-              </>
+              <Text style={styles.offer}>Offre reçue : {item.finalPrice} €</Text>
             )}
           </Card>
         )}

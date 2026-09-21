@@ -50,18 +50,17 @@ export default function QuoteRequestDetailScreen({ route }: Props) {
     <Screen>
       <ScrollView contentContainerStyle={{ padding: spacing.gutter, gap: spacing.md }}>
         <Card>
-          <Text style={styles.clientName}>
-            {quoteRequest.client?.firstName} {quoteRequest.client?.lastName}
-          </Text>
-          {quoteRequest.client?.phone && <Text style={styles.meta}>{quoteRequest.client.phone}</Text>}
-          <View style={{ marginTop: spacing.sm }}>
-            <Badge label={SERVICE_LABELS[quoteRequest.serviceType]} />
-          </View>
-          <Text style={styles.meta}>
-            Véhicule : {quoteRequest.vehicleMake} {quoteRequest.vehicleModel}
+          {/* L'identité du client ne vous est transmise qu'une fois l'offre
+              acceptée : ici, la demande se lit par sa prestation. */}
+          <Badge label={SERVICE_LABELS[quoteRequest.serviceType]} />
+          <Text style={styles.vehicle}>
+            {quoteRequest.vehicleMake} {quoteRequest.vehicleModel}
             {quoteRequest.vehicleYear ? ` (${quoteRequest.vehicleYear})` : ""}
           </Text>
-          {quoteRequest.description && <Text style={styles.description}>{quoteRequest.description}</Text>}
+          {quoteRequest.city ? <Text style={styles.meta}>{quoteRequest.city}</Text> : null}
+          {quoteRequest.description ? (
+            <Text style={styles.description}>{quoteRequest.description}</Text>
+          ) : null}
         </Card>
 
         {quoteRequest.quotes && quoteRequest.quotes.length > 0 && (
@@ -98,7 +97,7 @@ export default function QuoteRequestDetailScreen({ route }: Props) {
 }
 
 const styles = StyleSheet.create({
-  clientName: { fontFamily: fonts.bodyBold, color: colors.text, fontSize: 18 },
+  vehicle: { fontFamily: fonts.bodySemi, color: colors.text, fontSize: 17, marginTop: spacing.md },
   meta: { fontFamily: fonts.body, color: colors.textMuted, marginTop: 4 },
   description: { fontFamily: fonts.body, color: colors.text, marginTop: spacing.sm },
   sectionTitle: { fontFamily: fonts.display, color: colors.text, fontSize: 20 },
