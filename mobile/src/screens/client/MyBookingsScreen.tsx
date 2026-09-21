@@ -84,11 +84,14 @@ export default function MyBookingsScreen({ navigation }: Props) {
               </Text>
             ) : (
               item.status !== "CANCELLED" && (
-                <Button
-                  title={`Régler ${formatAmount(Math.round(item.price * 100))}`}
-                  style={{ marginTop: spacing.md }}
-                  onPress={() => navigation.navigate("Payment", { bookingId: item.id })}
-                />
+                <>
+                  <Button
+                    title={`Régler ${formatAmount(Math.round(item.price * 100))}`}
+                    style={{ marginTop: spacing.md }}
+                    onPress={() => navigation.navigate("Payment", { bookingId: item.id })}
+                  />
+                  <Text style={styles.methods}>Carte bancaire · Apple Pay · Google Pay</Text>
+                </>
               )
             )}
             {item.status === "COMPLETED" && (
@@ -137,4 +140,11 @@ const styles = StyleSheet.create({
   businessName: { fontFamily: fonts.bodySemi, color: colors.text, fontSize: 15, flexShrink: 1 },
   meta: { fontFamily: fonts.body, color: colors.textMuted, fontSize: 14, marginTop: 6 },
   paid: { fontFamily: fonts.bodySemi, color: colors.success, fontSize: 14, marginTop: 10 },
+  methods: {
+    fontFamily: fonts.body,
+    fontSize: 12,
+    color: colors.textMutedDark,
+    marginTop: spacing.sm,
+    textAlign: "center",
+  },
 });

@@ -72,6 +72,22 @@ Sans ces clés, tout continue de fonctionner : les écrans de paiement
 affichent « pas encore activé » et vous réglez les ateliers par virement
 classique.
 
+## 3 bis. Moyens de paiement acceptés
+
+Volontairement restreint à la **carte bancaire** (Visa, Mastercard, CB,
+American Express). Apple Pay et Google Pay passent par ce même rail — ce
+sont des cartes du point de vue de Stripe — et sont donc couverts sans
+réglage supplémentaire.
+
+Ce choix est explicite dans le code (`payment_method_types: ["card"]`)
+plutôt que laissé au tableau de bord Stripe, et c'est important : activer
+un prélèvement SEPA ou un paiement fractionné ferait apparaître des moyens
+qui se confirment d'abord puis se dénouent plusieurs jours après, parfois
+par un échec. Comme vous reversez la part de l'atelier une fois la
+prestation faite, vous vireriez un argent pas encore arrivé. Si vous voulez
+un jour les proposer, il faudra d'abord attendre l'encaissement effectif
+avant d'autoriser le virement.
+
 ## 4. Apple Pay
 
 1. Dans Stripe : Paramètres → Moyens de paiement → Apple Pay → **ajoutez le

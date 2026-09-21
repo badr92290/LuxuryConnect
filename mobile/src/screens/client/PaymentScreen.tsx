@@ -88,8 +88,11 @@ export default function PaymentScreen({ route }: Props) {
         const { error: initError } = await initPaymentSheet({
           merchantDisplayName: "LuxuryConnect",
           paymentIntentClientSecret: intent.clientSecret,
-          // Apple Pay et Google Pay : déclarés ici, proposés par la feuille
-          // selon l'appareil.
+          // Carte bancaire d'office ; Apple Pay et Google Pay s'ajoutent
+          // selon l'appareil. `allowsDelayedPaymentMethods: false` écarte
+          // les moyens qui se dénouent après coup : on ne peut pas reverser
+          // à l'atelier un argent qui n'est pas encore arrivé.
+          allowsDelayedPaymentMethods: false,
           applePay: { merchantCountryCode: "FR" },
           googlePay: {
             merchantCountryCode: "FR",
@@ -213,9 +216,12 @@ export default function PaymentScreen({ route }: Props) {
               loading={paying}
               disabled={!ready}
             />
+            <View style={styles.methods}>
+              <Text style={styles.methodsText}>Carte bancaire · Apple Pay · Google Pay</Text>
+            </View>
             <Muted style={styles.secure}>
-              Apple Pay, Google Pay ou carte bancaire. Paiement sécurisé par Stripe : vos
-              coordonnées bancaires ne transitent pas par LuxuryConnect.
+              Paiement sécurisé par Stripe : vos coordonnées bancaires ne transitent pas par
+              LuxuryConnect et ne sont jamais stockées sur nos serveurs.
             </Muted>
           </View>
         )}
@@ -250,5 +256,22 @@ const styles = StyleSheet.create({
   },
   note: { marginTop: spacing.sm, fontSize: 12, color: colors.textMutedDark },
   actions: { marginTop: spacing.lg },
+  methods: {
+    marginTop: spacing.md,
+    borderWidth: 1,
+    borderColor: colors.hairline,
+    backgroundColor: colors.surfaceAlt,
+    borderRadius: 999,
+    paddingVertical: 8,
+    paddingHorizontal: spacing.md,
+    alignSelf: "center",
+  },
+  methodsText: {
+    fontFamily: fonts.bodySemi,
+    fontSize: 11,
+    letterSpacing: 0.7,
+    textTransform: "uppercase",
+    color: colors.textMuted,
+  },
   secure: { marginTop: spacing.md, fontSize: 12, color: colors.textMutedDark },
 });

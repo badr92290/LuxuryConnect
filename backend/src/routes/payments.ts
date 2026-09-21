@@ -85,7 +85,18 @@ router.post("/bookings/:bookingId/intent", requireAuth, requireRole("CLIENT"), a
     // Encaissé sur le compte LuxuryConnect : aucun `transfer_data` ici.
     // Le reversement à l'atelier est un mouvement distinct, déclenché
     // après la prestation.
-    automatic_payment_methods: { enabled: true },
+    //
+    // Carte uniquement, et c'est délibéré. Apple Pay et Google Pay passent
+    // par ce même rail — ce sont des cartes aux yeux de Stripe — et sont
+    // donc couverts. En revanche `automatic_payment_methods` ouvrirait la
+    // porte à tout ce qui est coché dans le tableau de bord, dont des
+    // moyens à règlement différé (prélèvement SEPA, paiement fractionné)
+    // qui se confirment en « processing » puis se dénouent plusieurs jours
+    // après, parfois par un échec. Notre modèle reverse la part de
+    // l'atelier une fois la prestation faite : on virerait alors un argent
+    // pas encore arrivé. Tant que ce décalage n'est pas géré, on s'en tient
+    // aux moyens qui se règlent immédiatement.
+    payment_method_types: ["card"],
     description: `LuxuryConnect — ${vehicle}`,
     receipt_email: booking.client.email,
     metadata: {

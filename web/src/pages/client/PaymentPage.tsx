@@ -21,6 +21,7 @@ import {
   Spinner,
 } from "../../components/ui";
 import { IconShield } from "../../components/icons";
+import { CardBrands } from "../../components/CardBrands";
 
 type IntentResponse = { clientSecret: string; amountTotal: number; currency: string };
 
@@ -77,11 +78,15 @@ function PaymentForm({
 
   return (
     <form onSubmit={handleSubmit}>
-      {/* Apple Pay et Google Pay apparaissent d'eux-mêmes en haut de ce
-          composant, selon l'appareil et le navigateur. */}
+      {/* Carte bancaire d'abord ; Apple Pay et Google Pay s'ajoutent d'eux-mêmes
+          au-dessus, selon l'appareil et le navigateur. */}
       <PaymentElement
         onReady={() => setReady(true)}
-        options={{ layout: "tabs", wallets: { applePay: "auto", googlePay: "auto" } }}
+        options={{
+          layout: "tabs",
+          wallets: { applePay: "auto", googlePay: "auto" },
+          defaultValues: { billingDetails: { name: "" } },
+        }}
       />
 
       {error && (
@@ -94,7 +99,12 @@ function PaymentForm({
         Payer {formatAmount(amount, currency)}
       </Button>
 
-      <p className="mt-4 flex items-start gap-2 text-xs leading-relaxed text-mutedDark">
+      <div className="mt-5 flex flex-wrap items-center gap-x-3 gap-y-2">
+        <CardBrands />
+        <span className="text-xs text-mutedDark">Carte bancaire, Apple Pay ou Google Pay</span>
+      </div>
+
+      <p className="mt-3 flex items-start gap-2 text-xs leading-relaxed text-mutedDark">
         <IconShield className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
         <span>
           Paiement sécurisé par Stripe. Vos coordonnées bancaires ne transitent pas par

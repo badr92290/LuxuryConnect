@@ -68,9 +68,14 @@ export default function BookingsPage() {
               </p>
             ) : (
               b.status !== "CANCELLED" && (
-                <Button className="mt-4" onClick={() => navigate(`/app/bookings/${b.id}/paiement`)}>
-                  Régler {formatAmount(Math.round(b.price * 100))}
-                </Button>
+                <div className="mt-4">
+                  <Button onClick={() => navigate(`/app/bookings/${b.id}/paiement`)}>
+                    Régler {formatAmount(Math.round(b.price * 100))}
+                  </Button>
+                  <p className="mt-2 text-xs text-mutedDark">
+                    Carte bancaire, Apple Pay ou Google Pay
+                  </p>
+                </div>
               )
             )}
             {b.status === "COMPLETED" && (
