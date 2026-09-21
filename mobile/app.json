@@ -7,7 +7,8 @@
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "dark",
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "fr.luxuryconnect.app"
     },
     "android": {
       "adaptiveIcon": {
@@ -16,15 +17,28 @@
         "backgroundImage": "./assets/android-icon-background.png",
         "monochromeImage": "./assets/android-icon-monochrome.png"
       },
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "package": "fr.luxuryconnect.app"
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
       "expo-font",
-      "expo-splash-screen"
+      "expo-splash-screen",
+      [
+        "@stripe/stripe-react-native",
+        {
+          "merchantIdentifier": "merchant.fr.luxuryconnect",
+          "enableGooglePay": true
+        }
+      ]
     ],
-    "backgroundColor": "#0A0A0C"
+    "backgroundColor": "#0A0A0C",
+    "extra": {
+      "stripePublishableKey": "",
+      "appleMerchantId": "merchant.fr.luxuryconnect"
+    },
+    "scheme": "luxuryconnect"
   }
 }

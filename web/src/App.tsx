@@ -30,6 +30,9 @@ import AdminBookingsPage from "./pages/admin/BookingsPage";
 import AgendaPage from "./pages/admin/AgendaPage";
 import AdminReviewsPage from "./pages/admin/ReviewsPage";
 import AdminLeadsPage from "./pages/admin/LeadsPage";
+import AdminPaymentsPage from "./pages/admin/PaymentsPage";
+import ProPaymentsPage from "./pages/pro/PaymentsPage";
+import PaymentPage from "./pages/client/PaymentPage";
 
 import PrivacyPage from "./pages/public/PrivacyPage";
 import TermsPage from "./pages/public/TermsPage";
@@ -44,7 +47,7 @@ import NewSupportTicketPage from "./pages/client/NewSupportTicketPage";
 import MessagesPage from "./pages/shared/MessagesPage";
 import ChatPage from "./pages/shared/ChatPage";
 
-import { IconPlus, IconList, IconCalendar, IconMessage, IconUser, IconInbox, IconContacts, IconChart, IconCar, IconStar, IconMail, IconLifebuoy } from "./components/icons";
+import { IconPlus, IconList, IconCalendar, IconMessage, IconUser, IconInbox, IconContacts, IconChart, IconCar, IconStar, IconMail, IconLifebuoy, IconCard } from "./components/icons";
 
 const CLIENT_NAV: NavItem[] = [
   { to: "/app/requests/new", label: "Nouvelle demande", icon: IconPlus },
@@ -60,6 +63,7 @@ const PRO_NAV: NavItem[] = [
   { to: "/pro/requests", label: "Demandes", icon: IconList },
   { to: "/pro/bookings", label: "Réservations", icon: IconCalendar },
   { to: "/pro/sav", label: "Service après-vente", icon: IconLifebuoy },
+  { to: "/pro/paiements", label: "Mes paiements", icon: IconCard },
   { to: "/pro/messages", label: "Messages", icon: IconMessage },
   { to: "/pro/profile", label: "Profil", icon: IconUser },
 ];
@@ -72,6 +76,7 @@ const ADMIN_NAV: NavItem[] = [
   { to: "/admin/bookings", label: "Réservations", icon: IconCalendar },
   { to: "/admin/reviews", label: "Avis clients", icon: IconStar },
   { to: "/admin/sav", label: "Assistance SAV", icon: IconLifebuoy },
+  { to: "/admin/paiements", label: "Paiements", icon: IconCard },
   { to: "/admin/messages", label: "Messages", icon: IconMessage },
 ];
 
@@ -133,6 +138,7 @@ function AppRoutes() {
         <Route path="bookings" element={<BookingsPage />} />
         <Route path="bookings/:bookingId/review" element={<LeaveReviewPage />} />
         <Route path="bookings/:bookingId/sav" element={<NewSupportTicketPage />} />
+        <Route path="bookings/:bookingId/paiement" element={<PaymentPage />} />
         <Route path="sav" element={<SupportListPage basePath="/app" />} />
         <Route path="sav/:ticketId" element={<SupportTicketPage basePath="/app" />} />
         <Route path="messages" element={<MessagesPage basePath="/app" />} />
@@ -154,6 +160,7 @@ function AppRoutes() {
         <Route path="bookings" element={<ProBookingsPage />} />
         <Route path="sav" element={<SupportListPage basePath="/pro" />} />
         <Route path="sav/:ticketId" element={<SupportTicketPage basePath="/pro" />} />
+        <Route path="paiements" element={<ProPaymentsPage />} />
         <Route path="messages" element={<MessagesPage basePath="/pro" />} />
         <Route path="messages/:conversationId" element={<ChatPage basePath="/pro" />} />
         <Route path="profile" element={<ProfileEditPage />} />
@@ -176,6 +183,7 @@ function AppRoutes() {
         <Route path="leads" element={<AdminLeadsPage />} />
         <Route path="sav" element={<SupportListPage basePath="/admin" />} />
         <Route path="sav/:ticketId" element={<SupportTicketPage basePath="/admin" />} />
+        <Route path="paiements" element={<AdminPaymentsPage />} />
         <Route path="messages" element={<MessagesPage basePath="/admin" />} />
         <Route path="messages/:conversationId" element={<ChatPage basePath="/admin" />} />
       </Route>

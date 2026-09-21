@@ -2,6 +2,7 @@ import { Router } from "express";
 import { z } from "zod";
 import { prisma } from "../prisma";
 import { requireAuth, AuthRequest } from "../middleware/auth";
+import { notifyAdmins } from "../utils/notify";
 
 const router = Router();
 
@@ -54,6 +55,25 @@ router.patch("/:id", requireAuth, async (req: AuthRequest, res) => {
     where: { id: booking.id },
     data: { status: parsed.data.status },
   });
+
+  // Prestation terminée et déjà réglée : c'est le moment où LuxuryConnect
+  // doit verser sa part à l'atelier.
+  if (parsed.data.status === "COMPLETED") {
+    const payment = await prisma.payment.findUnique({ where: { bookingId: booking.id } });
+    if (payment?.status === "PAID" && payment.payoutStatus === "PENDING") {
+      await prisma.payment.update({
+        where: { id: payment.id },
+        data: { payoutStatus: "SCHEDULED" },
+      });
+      await notifyAdmins({
+        type: "PAYOUT_PENDING",
+        title: "Virement à effectuer",
+        body: `${booking.professional.businessName} — ${(payment.amountWorkshop / 100).toFixed(2)} €`,
+        link: "/admin/paiements",
+      });
+    }
+  }
+
   res.json({ booking: updated });
 });
 

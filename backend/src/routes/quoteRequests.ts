@@ -224,6 +224,27 @@ router.post("/:id/accept", requireAuth, requireRole("CLIENT"), async (req: AuthR
     }),
   ]);
 
+  // Le paiement est ouvert dès l'acceptation : le client sait ce qu'il doit,
+  // et la part de l'atelier est figée sur le prix qu'il avait proposé — un
+  // devis révisé plus tard ne changerait plus ce qui lui est dû.
+  const selectedQuote = await prisma.quote.findFirst({
+    where: { quoteRequestId: quoteRequest.id, status: "SELECTED" },
+    select: { price: true },
+  });
+  const amountTotal = Math.round(quoteRequest.finalPrice * 100);
+  const amountWorkshop = selectedQuote ? Math.round(selectedQuote.price * 100) : 0;
+
+  await prisma.payment.create({
+    data: {
+      bookingId: booking.id,
+      clientId: quoteRequest.clientId,
+      professionalId: quoteRequest.selectedProfessionalId,
+      amountTotal,
+      amountWorkshop,
+      amountMargin: amountTotal - amountWorkshop,
+    },
+  });
+
   const professional = await prisma.professionalProfile.findUnique({
     where: { id: quoteRequest.selectedProfessionalId },
     select: { userId: true },

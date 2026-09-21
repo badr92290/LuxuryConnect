@@ -308,3 +308,78 @@ export interface SupportTicket {
   photos: { id: string; imageUrl: string }[];
   messages: SupportMessage[];
 }
+
+// ── Paiement ─────────────────────────────────────────────────────────────
+// Le client paie LuxuryConnect ; LuxuryConnect reverse ensuite sa part à
+// l'atelier. Côté client, seul `amountTotal` existe.
+
+export type PaymentStatus = "PENDING" | "PROCESSING" | "PAID" | "FAILED" | "REFUNDED";
+export type PayoutStatus = "PENDING" | "SCHEDULED" | "PAID" | "FAILED";
+
+export const PAYMENT_STATUS_LABELS: Record<PaymentStatus, string> = {
+  PENDING: "À régler",
+  PROCESSING: "Paiement en cours",
+  PAID: "Réglé",
+  FAILED: "Paiement refusé",
+  REFUNDED: "Remboursé",
+};
+
+export const PAYOUT_STATUS_LABELS: Record<PayoutStatus, string> = {
+  PENDING: "En attente de la prestation",
+  SCHEDULED: "Virement à effectuer",
+  PAID: "Versé à l'atelier",
+  FAILED: "Virement échoué",
+};
+
+/** Ce que le client peut voir d'un paiement. */
+export interface ClientPayment {
+  id: string;
+  amountTotal: number; // centimes
+  currency: string;
+  status: PaymentStatus;
+  paymentMethodLabel?: string | null;
+  paidAt?: string | null;
+  refundedAt?: string | null;
+}
+
+/** Vue complète, réservée à LuxuryConnect. */
+export interface AdminPayment extends ClientPayment {
+  amountWorkshop: number;
+  amountMargin: number;
+  payoutStatus: PayoutStatus;
+  paidOutAt?: string | null;
+  payoutError?: string | null;
+  failureMessage?: string | null;
+  createdAt: string;
+  client: { firstName: string; lastName: string; email: string };
+  professional: { businessName: string; stripePayoutsEnabled: boolean };
+  booking: {
+    id: string;
+    status: Booking["status"];
+    scheduledAt: string;
+    quoteRequest: { serviceType: ServiceType; vehicleMake: string; vehicleModel: string };
+  };
+}
+
+/** Ce qu'un atelier voit de ses gains. */
+export interface WorkshopEarning {
+  id: string;
+  amountWorkshop: number;
+  currency: string;
+  payoutStatus: PayoutStatus;
+  paidOutAt?: string | null;
+  createdAt: string;
+  booking: {
+    scheduledAt: string;
+    status: Booking["status"];
+    quoteRequest: { serviceType: ServiceType; vehicleMake: string; vehicleModel: string };
+  };
+}
+
+/** Centimes → « 1 290,00 € ». */
+export function formatAmount(cents: number, currency = "eur"): string {
+  return (cents / 100).toLocaleString("fr-FR", {
+    style: "currency",
+    currency: currency.toUpperCase(),
+  });
+}

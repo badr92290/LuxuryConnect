@@ -263,3 +263,56 @@ export interface SupportTicket {
   photos: { id: string; imageUrl: string }[];
   messages: SupportMessage[];
 }
+
+// ── Paiement ─────────────────────────────────────────────────────────────
+
+export type PaymentStatus = "PENDING" | "PROCESSING" | "PAID" | "FAILED" | "REFUNDED";
+export type PayoutStatus = "PENDING" | "SCHEDULED" | "PAID" | "FAILED";
+
+export const PAYMENT_STATUS_LABELS: Record<PaymentStatus, string> = {
+  PENDING: "À régler",
+  PROCESSING: "Paiement en cours",
+  PAID: "Réglé",
+  FAILED: "Paiement refusé",
+  REFUNDED: "Remboursé",
+};
+
+export const PAYOUT_STATUS_LABELS: Record<PayoutStatus, string> = {
+  PENDING: "En attente de la prestation",
+  SCHEDULED: "Virement à effectuer",
+  PAID: "Versé",
+  FAILED: "Virement échoué",
+};
+
+/** Ce que le client peut voir d'un paiement : jamais la part de l'atelier. */
+export interface ClientPayment {
+  id: string;
+  amountTotal: number; // centimes
+  currency: string;
+  status: PaymentStatus;
+  paymentMethodLabel?: string | null;
+  paidAt?: string | null;
+  refundedAt?: string | null;
+}
+
+export interface WorkshopEarning {
+  id: string;
+  amountWorkshop: number;
+  currency: string;
+  payoutStatus: PayoutStatus;
+  paidOutAt?: string | null;
+  createdAt: string;
+  booking: {
+    scheduledAt: string;
+    status: Booking["status"];
+    quoteRequest: { serviceType: ServiceType; vehicleMake: string; vehicleModel: string };
+  };
+}
+
+/** Centimes → « 1 290,00 € ». */
+export function formatAmount(cents: number, currency = "eur"): string {
+  return (cents / 100).toLocaleString("fr-FR", {
+    style: "currency",
+    currency: currency.toUpperCase(),
+  });
+}

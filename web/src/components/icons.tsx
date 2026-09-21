@@ -197,3 +197,11 @@ export const IconHelp = base(
     <path d="M12 17h.01" />
   </>
 );
+
+export const IconCard = base(
+  <>
+    <rect x="2.5" y="5.5" width="19" height="13" rx="2.5" />
+    <path d="M2.5 10h19" />
+    <path d="M6 14.5h3" />
+  </>
+);

@@ -4,7 +4,7 @@ import { useFocusEffect } from "@react-navigation/native";
 import { colors, fonts, spacing } from "../../theme/colors";
 import { Badge, Button, Card, EmptyState, Screen, Title } from "../../components/ui";
 import { api } from "../../api/client";
-import { Booking } from "../../types";
+import { Booking, ClientPayment, formatAmount } from "../../types";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import type { CompositeScreenProps } from "@react-navigation/native";
 import type { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
@@ -23,6 +23,8 @@ const STATUS_LABELS: Record<Booking["status"], string> = {
 
 export default function MyBookingsScreen({ navigation }: Props) {
   const [bookings, setBookings] = useState<Booking[]>([]);
+  // État de paiement par réservation, pour savoir s'il reste à régler.
+  const [payments, setPayments] = useState<Record<string, ClientPayment | null>>({});
   const [loading, setLoading] = useState(false);
 
   const load = useCallback(async () => {
@@ -30,6 +32,16 @@ export default function MyBookingsScreen({ navigation }: Props) {
     try {
       const data = await api.get<{ bookings: Booking[] }>("/bookings");
       setBookings(data.bookings);
+
+      const states = await Promise.all(
+        data.bookings.map((b) =>
+          api
+            .get<{ payment: ClientPayment | null }>(`/payments/bookings/${b.id}`)
+            .then((r) => [b.id, r.payment] as const)
+            .catch(() => [b.id, null] as const),
+        ),
+      );
+      setPayments(Object.fromEntries(states));
     } finally {
       setLoading(false);
     }
@@ -59,8 +71,26 @@ export default function MyBookingsScreen({ navigation }: Props) {
               <Badge label={STATUS_LABELS[item.status]} />
             </View>
             <Text style={styles.meta}>
-              Rendez-vous le {new Date(item.scheduledAt).toLocaleDateString("fr-FR")} · {item.price} €
+              Rendez-vous le {new Date(item.scheduledAt).toLocaleDateString("fr-FR")} ·{" "}
+              {formatAmount(Math.round(item.price * 100))}
             </Text>
+
+            {payments[item.id]?.status === "PAID" ? (
+              <Text style={styles.paid}>
+                Réglé
+                {payments[item.id]?.paymentMethodLabel
+                  ? ` · ${payments[item.id]?.paymentMethodLabel}`
+                  : ""}
+              </Text>
+            ) : (
+              item.status !== "CANCELLED" && (
+                <Button
+                  title={`Régler ${formatAmount(Math.round(item.price * 100))}`}
+                  style={{ marginTop: spacing.md }}
+                  onPress={() => navigation.navigate("Payment", { bookingId: item.id })}
+                />
+              )
+            )}
             {item.status === "COMPLETED" && (
               <>
                 {!item.review && (
@@ -106,4 +136,5 @@ const styles = StyleSheet.create({
   },
   businessName: { fontFamily: fonts.bodySemi, color: colors.text, fontSize: 15, flexShrink: 1 },
   meta: { fontFamily: fonts.body, color: colors.textMuted, fontSize: 14, marginTop: 6 },
+  paid: { fontFamily: fonts.bodySemi, color: colors.success, fontSize: 14, marginTop: 10 },
 });

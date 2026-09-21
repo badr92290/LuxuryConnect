@@ -16,6 +16,8 @@ import vehicleRoutes from "./routes/vehicles";
 import notificationRoutes from "./routes/notifications";
 import contactRoutes from "./routes/contact";
 import supportRoutes from "./routes/support";
+import paymentRoutes from "./routes/payments";
+import stripeWebhookRoutes from "./routes/stripeWebhook";
 import { registerChatSockets } from "./sockets/chat";
 import { UPLOAD_DIR } from "./utils/uploads";
 import { startReminderJob } from "./jobs/reminders";
@@ -48,6 +50,10 @@ app.use(
 );
 app.use(cors(corsOptions));
 app.use(apiLimiter);
+
+// Monté avant `express.json` : la signature d'un webhook Stripe porte sur les
+// octets bruts, qu'un parseur JSON réécrirait.
+app.use("/stripe/webhook", stripeWebhookRoutes);
 // Les photos de véhicules arrivent en data URL dans le corps JSON.
 app.use(express.json({ limit: "12mb" }));
 app.use("/uploads", express.static(UPLOAD_DIR));
@@ -64,6 +70,7 @@ app.use("/vehicles", vehicleRoutes);
 app.use("/notifications", notificationRoutes);
 app.use("/contact", contactRoutes);
 app.use("/support", supportRoutes);
+app.use("/payments", paymentRoutes);
 app.use("/admin", adminRoutes);
 
 app.use((err: any, _req: express.Request, res: express.Response, _next: express.NextFunction) => {

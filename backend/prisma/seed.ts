@@ -413,6 +413,37 @@ async function main() {
     });
   }
 
+  console.log("Paiement de démonstration : encaissé, atelier déjà réglé...");
+  // Les deux mouvements d'une prestation soldée : le client a payé 1450 €,
+  // l'atelier a touché les 1250 € de son devis, la marge est de 200 €.
+  await prisma.payment.create({
+    data: {
+      bookingId: booking.id,
+      clientId: client2.id,
+      professionalId: proLyon.id,
+      amountTotal: 145000,
+      amountWorkshop: 125000,
+      amountMargin: 20000,
+      status: "PAID",
+      paidAt: new Date(Date.now() - 6 * 24 * 3600 * 1000),
+      paymentMethodLabel: "Apple Pay",
+      stripePaymentIntentId: "pi_demo_seed_0001",
+      payoutStatus: "PAID",
+      paidOutAt: new Date(Date.now() - 2 * 24 * 3600 * 1000),
+      stripeTransferId: "tr_demo_seed_0001",
+    },
+  });
+  // Un atelier prêt à recevoir ses virements, pour que l'écran pro ne soit
+  // pas bloqué sur l'étape d'inscription.
+  await prisma.professionalProfile.update({
+    where: { id: proLyon.id },
+    data: {
+      stripeAccountId: "acct_demo_autoshine",
+      stripePayoutsEnabled: true,
+      stripeOnboardedAt: new Date(Date.now() - 40 * 24 * 3600 * 1000),
+    },
+  });
+
   console.log("Dossier SAV de démonstration (client <-> atelier, en direct)...");
   // Le SAV est le seul endroit où le client et l'atelier échangent sans
   // passer par l'intermédiaire : on en sème un pour que l'écran ne soit pas vide.

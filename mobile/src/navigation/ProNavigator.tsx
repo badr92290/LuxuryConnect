@@ -4,6 +4,7 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { stackScreenOptions, tabScreenOptions } from "./screenOptions";
 import {
   IconCalendar,
+  IconCard,
   IconInbox,
   IconLifebuoy,
   IconMessage,
@@ -16,6 +17,7 @@ import ProProfileScreen from "../screens/pro/ProProfileScreen";
 import ConversationsScreen from "../screens/shared/ConversationsScreen";
 import ChatScreen from "../screens/shared/ChatScreen";
 import QuoteRequestDetailScreen from "../screens/pro/QuoteRequestDetailScreen";
+import ProPaymentsScreen from "../screens/pro/ProPaymentsScreen";
 import SupportListScreen from "../screens/shared/SupportListScreen";
 import SupportTicketScreen from "../screens/shared/SupportTicketScreen";
 import HelpScreen from "../screens/shared/HelpScreen";
@@ -27,6 +29,7 @@ const Stack = createNativeStackNavigator<ProStackParamList>();
 const TAB_ICONS: Record<keyof ProTabParamList, React.ComponentType<IconProps>> = {
   Requests: IconInbox,
   ProBookings: IconCalendar,
+  ProPayments: IconCard,
   Support: IconLifebuoy,
   Messages: IconMessage,
   ProProfile: IconUser,
@@ -45,6 +48,11 @@ function ProTabs() {
     >
       <Tab.Screen name="Requests" component={RequestsScreen} options={{ title: "Demandes" }} />
       <Tab.Screen name="ProBookings" component={ProBookingsScreen} options={{ title: "Agenda" }} />
+      <Tab.Screen
+        name="ProPayments"
+        component={ProPaymentsScreen}
+        options={{ title: "Paiements" }}
+      />
       <Tab.Screen name="Support" component={SupportListScreen} options={{ title: "SAV" }} />
       <Tab.Screen name="Messages" component={ConversationsScreen} options={{ title: "Messages" }} />
       <Tab.Screen name="ProProfile" component={ProProfileScreen} options={{ title: "Profil" }} />

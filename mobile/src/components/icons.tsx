@@ -157,3 +157,11 @@ export const IconLifebuoy = base(() => (
     <Path d="m6 6 3.5 3.5M18 6l-3.5 3.5M6 18l3.5-3.5M18 18l-3.5-3.5" />
   </>
 ));
+
+export const IconCard = base(() => (
+  <>
+    <Rect x="2.5" y="5.5" width="19" height="13" rx="2.5" />
+    <Path d="M2.5 10h19" />
+    <Path d="M6 14.5h3" />
+  </>
+));

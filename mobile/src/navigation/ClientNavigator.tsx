@@ -18,6 +18,7 @@ import MyBookingsScreen from "../screens/client/MyBookingsScreen";
 import ProfileScreen from "../screens/client/ProfileScreen";
 import LeaveReviewScreen from "../screens/client/LeaveReviewScreen";
 import NewSupportTicketScreen from "../screens/client/NewSupportTicketScreen";
+import PaymentScreen from "../screens/client/PaymentScreen";
 import ConversationsScreen from "../screens/shared/ConversationsScreen";
 import ChatScreen from "../screens/shared/ChatScreen";
 import ReviewsScreen from "../screens/shared/ReviewsScreen";
@@ -84,6 +85,7 @@ export default function ClientNavigator() {
         component={SupportTicketScreen}
         options={{ title: "Dossier SAV" }}
       />
+      <Stack.Screen name="Payment" component={PaymentScreen} options={{ title: "Paiement" }} />
       <Stack.Screen name="Reviews" component={ReviewsScreen} options={{ title: "Avis clients" }} />
       <Stack.Screen name="Help" component={HelpScreen} options={{ title: "Assistance" }} />
     </Stack.Navigator>

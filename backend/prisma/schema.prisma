@@ -57,6 +57,25 @@ enum QuoteStatus {
   REJECTED
 }
 
+// Encaissement du client par LuxuryConnect.
+enum PaymentStatus {
+  PENDING // offre acceptée, paiement pas encore effectué
+  PROCESSING // autorisation en cours chez la banque
+  PAID // encaissé sur le compte LuxuryConnect
+  FAILED
+  REFUNDED
+}
+
+// Reversement de LuxuryConnect vers l'atelier. Il suit l'encaissement mais
+// n'est déclenché qu'une fois la prestation réalisée : c'est ce décalage qui
+// donne à l'intermédiaire les moyens de trancher un litige.
+enum PayoutStatus {
+  PENDING // prestation pas encore terminée, rien n'est versé
+  SCHEDULED // versement demandé
+  PAID // viré sur le compte de l'atelier
+  FAILED
+}
+
 enum BookingStatus {
   CONFIRMED
   COMPLETED
@@ -72,6 +91,10 @@ enum NotificationType {
   OFFER_DECLINED
   QUOTE_REMINDER
   CONTACT_LEAD
+  PAYMENT_RECEIVED
+  PAYMENT_FAILED
+  PAYOUT_SENT
+  PAYOUT_PENDING
   SUPPORT_OPENED
   SUPPORT_REPLY
   SUPPORT_REMINDER
@@ -116,6 +139,7 @@ model User {
   bookingsAsClient Booking[]        @relation("ClientBookings")
   reviewsWritten   Review[]         @relation("ClientReviews")
   supportTickets   SupportTicket[]  @relation("ClientTickets")
+  payments         Payment[]        @relation("ClientPayments")
   supportMessages  SupportMessage[] @relation("SupportMessages")
   vehicles         Vehicle[]        @relation("ClientVehicles")
 
@@ -172,6 +196,13 @@ model ProfessionalProfile {
   isCertified     Boolean @default(false)
   yearsExperience Int?
 
+  // Compte Stripe Connect de l'atelier. LuxuryConnect encaisse le client,
+  // puis vire la part de l'atelier sur ce compte : les pièces d'identité et
+  // le RIB restent chez Stripe, jamais dans notre base.
+  stripeAccountId      String?   @unique
+  stripePayoutsEnabled Boolean   @default(false)
+  stripeOnboardedAt    DateTime?
+
   // Site vitrine du professionnel, d'où sont importées ses réalisations.
   // L'import n'a lieu que si le professionnel a confirmé détenir les droits.
   websiteUrl             String?
@@ -188,6 +219,7 @@ model ProfessionalProfile {
   bookings            Booking[]             @relation("ProBookings")
   reviews             Review[]              @relation("ProReviews")
   supportTickets      SupportTicket[]       @relation("ProTickets")
+  payments            Payment[]             @relation("ProPayments")
   selectedForRequests QuoteRequest[]        @relation("SelectedProfessional")
 }
 
@@ -316,6 +348,49 @@ model Booking {
 
   review         Review?
   supportTickets SupportTicket[]
+  payment        Payment?
+}
+
+// Un paiement porte les deux mouvements d'argent d'une prestation : ce que le
+// client verse à LuxuryConnect, et ce que LuxuryConnect reverse à l'atelier.
+// La différence est notre rémunération, et le client ne la voit jamais — il ne
+// connaît que `amountTotal`.
+//
+// Les montants sont en centimes : un flottant ne sait pas représenter 0,10 €
+// exactement, et une facture ne tolère pas l'à-peu-près.
+model Payment {
+  id             String              @id @default(uuid())
+  bookingId      String              @unique
+  booking        Booking             @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  clientId       String
+  client         User                @relation("ClientPayments", fields: [clientId], references: [id], onDelete: Cascade)
+  professionalId String
+  professional   ProfessionalProfile @relation("ProPayments", fields: [professionalId], references: [id], onDelete: Cascade)
+
+  amountTotal    Int // ce que paie le client
+  amountWorkshop Int // ce que touche l'atelier
+  amountMargin   Int // amountTotal - amountWorkshop
+  currency       String @default("eur")
+
+  status                PaymentStatus @default(PENDING)
+  stripePaymentIntentId String?       @unique
+  stripeChargeId        String?
+  // « Apple Pay », « Google Pay », « Visa •••• 4242 » — pour le reçu.
+  paymentMethodLabel    String?
+  paidAt                DateTime?
+  refundedAt            DateTime?
+  failureMessage        String?
+
+  payoutStatus     PayoutStatus @default(PENDING)
+  stripeTransferId String?
+  paidOutAt        DateTime?
+  payoutError      String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status, createdAt])
+  @@index([payoutStatus])
 }
 
 // Dossier de service après-vente, rattaché à une prestation réalisée.

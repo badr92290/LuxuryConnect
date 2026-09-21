@@ -19,6 +19,7 @@ export type ClientStackParamList = {
   Chat: { conversationId: string; title: string };
   LeaveReview: { bookingId: string; businessName: string };
   NewSupportTicket: { bookingId: string; businessName: string };
+  Payment: { bookingId: string };
   SupportTicket: { ticketId: string };
   Reviews: undefined;
   Help: undefined;
@@ -44,6 +45,7 @@ export type ProStackParamList = {
 export type ProTabParamList = {
   Requests: undefined;
   ProBookings: undefined;
+  ProPayments: undefined;
   Support: undefined;
   Messages: undefined;
   ProProfile: undefined;
